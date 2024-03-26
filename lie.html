@@ -8,11 +8,21 @@
       position: absolute;
       top: 0;
       right: 0;
+      display: flex;
+      flex-direction: row; /* Place images horizontally */
+      align-items: flex-end;
     }
 
     .corner-image {
-      width: 200px; /* Adjust the width as desired */
       height: auto; /* Maintain aspect ratio */
+    }
+
+    .original-image {
+      width: 200px; /* Adjust the width as desired */
+    }
+
+    .shrink-image {
+      width: 150px; /* Adjust the width as desired */
     }
 
     body {
@@ -32,8 +42,10 @@
 </head>
 <body>
   <div class="corner-container">
-    <img src="CUSZ.png" alt="Image 1" class="corner-image">
-    <img src="MRC.jpg" alt="Image 2" class="corner-image">
+  <div class="corner-container">
+    <img src="MRC.jpg" alt="Image 1" class="corner-image shrink-image">
+    <img src="CUSZ.png" alt="Image 2" class="corner-image original-image">
+  </div>
   </div>
   <h1>Lie Theory Seminar</h1>
   <h2>Hosts</h2>
