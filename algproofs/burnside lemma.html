@@ -1,0 +1,426 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:title" content="Lean Proof Explanation: sum_inv_orbit_eq_orbits">
+    <meta property="og:description" content="Interactive line-by-line explanation of sum_inv_orbit_eq_orbits in Lean 4">
+    <meta property="og:image" content="https://cdn.simulationtheory.ai/gasset/?asset=img&prompt=mathematical proof diagram with group theory orbits&w=64&h=64&style=professional">
+    <meta property="og:type" content="website">
+    <link rel="icon" href="https://cdn.simulationtheory.ai/gasset/?asset=img&prompt=lambda symbol mathematics&w=32&h=32&style=professional">
+    <title>Lean Proof: sum_inv_orbit_eq_orbits</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="/chat/cdn/animate.min.css" rel="stylesheet">
+    <style>
+        .proof-line {
+            transition: all 0.2s ease;
+        }
+        .proof-line:hover {
+            background-color: rgba(59, 130, 246, 0.05);
+        }
+        .code-block {
+            font-family: 'Courier New', monospace;
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+        }
+        .keyword  { color: #569cd6; }
+        .type     { color: #4ec9b0; }
+        .variable { color: #9cdcfe; }
+        .comment  { color: #6a9955; }
+        .function { color: #dcdcaa; }
+        .full-code-line {
+            cursor: pointer;
+            transition: all 0.15s ease;
+            padding: 2px 8px;
+            border-left: 3px solid transparent;
+        }
+        .full-code-line:hover {
+            background-color: rgba(59, 130, 246, 0.1);
+            border-left-color: #3b82f6;
+        }
+        .full-code-line.active-code-line {
+            background-color: rgba(251, 191, 36, 0.15);
+            border-left-color: #f59e0b;
+        }
+        .line-number {
+            display: inline-block;
+            width: 40px;
+            color: #858585;
+            user-select: none;
+        }
+        .inline-explanation {
+            display: none;
+            background-color: #f8fafc;
+            border-left: 4px solid #f59e0b;
+            border-radius: 0 0.5rem 0.5rem 0;
+            margin: 4px 0 4px 40px;
+            padding: 14px 18px;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            font-size: 0.95rem;
+            color: #1e293b;
+            animation: fadeSlideIn 0.2s ease;
+        }
+        .inline-explanation.visible {
+            display: block;
+        }
+        @keyframes fadeSlideIn {
+            from { opacity: 0; transform: translateY(-6px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .expl-code-snippet {
+            font-family: 'Courier New', monospace;
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 0.4rem;
+            padding: 10px 14px;
+            font-size: 0.82rem;
+            margin-bottom: 10px;
+            overflow-x: auto;
+            white-space: pre;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen">
+<div class="container mx-auto px-4 py-8 max-w-7xl">
+
+    <div class="text-center mb-12 animate__animated animate__fadeInDown">
+        <h1 class="text-5xl font-bold text-slate-800 mb-4">
+            <span class="text-blue-600">Lean Proof</span> Explanation
+        </h1>
+        <p class="text-xl text-slate-600">sum_inv_orbit_eq_orbits: Summing reciprocal orbit sizes counts orbits</p>
+    </div>
+
+    <div class="bg-emerald-50 border-l-4 border-emerald-600 p-6 mb-8 rounded-r-lg animate__animated animate__fadeInUp">
+        <h3 class="text-xl font-bold text-emerald-900 mb-3">Overview</h3>
+        <p class="text-slate-700 leading-relaxed">
+            This lemma proves that summing 1/|orbit(x)| over every element x of X equals the number of distinct orbits.
+            The key idea is a <strong>telescoping contribution</strong>: every orbit O of size k contains exactly k elements,
+            each contributing 1/k to the sum, so O contributes k × (1/k) = 1 in total.
+            Summing over all orbits gives exactly the orbit count.
+            The proof works by reindexing the sum from elements of X to distinct orbits, then verifying each fiber sums to 1.
+        </p>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-xl mb-8 overflow-hidden animate__animated animate__fadeInUp">
+        <div class="bg-gradient-to-r from-indigo-600 to-blue-600 p-6">
+            <h2 class="text-3xl font-bold text-white flex items-center gap-3">
+                <span class="bg-white text-indigo-600 rounded-lg px-3 py-1">📝</span>
+                Full Proof Code (Click any line for explanation)
+            </h2>
+            <p class="text-indigo-100 mt-2">Interactive Lean 4 proof — click a line to see its strategy and explanation inline</p>
+        </div>
+
+        <div class="p-8">
+            <div class="code-block p-6 rounded-lg overflow-x-auto">
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line1', this)">
+                    <span class="line-number">1</span><span class="keyword">lemma</span> <span class="function">sum_inv_orbit_eq_orbits</span> {<span class="type">G</span> <span class="type">X</span> : <span class="type">Type*</span>} [<span class="type">Group</span> <span class="type">G</span>] [<span class="type">Fintype</span> <span class="type">X</span>] (<span class="variable">A</span> : <span class="type">MyGroupAction</span> <span class="type">G</span> <span class="type">X</span>) :
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line1', this)">
+                    <span class="line-number">2</span>&nbsp;&nbsp;&nbsp;&nbsp;∑ <span class="variable">x</span> : <span class="type">X</span>, (<span class="keyword">1</span> : <span class="type">ℚ</span>) / <span class="function">Fintype.card</span> (<span class="function">orbit</span> <span class="variable">A</span> <span class="variable">x</span>) = <span class="function">Fintype.card</span> (<span class="function">orbits</span> <span class="variable">A</span>) := <span class="keyword">by</span>
+                </div>
+                <div id="expl-line1" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">lemma</span> <span class="function">sum_inv_orbit_eq_orbits</span> {<span class="type">G</span> <span class="type">X</span> : <span class="type">Type*</span>} [<span class="type">Group</span> <span class="type">G</span>] [<span class="type">Fintype</span> <span class="type">X</span>] (<span class="variable">A</span> : <span class="type">MyGroupAction</span> <span class="type">G</span> <span class="type">X</span>) :
+    ∑ <span class="variable">x</span> : <span class="type">X</span>, (<span class="keyword">1</span> : <span class="type">ℚ</span>) / <span class="function">Fintype.card</span> (<span class="function">orbit</span> <span class="variable">A</span> <span class="variable">x</span>) = <span class="function">Fintype.card</span> (<span class="function">orbits</span> <span class="variable">A</span>)</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> State the lemma — sum of reciprocal orbit sizes equals orbit count.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> We sum 1/|orbit(x)| over all x in the finite type X and claim the result equals |orbits A|, the number of distinct orbits. We work in ℚ so that division is well-defined. The intuition: each orbit of size k has k elements each contributing 1/k, totalling 1 per orbit. This lemma is a key ingredient in the proof of Burnside's Lemma.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line2', this)">
+                    <span class="line-number">3</span>&nbsp;&nbsp;<span class="keyword">have</span> <span class="variable">h_orbit_sum</span> : ∑ <span class="variable">x</span> : <span class="type">X</span>, (<span class="keyword">1</span> / (<span class="function">Fintype.card</span> (<span class="function">orbit</span> <span class="variable">A</span> <span class="variable">x</span>) : <span class="type">ℚ</span>))
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line2', this)">
+                    <span class="line-number">4</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= ∑ <span class="variable">o</span> ∈ <span class="function">Finset.image</span> (<span class="keyword">fun</span> <span class="variable">x</span> : <span class="type">X</span> => <span class="function">orbit</span> <span class="variable">A</span> <span class="variable">x</span>) <span class="function">Finset.univ</span>, (<span class="keyword">1</span> : <span class="type">ℚ</span>) := <span class="keyword">by</span>
+                </div>
+                <div id="expl-line2" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">have</span> <span class="variable">h_orbit_sum</span> : ∑ <span class="variable">x</span> : <span class="type">X</span>, (<span class="keyword">1</span> / (<span class="function">Fintype.card</span> (<span class="function">orbit</span> <span class="variable">A</span> <span class="variable">x</span>) : <span class="type">ℚ</span>))
+                = ∑ <span class="variable">o</span> ∈ <span class="function">Finset.image</span> (<span class="keyword">fun</span> <span class="variable">x</span> : <span class="type">X</span> => <span class="function">orbit</span> <span class="variable">A</span> <span class="variable">x</span>) <span class="function">Finset.univ</span>, (<span class="keyword">1</span> : <span class="type">ℚ</span>)</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Introduce the key auxiliary equality h_orbit_sum.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> We claim the sum over all elements x equals a sum of 1's indexed by distinct orbits. The right-hand side uses <code>Finset.image (fun x => orbit A x) Finset.univ</code>, which is the finset of all distinct orbits (each orbit appears exactly once). Once proved, the RHS is simply the count of distinct orbits, giving us what we need. This <code>have</code> isolates the combinatorial core of the argument.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line3', this)">
+                    <span class="line-number">5</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">rw</span> [ <span class="function">Finset.sum_image'</span> ];
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line3', this)">
+                    <span class="line-number">6</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">intro</span> <span class="variable">x</span> <span class="variable">hx</span>
+                </div>
+                <div id="expl-line3" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">rw</span> [ <span class="function">Finset.sum_image'</span> ];
+<span class="keyword">intro</span> <span class="variable">x</span> <span class="variable">hx</span></div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Reindex the sum from elements to orbits using Finset.sum_image'.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> <code>Finset.sum_image'</code> rewrites a sum ∑ x, f(φ(x)) into ∑ o ∈ image(φ), ∑ x in fiber(o), f(o). Here φ = orbit A, so it groups elements of X by their orbit. After the rewrite, we must prove: for each orbit representative x, the sum of 1/|orbit(y)| over all y with orbit(y) = orbit(x) equals 1. The <code>intro x hx</code> fixes an arbitrary orbit representative x ∈ Finset.univ.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line4', this)">
+                    <span class="line-number">7</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">have</span> <span class="variable">h_card</span> : <span class="function">Fintype.card</span> (<span class="function">orbit</span> <span class="variable">A</span> <span class="variable">x</span>) =
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line4', this)">
+                    <span class="line-number">8</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="function">Finset.card</span> (<span class="function">Finset.filter</span> (<span class="keyword">fun</span> <span class="variable">y</span> => <span class="function">orbit</span> <span class="variable">A</span> <span class="variable">y</span> = <span class="function">orbit</span> <span class="variable">A</span> <span class="variable">x</span>) <span class="function">Finset.univ</span>) := <span class="keyword">by</span>
+                </div>
+                <div id="expl-line4" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">have</span> <span class="variable">h_card</span> : <span class="function">Fintype.card</span> (<span class="function">orbit</span> <span class="variable">A</span> <span class="variable">x</span>) =
+                <span class="function">Finset.card</span> (<span class="function">Finset.filter</span> (<span class="keyword">fun</span> <span class="variable">y</span> => <span class="function">orbit</span> <span class="variable">A</span> <span class="variable">y</span> = <span class="function">orbit</span> <span class="variable">A</span> <span class="variable">x</span>) <span class="function">Finset.univ</span>)</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Relate the abstract orbit cardinality to a concrete filter count.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> <code>Fintype.card (orbit A x)</code> is the abstract cardinality of the orbit as a subtype of X. We need to connect this to the concrete finset count of elements y ∈ X whose orbit equals orbit(x). These are equal because orbits partition X: y ∈ orbit(x) if and only if orbit(y) = orbit(x) (orbits are either identical or disjoint). This equality is what allows us to cancel the orbit size against the 1/|orbit| terms.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line5', this)">
+                    <span class="line-number">9</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">rw</span> [ <span class="function">Fintype.card_of_subtype</span> ];
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line5', this)">
+                    <span class="line-number">10</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">intro</span> <span class="variable">y</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line5', this)">
+                    <span class="line-number">11</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">simp only</span> [<span class="function">orbit</span>, <span class="function">Finset.mem_filter</span>, <span class="function">Finset.mem_univ</span>, <span class="function">true_and</span>]
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line5', this)">
+                    <span class="line-number">12</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">constructor</span>;
+                </div>
+                <div id="expl-line5" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">rw</span> [ <span class="function">Fintype.card_of_subtype</span> ];
+<span class="keyword">intro</span> <span class="variable">y</span>
+<span class="keyword">simp only</span> [<span class="function">orbit</span>, <span class="function">Finset.mem_filter</span>, <span class="function">Finset.mem_univ</span>, <span class="function">true_and</span>]
+<span class="keyword">constructor</span>;</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Convert subtype cardinality to filter cardinality, then prove membership iff.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> <code>Fintype.card_of_subtype</code> rewrites <code>Fintype.card {y | P y}</code> as <code>Finset.card (Finset.filter P Finset.univ)</code>, provided we prove the membership criterion matches. After the rewrite, the goal becomes: for all y, y ∈ filter (orbit A y = orbit A x) univ ↔ y ∈ orbit A x. The <code>simp only</code> unfolds the orbit definition and simplifies the filter membership. We then split into two directions with <code>constructor</code>.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line6', this)">
+                    <span class="line-number">13</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;· <span class="keyword">intro</span> <span class="variable">h</span>;
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line6', this)">
+                    <span class="line-number">14</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">exact</span> <span class="variable">h</span>.<span class="function">subset</span> ⟨ <span class="keyword">1</span>, <span class="keyword">by</span> <span class="keyword">simp</span> [ <span class="variable">A</span>.<span class="function">one_act</span> ] ⟩;
+                </div>
+                <div id="expl-line6" class="inline-explanation">
+                    <div class="expl-code-snippet">· <span class="keyword">intro</span> <span class="variable">h</span>;
+  <span class="keyword">exact</span> <span class="variable">h</span>.<span class="function">subset</span> ⟨ <span class="keyword">1</span>, <span class="keyword">by</span> <span class="keyword">simp</span> [ <span class="variable">A</span>.<span class="function">one_act</span> ] ⟩;</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Forward direction — orbit equality implies membership.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> Assume h : orbit A y = orbit A x. We must show y ∈ orbit A x. Since y ∈ orbit A y (witnessed by the identity: A.act 1 y = y by <code>A.one_act</code>), and orbit A y = orbit A x by hypothesis h, we get y ∈ orbit A x via <code>h.subset</code>. The witness ⟨1, by simp [A.one_act]⟩ provides the proof that y ∈ orbit A y.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line7', this)">
+                    <span class="line-number">15</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;· <span class="keyword">rintro</span> ⟨ <span class="variable">g</span>, <span class="keyword">rfl</span> ⟩;
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line7', this)">
+                    <span class="line-number">16</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">ext</span> <span class="variable">y</span>;
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line7', this)">
+                    <span class="line-number">17</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">constructor</span> &lt;;&gt; <span class="keyword">rintro</span> ⟨ <span class="variable">h</span>, <span class="keyword">rfl</span> ⟩;
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line7', this)">
+                    <span class="line-number">18</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;· <span class="keyword">exact</span> ⟨ <span class="variable">h</span> * <span class="variable">g</span>, <span class="keyword">by</span> <span class="keyword">rw</span> [ <span class="variable">A</span>.<span class="function">mul_act</span> ] ⟩;
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line7', this)">
+                    <span class="line-number">19</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;· <span class="keyword">exact</span> ⟨ <span class="variable">h</span> * <span class="variable">g</span>⁻¹, <span class="keyword">by</span> <span class="keyword">simp</span> [ ← <span class="variable">A</span>.<span class="function">mul_act</span> ] ⟩;
+                </div>
+                <div id="expl-line7" class="inline-explanation">
+                    <div class="expl-code-snippet">· <span class="keyword">rintro</span> ⟨ <span class="variable">g</span>, <span class="keyword">rfl</span> ⟩;
+  <span class="keyword">ext</span> <span class="variable">y</span>;
+  <span class="keyword">constructor</span> &lt;;&gt; <span class="keyword">rintro</span> ⟨ <span class="variable">h</span>, <span class="keyword">rfl</span> ⟩;
+  · <span class="keyword">exact</span> ⟨ <span class="variable">h</span> * <span class="variable">g</span>, <span class="keyword">by</span> <span class="keyword">rw</span> [ <span class="variable">A</span>.<span class="function">mul_act</span> ] ⟩;
+  · <span class="keyword">exact</span> ⟨ <span class="variable">h</span> * <span class="variable">g</span>⁻¹, <span class="keyword">by</span> <span class="keyword">simp</span> [ ← <span class="variable">A</span>.<span class="function">mul_act</span> ] ⟩;</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Backward direction — membership implies orbit equality, proved by set extensionality.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> Assume y ∈ orbit A x, i.e., ∃ g, A.act g x = y. The <code>rintro ⟨g, rfl⟩</code> destructs this, substituting y := A.act g x. We must show orbit A (A.act g x) = orbit A x as sets. Using <code>ext</code>, this reduces to: for all z, z ∈ orbit(g·x) ↔ z ∈ orbit(x). Forward (z = A.act h (A.act g x)): by <code>A.mul_act</code>, z = A.act (h*g) x ∈ orbit(x). Backward (z = A.act h x): z = A.act (h*g⁻¹) (A.act g x) ∈ orbit(g·x), using <code>A.mul_act</code> and simp to cancel g⁻¹·g = 1.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line8', this)">
+                    <span class="line-number">20</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">rw</span> [ <span class="function">Finset.sum_congr</span> <span class="keyword">rfl</span> <span class="keyword">fun</span> <span class="variable">y</span> <span class="variable">hy</span> => <span class="keyword">by</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line8', this)">
+                    <span class="line-number">21</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">rw</span> [ <span class="keyword">show</span> <span class="function">orbit</span> <span class="variable">A</span> <span class="variable">y</span> = <span class="function">orbit</span> <span class="variable">A</span> <span class="variable">x</span> <span class="keyword">from</span> <span class="function">Finset.mem_filter.mp</span> <span class="variable">hy</span> |>.2 ] ]
+                </div>
+                <div id="expl-line8" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">rw</span> [ <span class="function">Finset.sum_congr</span> <span class="keyword">rfl</span> <span class="keyword">fun</span> <span class="variable">y</span> <span class="variable">hy</span> => <span class="keyword">by</span>
+    <span class="keyword">rw</span> [ <span class="keyword">show</span> <span class="function">orbit</span> <span class="variable">A</span> <span class="variable">y</span> = <span class="function">orbit</span> <span class="variable">A</span> <span class="variable">x</span> <span class="keyword">from</span> <span class="function">Finset.mem_filter.mp</span> <span class="variable">hy</span> |>.2 ] ]</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Normalize orbit sizes inside the fiber sum — replace orbit(y) with orbit(x).</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> Inside the fiber sum (over all y with orbit(y) = orbit(x)), every term is 1/|orbit(y)|. Since the filter hypothesis <code>hy</code> gives orbit(y) = orbit(x), we can replace orbit(y) with orbit(x) everywhere. <code>Finset.sum_congr rfl</code> applies a pointwise rewrite to each term in the sum without changing the index set. After this rewrite, every term in the fiber sum is the same constant 1/|orbit(x)|, so the sum becomes |fiber| × (1/|orbit(x)|).</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line9', this)">
+                    <span class="line-number">22</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">aesop</span>
+                </div>
+                <div id="expl-line9" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">aesop</span></div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Close the fiber sum goal automatically.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> After the <code>sum_congr</code> rewrite, the goal is: (Finset.card (filter (orbit A · = orbit A x) univ) : ℚ) * (1 / |orbit A x|) = 1. Combined with <code>h_card</code>, which equates the filter card with <code>Fintype.card (orbit A x)</code>, this reduces to k * (1/k) = 1 for k = |orbit A x|. <code>aesop</code> handles this arithmetic identity automatically, including the non-zero condition on k (orbits are non-empty since x ∈ orbit(x) via the identity action).</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line10', this)">
+                    <span class="line-number">23</span>&nbsp;&nbsp;<span class="keyword">convert</span> <span class="variable">h_orbit_sum</span> <span class="keyword">using</span> <span class="keyword">1</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line10', this)">
+                    <span class="line-number">24</span>&nbsp;&nbsp;<span class="keyword">simp only</span> [<span class="function">Fintype.card_ofFinset</span>, <span class="function">Finset.sum_const</span>, <span class="function">nsmul_eq_mul</span>, <span class="function">mul_one</span>, <span class="function">orbits</span>,
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line10', this)">
+                    <span class="line-number">25</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="function">Set.coe_setOf</span>] <span class="keyword">at</span> *
+                </div>
+                <div id="expl-line10" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">convert</span> <span class="variable">h_orbit_sum</span> <span class="keyword">using</span> <span class="keyword">1</span>
+<span class="keyword">simp only</span> [<span class="function">Fintype.card_ofFinset</span>, <span class="function">Finset.sum_const</span>, <span class="function">nsmul_eq_mul</span>, <span class="function">mul_one</span>, <span class="function">orbits</span>,
+  <span class="function">Set.coe_setOf</span>] <span class="keyword">at</span> *</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Apply h_orbit_sum and simplify the RHS to the orbit count.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> <code>convert h_orbit_sum using 1</code> applies our auxiliary lemma, leaving two sub-goals for the two sides. The <code>simp only</code> then simplifies the RHS: <code>Finset.sum_const</code> rewrites a sum of a constant 1 over a finset of size n as n • 1; <code>nsmul_eq_mul</code> converts n • (1:ℚ) to n * 1; <code>mul_one</code> simplifies to n; and <code>Fintype.card_ofFinset</code> converts the finset card to a Fintype card. The result is that the RHS becomes <code>Fintype.card (orbits A)</code>, matching the goal.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line11', this)">
+                    <span class="line-number">26</span>&nbsp;&nbsp;<span class="keyword">rw</span> [ <span class="function">Fintype.card_of_subtype</span> ]
+                </div>
+                <div id="expl-line11" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">rw</span> [ <span class="function">Fintype.card_of_subtype</span> ]</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Convert the abstract orbit count to a concrete finset cardinality.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> <code>orbits A</code> is defined as the subtype <code>{ o | ∃ x, o = orbit A x }</code>. <code>Fintype.card_of_subtype</code> rewrites its abstract cardinality as the cardinality of the finset of all sets o satisfying ∃ x, o = orbit A x. This leaves the goal: for all o, o ∈ Finset.image (orbit A) Finset.univ ↔ ∃ x, o = orbit A x, which is exactly the definition of membership in the image finset.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line12', this)">
+                    <span class="line-number">27</span>&nbsp;&nbsp;<span class="keyword">aesop</span>
+                </div>
+                <div id="expl-line12" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">aesop</span></div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Close the final membership iff goal automatically.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> The remaining goal is: ∀ o, o ∈ Finset.image (fun x => orbit A x) Finset.univ ↔ ∃ x, o = orbit A x. <code>aesop</code> unfolds <code>Finset.mem_image</code> and <code>Finset.mem_univ</code>, then matches the existential witnesses on both sides. Forward: if o = orbit A x for some x ∈ univ, then ∃ x, o = orbit A x. Backward: if ∃ x, o = orbit A x, then x ∈ univ (trivially) and o = orbit A x, so o ∈ image. This is a straightforward logical equivalence that <code>aesop</code> closes automatically. □</p>
+                </div>
+
+            </div>
+            <p class="text-sm text-slate-500 mt-4 italic">💡 Tip: Click on any line above to see its strategy and explanation inline. Click again to hide it.</p>
+        </div>
+    </div>
+
+    <div class="bg-emerald-50 border-l-4 border-emerald-600 p-6 mb-8 rounded-r-lg animate__animated animate__fadeInUp">
+        <h3 class="text-xl font-bold text-emerald-900 mb-3">Proof Structure Summary</h3>
+        <p class="text-slate-700 leading-relaxed mb-4">The proof follows a clean reindexing argument:</p>
+        <ul class="list-disc list-inside text-slate-700 space-y-3 ml-4">
+            <li><strong>Setup (h_orbit_sum):</strong> Reduce the main goal to showing ∑ₓ 1/|orbit(x)| = ∑ over distinct orbits of 1</li>
+            <li><strong>Step 1 (Reindex via sum_image'):</strong> Group elements of X by their orbit; the outer sum runs over distinct orbits, the inner sum over the fiber</li>
+            <li><strong>Step 2 (h_card):</strong> Show |orbit(x)| = |{y | orbit(y) = orbit(x)}| by proving the membership iff:
+                <ul class="list-disc list-inside ml-6 mt-2">
+                    <li>Forward: orbit(y) = orbit(x) implies y ∈ orbit(x) via the identity action</li>
+                    <li>Backward: y = g·x implies orbit(g·x) = orbit(x) by set extensionality, using h*g and h*g⁻¹ as witnesses</li>
+                </ul>
+            </li>
+            <li><strong>Step 3 (sum_congr + aesop):</strong> Normalize all orbit sizes in the fiber to |orbit(x)|, then close k × (1/k) = 1 automatically</li>
+            <li><strong>Conclusion (convert + simp + aesop):</strong> Apply h_orbit_sum, simplify the constant sum to the orbit count, and close the membership iff by aesop</li>
+        </ul>
+        <p class="text-slate-700 leading-relaxed mt-4">
+            <strong>Key insight:</strong> Orbits partition X, so every element belongs to exactly one orbit.
+            An orbit of size k contributes k terms of 1/k each, totalling 1.
+            Summing over all elements of X is therefore the same as summing 1 over all distinct orbits,
+            which is exactly the orbit count.
+        </p>
+    </div>
+
+    <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl shadow-xl p-8 text-white animate__animated animate__fadeInUp animate__delay-1s">
+        <h2 class="text-3xl font-bold mb-6 flex items-center gap-3">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z">
+                </path>
+            </svg>
+            Key Lemmas Used
+        </h2>
+
+        <div class="grid md:grid-cols-2 gap-6">
+            <div class="bg-slate-700 rounded-xl p-6">
+                <h3 class="text-xl font-bold mb-3 text-emerald-300">1. Finset.sum_image'</h3>
+                <p class="text-slate-200">
+                    Rewrites ∑ x, f(φ(x)) as ∑ o ∈ image(φ), ∑ x in fiber(o), f(o).
+                    Here φ = orbit A, grouping elements of X by their orbit so the outer sum runs over distinct orbits.
+                    This is the core reindexing step of the proof.
+                </p>
+            </div>
+
+            <div class="bg-slate-700 rounded-xl p-6">
+                <h3 class="text-xl font-bold mb-3 text-blue-300">2. Fintype.card_of_subtype</h3>
+                <p class="text-slate-200">
+                    Converts an abstract subtype cardinality Fintype.card {y | P y} into a concrete finset cardinality
+                    Finset.card (Finset.filter P Finset.univ), provided the membership criterion is verified.
+                    Used twice: once for orbit cardinality, once for the orbits count.
+                </p>
+            </div>
+
+            <div class="bg-slate-700 rounded-xl p-6">
+                <h3 class="text-xl font-bold mb-3 text-purple-300">3. Finset.sum_congr</h3>
+                <p class="text-slate-200">
+                    Applies a pointwise rewrite to each term in a finset sum without changing the index set.
+                    Used to replace orbit(y) with orbit(x) inside the fiber sum, making all terms identical
+                    so the sum collapses to |fiber| × (1/|orbit(x)|).
+                </p>
+            </div>
+
+            <div class="bg-slate-700 rounded-xl p-6">
+                <h3 class="text-xl font-bold mb-3 text-yellow-300">4. Finset.sum_const / nsmul_eq_mul</h3>
+                <p class="text-slate-200">
+                    Finset.sum_const rewrites a sum of a constant c over a finset of size n as n • c.
+                    Combined with nsmul_eq_mul (n • c = n * c) and mul_one, this simplifies the sum of 1's
+                    over the distinct orbits finset to the orbit count as a rational number.
+                </p>
+            </div>
+        </div>
+
+        <div class="mt-8 bg-slate-700 rounded-xl p-6">
+            <h3 class="text-xl font-bold mb-3 text-red-300">Mathematical Significance</h3>
+            <p class="text-slate-200 leading-relaxed">
+                This lemma is the orbit-counting heart of Burnside's Lemma. It formalises the classical observation
+                that orbits partition the set X, and that summing 1/|O| over all elements of an orbit O gives exactly 1.
+                In the Burnside proof, it is invoked to convert ∑ₓ |Stab(x)| = ∑ₓ |G|/|orbit(x)| = |G| · ∑ₓ 1/|orbit(x)|
+                into |G| · |orbits|, completing the double-counting argument.
+                The proof technique — reindexing a sum over a set by the image of a map — is a standard and reusable
+                pattern in combinatorial formalisation in Lean 4.
+            </p>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    var currentOpen = null;
+    var currentLine = null;
+
+    function toggleExplanation(explId, clickedLine) {
+        var expl = document.getElementById(explId);
+        if (!expl) return;
+
+        if (currentOpen && currentOpen !== expl) {
+            currentOpen.classList.remove('visible');
+        }
+        if (currentLine && currentLine !== clickedLine) {
+            document.querySelectorAll('.full-code-line').forEach(function(el) {
+                el.classList.remove('active-code-line');
+            });
+        }
+
+        if (expl.classList.contains('visible')) {
+            expl.classList.remove('visible');
+            clickedLine.classList.remove('active-code-line');
+            currentOpen = null;
+            currentLine = null;
+        } else {
+            expl.classList.add('visible');
+            document.querySelectorAll('.full-code-line').forEach(function(el) {
+                el.classList.remove('active-code-line');
+            });
+            var siblings = document.querySelectorAll('[onclick="toggleExplanation(\'' + explId + '\', this)"]');
+            siblings.forEach(function(el) {
+                el.classList.add('active-code-line');
+            });
+            currentOpen = expl;
+            currentLine = clickedLine;
+            setTimeout(function() {
+                expl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 50);
+        }
+    }
+
+    document.querySelectorAll('.full-code-line').forEach(function(line) {
+        line.addEventListener('mouseenter', function () {
+            this.style.transform = 'translateX(4px)';
+        });
+        line.addEventListener('mouseleave', function () {
+            this.style.transform = 'translateX(0)';
+        });
+    });
+</script>
+</body>
+</html>
+        

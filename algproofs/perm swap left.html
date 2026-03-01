@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:title" content="Lean Proof Explanation: move_swap_left">
+    <meta property="og:description" content="Interactive line-by-line explanation of move_swap_left in Lean 4">
+    <meta property="og:image" content="https://cdn.simulationtheory.ai/gasset/?asset=img&prompt=mathematical proof diagram with permutation transpositions&w=64&h=64&style=professional">
+    <meta property="og:type" content="website">
+    <link rel="icon" href="https://cdn.simulationtheory.ai/gasset/?asset=img&prompt=lambda symbol mathematics&w=32&h=32&style=professional">
+    <title>Lean Proof: move_swap_left</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="/chat/cdn/animate.min.css" rel="stylesheet">
+    <style>
+        .proof-line {
+            transition: all 0.2s ease;
+        }
+        .proof-line:hover {
+            background-color: rgba(59, 130, 246, 0.05);
+        }
+        .code-block {
+            font-family: 'Courier New', monospace;
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+        }
+        .keyword  { color: #569cd6; }
+        .type     { color: #4ec9b0; }
+        .variable { color: #9cdcfe; }
+        .comment  { color: #6a9955; }
+        .function { color: #dcdcaa; }
+        .full-code-line {
+            cursor: pointer;
+            transition: all 0.15s ease;
+            padding: 2px 8px;
+            border-left: 3px solid transparent;
+        }
+        .full-code-line:hover {
+            background-color: rgba(59, 130, 246, 0.1);
+            border-left-color: #3b82f6;
+        }
+        .full-code-line.active-code-line {
+            background-color: rgba(251, 191, 36, 0.15);
+            border-left-color: #f59e0b;
+        }
+        .line-number {
+            display: inline-block;
+            width: 40px;
+            color: #858585;
+            user-select: none;
+        }
+        .inline-explanation {
+            display: none;
+            background-color: #f8fafc;
+            border-left: 4px solid #f59e0b;
+            border-radius: 0 0.5rem 0.5rem 0;
+            margin: 4px 0 4px 40px;
+            padding: 14px 18px;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            font-size: 0.95rem;
+            color: #1e293b;
+            animation: fadeSlideIn 0.2s ease;
+        }
+        .inline-explanation.visible {
+            display: block;
+        }
+        @keyframes fadeSlideIn {
+            from { opacity: 0; transform: translateY(-6px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .expl-code-snippet {
+            font-family: 'Courier New', monospace;
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 0.4rem;
+            padding: 10px 14px;
+            font-size: 0.82rem;
+            margin-bottom: 10px;
+            overflow-x: auto;
+            white-space: pre;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen">
+<div class="container mx-auto px-4 py-8 max-w-7xl">
+
+    <div class="text-center mb-12 animate__animated animate__fadeInDown">
+        <h1 class="text-5xl font-bold text-slate-800 mb-4">
+            <span class="text-blue-600">Lean Proof</span> Explanation
+        </h1>
+        <p class="text-xl text-slate-600">move_swap_left: Composing a transposition with (a b)</p>
+    </div>
+
+    <div class="bg-emerald-50 border-l-4 border-emerald-600 p-6 mb-8 rounded-r-lg animate__animated animate__fadeInUp">
+        <h3 class="text-xl font-bold text-emerald-900 mb-3">Overview</h3>
+        <p class="text-slate-700 leading-relaxed">
+            This lemma proves that when you multiply any transposition σ by (a b), one of two things happens:
+            either they cancel (if σ = (a b)), or the result can be rewritten as (a z) · τ where τ is a transposition that fixes a.
+            The key insight is a <strong>case analysis</strong>: depending on whether σ shares elements with {a, b}, we use different commutation rules
+            (swap_mul_swap_share_left, swap_mul_swap_share_right, or swap_mul_swap_comm_of_disjoint) to "move the a to the left".
+            This is crucial for algorithms that normalize permutations by repeatedly conjugating transpositions.
+        </p>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-xl mb-8 overflow-hidden animate__animated animate__fadeInUp">
+        <div class="bg-gradient-to-r from-indigo-600 to-blue-600 p-6">
+            <h2 class="text-3xl font-bold text-white flex items-center gap-3">
+                <span class="bg-white text-indigo-600 rounded-lg px-3 py-1">📝</span>
+                Full Proof Code (Click any line for explanation)
+            </h2>
+            <p class="text-indigo-100 mt-2">Interactive Lean 4 proof — click a line to see its strategy and explanation inline</p>
+        </div>
+
+        <div class="p-8">
+            <div class="code-block p-6 rounded-lg overflow-x-auto">
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line1', this)">
+                    <span class="line-number">1</span><span class="keyword">lemma</span> <span class="function">move_swap_left</span> {<span class="variable">a</span> <span class="variable">b</span> : <span class="type">α</span>} (<span class="variable">hab</span> : <span class="variable">a</span> ≠ <span class="variable">b</span>) (<span class="variable">σ</span> : <span class="type">Perm</span> <span class="type">α</span>) (<span class="variable">hσ</span> : <span class="variable">σ</span>.<span class="function">IsSwap</span>) :
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line1', this)">
+                    <span class="line-number">2</span>&nbsp;&nbsp;&nbsp;&nbsp;(<span class="variable">σ</span> * <span class="function">swap</span> <span class="variable">a</span> <span class="variable">b</span> = <span class="keyword">1</span>) ∨ (∃ <span class="variable">z</span>, <span class="variable">z</span> ≠ <span class="variable">a</span> ∧ ∃ <span class="variable">τ</span>, <span class="variable">τ</span>.<span class="function">IsSwap</span> ∧ <span class="variable">τ</span> <span class="variable">a</span> = <span class="variable">a</span> ∧ <span class="variable">σ</span> * <span class="function">swap</span> <span class="variable">a</span> <span class="variable">b</span> = <span class="function">swap</span> <span class="variable">a</span> <span class="variable">z</span> * <span class="variable">τ</span>) := <span class="keyword">by</span>
+                </div>
+                <div id="expl-line1" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">lemma</span> <span class="function">move_swap_left</span> {<span class="variable">a</span> <span class="variable">b</span> : <span class="type">α</span>} (<span class="variable">hab</span> : <span class="variable">a</span> ≠ <span class="variable">b</span>) (<span class="variable">σ</span> : <span class="type">Perm</span> <span class="type">α</span>) (<span class="variable">hσ</span> : <span class="variable">σ</span>.<span class="function">IsSwap</span>) :
+    (<span class="variable">σ</span> * <span class="function">swap</span> <span class="variable">a</span> <span class="variable">b</span> = <span class="keyword">1</span>) ∨ (∃ <span class="variable">z</span>, <span class="variable">z</span> ≠ <span class="variable">a</span> ∧ ∃ <span class="variable">τ</span>, <span class="variable">τ</span>.<span class="function">IsSwap</span> ∧ <span class="variable">τ</span> <span class="variable">a</span> = <span class="variable">a</span> ∧ <span class="variable">σ</span> * <span class="function">swap</span> <span class="variable">a</span> <span class="variable">b</span> = <span class="function">swap</span> <span class="variable">a</span> <span class="variable">z</span> * <span class="variable">τ</span>)</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> State the lemma — composing a transposition σ with (a b) either cancels or factors as (a z) · τ with τ fixing a.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> Given a transposition σ and a distinct pair a ≠ b, we claim that σ · (a b) either equals the identity (cancellation case), or can be written as (a z) · τ where z ≠ a, τ is a transposition, and τ(a) = a. This is the key technical lemma for "moving a to the left" in permutation algorithms, and it's proved by exhaustive case analysis on how σ overlaps with {a, b}.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line2', this)">
+                    <span class="line-number">3</span>&nbsp;&nbsp;<span class="keyword">rcases</span> <span class="variable">hσ</span> <span class="keyword">with</span> ⟨<span class="variable">x</span>, <span class="variable">y</span>, <span class="variable">hxy</span>, <span class="keyword">rfl</span>⟩
+                </div>
+                <div id="expl-line2" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">rcases</span> <span class="variable">hσ</span> <span class="keyword">with</span> ⟨<span class="variable">x</span>, <span class="variable">y</span>, <span class="variable">hxy</span>, <span class="keyword">rfl</span>⟩</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Destruct the IsSwap hypothesis to obtain concrete elements x, y with σ = swap x y.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> The hypothesis hσ : σ.IsSwap unfolds to ∃ x y, x ≠ y ∧ σ = swap x y. We use <code>rcases</code> to extract witnesses x, y, the proof hxy : x ≠ y, and substitute σ := swap x y via <code>rfl</code>. From now on, the goal is about swap x y * swap a b, and we proceed by case analysis on how {x, y} overlaps with {a, b}.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line3', this)">
+                    <span class="line-number">4</span>&nbsp;&nbsp;<span class="comment">-- Check if σ is exactly swap a b (or swap b a)</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line3', this)">
+                    <span class="line-number">5</span>&nbsp;&nbsp;<span class="keyword">by_cases</span> <span class="variable">h</span> : <span class="function">swap</span> <span class="variable">x</span> <span class="variable">y</span> = <span class="function">swap</span> <span class="variable">a</span> <span class="variable">b</span>
+                </div>
+                <div id="expl-line3" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="comment">-- Check if σ is exactly swap a b (or swap b a)</span>
+<span class="keyword">by_cases</span> <span class="variable">h</span> : <span class="function">swap</span> <span class="variable">x</span> <span class="variable">y</span> = <span class="function">swap</span> <span class="variable">a</span> <span class="variable">b</span></div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> First case split — test whether σ equals (a b).</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> We use <code>by_cases</code> to split on whether swap x y = swap a b (which includes swap b a by commutativity of swap). If true, we're in the cancellation case and will take the left disjunct (σ * swap a b = 1). Otherwise, we proceed to the right disjunct and further case-split on how {x, y} overlaps {a, b}.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line4', this)">
+                    <span class="line-number">6</span>&nbsp;&nbsp;· <span class="keyword">left</span>; <span class="keyword">rw</span> [<span class="variable">h</span>, <span class="function">Equiv.swap_mul_self</span>]
+                </div>
+                <div id="expl-line4" class="inline-explanation">
+                    <div class="expl-code-snippet">· <span class="keyword">left</span>; <span class="keyword">rw</span> [<span class="variable">h</span>, <span class="function">Equiv.swap_mul_self</span>]</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Cancellation case — if σ = (a b), then σ · (a b) = 1.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> Given h : swap x y = swap a b, we rewrite the goal to swap a b * swap a b, which equals 1 by <code>Equiv.swap_mul_self</code> (a transposition is its own inverse). We choose the left disjunct, proving σ * swap a b = 1. This closes the cancellation branch.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line5', this)">
+                    <span class="line-number">7</span>&nbsp;&nbsp;· <span class="keyword">right</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line5', this)">
+                    <span class="line-number">8</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">-- Case: σ involves 'a'</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line5', this)">
+                    <span class="line-number">9</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span> <span class="variable">ha</span> : <span class="variable">x</span> = <span class="variable">a</span> ∨ <span class="variable">y</span> = <span class="variable">a</span> <span class="keyword">then</span>
+                </div>
+                <div id="expl-line5" class="inline-explanation">
+                    <div class="expl-code-snippet">· <span class="keyword">right</span>
+  <span class="comment">-- Case: σ involves 'a'</span>
+  <span class="keyword">if</span> <span class="variable">ha</span> : <span class="variable">x</span> = <span class="variable">a</span> ∨ <span class="variable">y</span> = <span class="variable">a</span> <span class="keyword">then</span></div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Non-cancellation case — choose the right disjunct and begin case analysis on overlap with a.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> Since swap x y ≠ swap a b, we must prove the right disjunct: ∃ z ≠ a, ∃ τ fixing a, σ * swap a b = swap a z * τ. We use an <code>if</code> statement to check whether σ involves a (i.e., x = a or y = a). This is the first of three sub-cases. If true, we'll use <code>swap_mul_swap_share_left</code> to rewrite the product.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line6', this)">
+                    <span class="line-number">10</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">obtain</span> ⟨<span class="variable">z</span>, <span class="variable">hza</span>, <span class="variable">heq</span>⟩ : ∃ <span class="variable">z</span>, <span class="variable">z</span> ≠ <span class="variable">a</span> ∧ <span class="function">swap</span> <span class="variable">x</span> <span class="variable">y</span> = <span class="function">swap</span> <span class="variable">a</span> <span class="variable">z</span> := <span class="keyword">by</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line6', this)">
+                    <span class="line-number">11</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">cases</span> <span class="variable">ha</span> <span class="keyword">with</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line6', this)">
+                    <span class="line-number">12</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="keyword">inl</span> <span class="variable">hxa</span> => <span class="keyword">subst</span> <span class="variable">hxa</span>; <span class="keyword">exact</span> ⟨<span class="variable">y</span>, <span class="variable">hxy</span>.<span class="function">symm</span>, <span class="keyword">rfl</span>⟩
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line6', this)">
+                    <span class="line-number">13</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="keyword">inr</span> <span class="variable">hya</span> => <span class="keyword">subst</span> <span class="variable">hya</span>; <span class="keyword">exact</span> ⟨<span class="variable">x</span>, <span class="variable">hxy</span>, <span class="function">Equiv.swap_comm</span> <span class="variable">x</span> <span class="variable">y</span>⟩
+                </div>
+                <div id="expl-line6" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">obtain</span> ⟨<span class="variable">z</span>, <span class="variable">hza</span>, <span class="variable">heq</span>⟩ : ∃ <span class="variable">z</span>, <span class="variable">z</span> ≠ <span class="variable">a</span> ∧ <span class="function">swap</span> <span class="variable">x</span> <span class="variable">y</span> = <span class="function">swap</span> <span class="variable">a</span> <span class="variable">z</span> := <span class="keyword">by</span>
+  <span class="keyword">cases</span> <span class="variable">ha</span> <span class="keyword">with</span>
+  | <span class="keyword">inl</span> <span class="variable">hxa</span> => <span class="keyword">subst</span> <span class="variable">hxa</span>; <span class="keyword">exact</span> ⟨<span class="variable">y</span>, <span class="variable">hxy</span>.<span class="function">symm</span>, <span class="keyword">rfl</span>⟩
+  | <span class="keyword">inr</span> <span class="variable">hya</span> => <span class="keyword">subst</span> <span class="variable">hya</span>; <span class="keyword">exact</span> ⟨<span class="variable">x</span>, <span class="variable">hxy</span>, <span class="function">Equiv.swap_comm</span> <span class="variable">x</span> <span class="variable">y</span>⟩</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Normalize σ to the form (a z) for some z ≠ a.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> We prove ∃ z ≠ a, swap x y = swap a z. If x = a, take z := y (using hxy.symm : y ≠ x = a); if y = a, take z := x and use <code>Equiv.swap_comm</code> to rewrite swap x y = swap y x = swap a x. This gives us σ = swap a z for some z ≠ a, which is the form we need for the next step.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line7', this)">
+                    <span class="line-number">14</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">rw</span> [<span class="variable">heq</span>]
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line7', this)">
+                    <span class="line-number">15</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">have</span> <span class="variable">hzb</span> : <span class="variable">z</span> ≠ <span class="variable">b</span> := <span class="keyword">by</span> <span class="keyword">intro</span> <span class="variable">hb</span>; <span class="keyword">subst</span> <span class="variable">hb</span>; <span class="keyword">apply</span> <span class="variable">h</span>; <span class="keyword">rw</span> [<span class="variable">heq</span>]
+                </div>
+                <div id="expl-line7" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">rw</span> [<span class="variable">heq</span>]
+<span class="keyword">have</span> <span class="variable">hzb</span> : <span class="variable">z</span> ≠ <span class="variable">b</span> := <span class="keyword">by</span> <span class="keyword">intro</span> <span class="variable">hb</span>; <span class="keyword">subst</span> <span class="variable">hb</span>; <span class="keyword">apply</span> <span class="variable">h</span>; <span class="keyword">rw</span> [<span class="variable">heq</span>]</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Substitute σ = swap a z and prove z ≠ b.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> We rewrite the goal using heq, so now we work with swap a z * swap a b. We prove z ≠ b by contradiction: if z = b, then by heq, swap x y = swap a b, contradicting h. This inequality is needed as a hypothesis for <code>swap_mul_swap_share_left</code>.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line8', this)">
+                    <span class="line-number">16</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">-- Use: swap a z * swap a b = swap a b * swap b z</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line8', this)">
+                    <span class="line-number">17</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">refine</span> ⟨<span class="variable">b</span>, <span class="variable">hab</span>.<span class="function">symm</span>, <span class="function">swap</span> <span class="variable">b</span> <span class="variable">z</span>, ⟨<span class="variable">b</span>, <span class="variable">z</span>, <span class="keyword">by</span> <span class="keyword">aesop</span>, <span class="keyword">rfl</span>⟩, ?_, ?_⟩
+                </div>
+                <div id="expl-line8" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="comment">-- Use: swap a z * swap a b = swap a b * swap b z</span>
+<span class="keyword">refine</span> ⟨<span class="variable">b</span>, <span class="variable">hab</span>.<span class="function">symm</span>, <span class="function">swap</span> <span class="variable">b</span> <span class="variable">z</span>, ⟨<span class="variable">b</span>, <span class="variable">z</span>, <span class="keyword">by</span> <span class="keyword">aesop</span>, <span class="keyword">rfl</span>⟩, ?_, ?_⟩</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Provide witnesses for the existential — take z := b and τ := swap b z.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> We use <code>refine</code> to provide the witnesses: z' := b (with b ≠ a by hab.symm), and τ := swap b z. We package the IsSwap proof for τ as ⟨b, z, by aesop, rfl⟩, where <code>aesop</code> solves b ≠ z from hzb. This leaves two sub-goals: (1) τ a = a, and (2) swap a z * swap a b = swap a b * τ.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line9', this)">
+                    <span class="line-number">18</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;· <span class="keyword">simp</span> [<span class="function">swap_apply_def</span>]; <span class="keyword">aesop</span>
+                </div>
+                <div id="expl-line9" class="inline-explanation">
+                    <div class="expl-code-snippet">· <span class="keyword">simp</span> [<span class="function">swap_apply_def</span>]; <span class="keyword">aesop</span></div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Prove τ a = a, i.e., swap b z fixes a.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> We must show (swap b z) a = a. Unfolding <code>swap_apply_def</code> with <code>simp</code>, this reduces to: if a = b then z else if a = z then b else a. Since a ≠ b (by hab) and a ≠ z (by hza), the result is a. <code>aesop</code> closes this arithmetic goal using the hypotheses.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line10', this)">
+                    <span class="line-number">19</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;· <span class="keyword">rw</span> [<span class="function">swap_mul_swap_share_left</span> <span class="variable">hzb</span> <span class="variable">hza</span>]
+                </div>
+                <div id="expl-line10" class="inline-explanation">
+                    <div class="expl-code-snippet">· <span class="keyword">rw</span> [<span class="function">swap_mul_swap_share_left</span> <span class="variable">hzb</span> <span class="variable">hza</span>]</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Prove the factorization swap a z * swap a b = swap a b * swap b z using the share_left lemma.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> The lemma <code>swap_mul_swap_share_left</code> states: for z ≠ b and z ≠ a, swap a z * swap a b = swap a b * swap b z. This is exactly what we need. Applying it with hzb and hza closes the goal. This completes the "σ involves a" case.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line11', this)">
+                    <span class="line-number">20</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">-- Case: σ involves 'b' but not 'a'</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line11', this)">
+                    <span class="line-number">21</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">else if</span> <span class="variable">hb</span> : <span class="variable">x</span> = <span class="variable">b</span> ∨ <span class="variable">y</span> = <span class="variable">b</span> <span class="keyword">then</span>
+                </div>
+                <div id="expl-line11" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="comment">-- Case: σ involves 'b' but not 'a'</span>
+<span class="keyword">else if</span> <span class="variable">hb</span> : <span class="variable">x</span> = <span class="variable">b</span> ∨ <span class="variable">y</span> = <span class="variable">b</span> <span class="keyword">then</span></div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Second sub-case — σ involves b but not a.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> Having ruled out the "σ involves a" case, we now test whether σ involves b. Combined with the negation of ha (pushed into scope by the <code>else</code>), we know x ≠ a and y ≠ a. If x = b or y = b, we'll normalize σ to swap b z and use <code>swap_mul_swap_share_right</code>.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line12', this)">
+                    <span class="line-number">22</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">obtain</span> ⟨<span class="variable">z</span>, <span class="variable">hzb</span>, <span class="variable">heq</span>⟩ : ∃ <span class="variable">z</span>, <span class="variable">z</span> ≠ <span class="variable">b</span> ∧ <span class="function">swap</span> <span class="variable">x</span> <span class="variable">y</span> = <span class="function">swap</span> <span class="variable">b</span> <span class="variable">z</span> := <span class="keyword">by</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line12', this)">
+                    <span class="line-number">23</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">cases</span> <span class="variable">hb</span> <span class="keyword">with</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line12', this)">
+                    <span class="line-number">24</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="keyword">inl</span> <span class="variable">hxb</span> => <span class="keyword">subst</span> <span class="variable">hxb</span>; <span class="keyword">exact</span> ⟨<span class="variable">y</span>, <span class="variable">hxy</span>.<span class="function">symm</span>, <span class="keyword">rfl</span>⟩
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line12', this)">
+                    <span class="line-number">25</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="keyword">inr</span> <span class="variable">hyb</span> => <span class="keyword">subst</span> <span class="variable">hyb</span>; <span class="keyword">exact</span> ⟨<span class="variable">x</span>, <span class="variable">hxy</span>, <span class="function">Equiv.swap_comm</span> _ _⟩
+                </div>
+                <div id="expl-line12" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">obtain</span> ⟨<span class="variable">z</span>, <span class="variable">hzb</span>, <span class="variable">heq</span>⟩ : ∃ <span class="variable">z</span>, <span class="variable">z</span> ≠ <span class="variable">b</span> ∧ <span class="function">swap</span> <span class="variable">x</span> <span class="variable">y</span> = <span class="function">swap</span> <span class="variable">b</span> <span class="variable">z</span> := <span class="keyword">by</span>
+  <span class="keyword">cases</span> <span class="variable">hb</span> <span class="keyword">with</span>
+  | <span class="keyword">inl</span> <span class="variable">hxb</span> => <span class="keyword">subst</span> <span class="variable">hxb</span>; <span class="keyword">exact</span> ⟨<span class="variable">y</span>, <span class="variable">hxy</span>.<span class="function">symm</span>, <span class="keyword">rfl</span>⟩
+  | <span class="keyword">inr</span> <span class="variable">hyb</span> => <span class="keyword">subst</span> <span class="variable">hyb</span>; <span class="keyword">exact</span> ⟨<span class="variable">x</span>, <span class="variable">hxy</span>, <span class="function">Equiv.swap_comm</span> _ _⟩</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Normalize σ to the form (b z) for some z ≠ b.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> Analogous to the "σ involves a" case, we prove ∃ z ≠ b, swap x y = swap b z. If x = b, take z := y; if y = b, take z := x and use commutativity. This gives σ = swap b z.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line13', this)">
+                    <span class="line-number">26</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">rw</span> [<span class="variable">heq</span>]
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line13', this)">
+                    <span class="line-number">27</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">have</span> <span class="variable">hza</span> : <span class="variable">z</span> ≠ <span class="variable">a</span> := <span class="keyword">by</span> <span class="keyword">intro</span> <span class="variable">Hz</span>; <span class="keyword">subst</span> <span class="variable">Hz</span>; <span class="keyword">cases</span> <span class="variable">hb</span> &lt;;&gt; <span class="keyword">grind</span>
+                </div>
+                <div id="expl-line13" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">rw</span> [<span class="variable">heq</span>]
+<span class="keyword">have</span> <span class="variable">hza</span> : <span class="variable">z</span> ≠ <span class="variable">a</span> := <span class="keyword">by</span> <span class="keyword">intro</span> <span class="variable">Hz</span>; <span class="keyword">subst</span> <span class="variable">Hz</span>; <span class="keyword">cases</span> <span class="variable">hb</span> &lt;;&gt; <span class="keyword">grind</span></div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Substitute σ = swap b z and prove z ≠ a.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> Rewrite using heq, so now we work with swap b z * swap a b. We prove z ≠ a by contradiction: if z = a, then either x = b and y = a, or x = a and y = b. But the negation of ha tells us x ≠ a and y ≠ a, contradiction. The <code>grind</code> tactic closes both cases automatically.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line14', this)">
+                    <span class="line-number">28</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">-- Use: swap b z * swap a b = swap a z * swap z b</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line14', this)">
+                    <span class="line-number">29</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">refine</span> ⟨<span class="variable">z</span>, <span class="variable">hza</span>, <span class="function">swap</span> <span class="variable">z</span> <span class="variable">b</span>, ⟨<span class="variable">z</span>, <span class="variable">b</span>, <span class="variable">hzb</span>, <span class="keyword">rfl</span>⟩, ?_, ?_⟩
+                </div>
+                <div id="expl-line14" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="comment">-- Use: swap b z * swap a b = swap a z * swap z b</span>
+<span class="keyword">refine</span> ⟨<span class="variable">z</span>, <span class="variable">hza</span>, <span class="function">swap</span> <span class="variable">z</span> <span class="variable">b</span>, ⟨<span class="variable">z</span>, <span class="variable">b</span>, <span class="variable">hzb</span>, <span class="keyword">rfl</span>⟩, ?_, ?_⟩</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Provide witnesses — take z' := z and τ := swap z b.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> We instantiate the existential with z (which satisfies z ≠ a by hza) and τ := swap z b (with IsSwap proof ⟨z, b, hzb, rfl⟩). This leaves two sub-goals: (1) τ a = a, and (2) swap b z * swap a b = swap a z * swap z b.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line15', this)">
+                    <span class="line-number">30</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;· <span class="keyword">simp</span> [<span class="function">swap_apply_def</span>]; <span class="keyword">aesop</span>
+                </div>
+                <div id="expl-line15" class="inline-explanation">
+                    <div class="expl-code-snippet">· <span class="keyword">simp</span> [<span class="function">swap_apply_def</span>]; <span class="keyword">aesop</span></div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Prove τ a = a, i.e., swap z b fixes a.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> We show (swap z b) a = a. Unfolding swap_apply_def, this reduces to: if a = z then b else if a = b then z else a. Since a ≠ z (hza) and a ≠ b (hab), the result is a. <code>aesop</code> closes this.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line16', this)">
+                    <span class="line-number">31</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;· <span class="keyword">rw</span> [<span class="function">swap_mul_swap_share_right</span> <span class="variable">hza</span> <span class="variable">hzb</span> <span class="variable">hab</span>]
+                </div>
+                <div id="expl-line16" class="inline-explanation">
+                    <div class="expl-code-snippet">· <span class="keyword">rw</span> [<span class="function">swap_mul_swap_share_right</span> <span class="variable">hza</span> <span class="variable">hzb</span> <span class="variable">hab</span>]</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Prove the factorization swap b z * swap a b = swap a z * swap z b using the share_right lemma.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> The lemma <code>swap_mul_swap_share_right</code> states: for z ≠ a, z ≠ b, and a ≠ b, swap b z * swap a b = swap a z * swap z b. Applying it with hza, hzb, and hab closes the goal. This completes the "σ involves b but not a" case.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line17', this)">
+                    <span class="line-number">32</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">-- Case: σ is disjoint from {a, b}</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line17', this)">
+                    <span class="line-number">33</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">else</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line17', this)">
+                    <span class="line-number">34</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">push_neg</span> <span class="keyword">at</span> <span class="variable">ha</span> <span class="variable">hb</span>
+                </div>
+                <div id="expl-line17" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="comment">-- Case: σ is disjoint from {a, b}</span>
+<span class="keyword">else</span>
+  <span class="keyword">push_neg</span> <span class="keyword">at</span> <span class="variable">ha</span> <span class="variable">hb</span></div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Third sub-case — σ is disjoint from {a, b}.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> Having ruled out "σ involves a" and "σ involves b", we're in the <code>else</code> branch where neither x nor y equals a or b. We use <code>push_neg</code> to convert ¬(x = a ∨ y = a) and ¬(x = b ∨ y = b) into x ≠ a ∧ y ≠ a and x ≠ b ∧ y ≠ b, respectively. This means {x, y} is disjoint from {a, b}, so the transpositions commute.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line18', this)">
+                    <span class="line-number">35</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">have</span> <span class="variable">hdisj</span> : <span class="function">Disjoint</span> ({<span class="variable">a</span>, <span class="variable">b</span>} : <span class="type">Set</span> <span class="type">α</span>) {<span class="variable">x</span>, <span class="variable">y</span>} := <span class="keyword">by</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line18', this)">
+                    <span class="line-number">36</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">rw</span> [<span class="function">Set.disjoint_insert_left</span>, <span class="function">Set.disjoint_singleton_left</span>]
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line18', this)">
+                    <span class="line-number">37</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">aesop</span>
+                </div>
+                <div id="expl-line18" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">have</span> <span class="variable">hdisj</span> : <span class="function">Disjoint</span> ({<span class="variable">a</span>, <span class="variable">b</span>} : <span class="type">Set</span> <span class="type">α</span>) {<span class="variable">x</span>, <span class="variable">y</span>} := <span class="keyword">by</span>
+  <span class="keyword">rw</span> [<span class="function">Set.disjoint_insert_left</span>, <span class="function">Set.disjoint_singleton_left</span>]
+  <span class="keyword">aesop</span></div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Prove the sets {a, b} and {x, y} are disjoint.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> We must show Disjoint ({a, b} : Set α) {x, y}. Using <code>Set.disjoint_insert_left</code> and <code>Set.disjoint_singleton_left</code>, this unfolds to: a ∉ {x, y} ∧ b ∉ {x, y}. From ha and hb (after push_neg), we have x ≠ a, y ≠ a, x ≠ b, y ≠ b, which imply these non-membership conditions. <code>aesop</code> closes this automatically.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line19', this)">
+                    <span class="line-number">38</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">-- Use: swap x y * swap a b = swap a b * swap x y</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line19', this)">
+                    <span class="line-number">39</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">refine</span> ⟨<span class="variable">b</span>, <span class="variable">hab</span>.<span class="function">symm</span>, <span class="function">swap</span> <span class="variable">x</span> <span class="variable">y</span>, ⟨<span class="variable">x</span>, <span class="variable">y</span>, <span class="variable">hxy</span>, <span class="keyword">rfl</span>⟩, ?_, ?_⟩
+                </div>
+                <div id="expl-line19" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="comment">-- Use: swap x y * swap a b = swap a b * swap x y</span>
+<span class="keyword">refine</span> ⟨<span class="variable">b</span>, <span class="variable">hab</span>.<span class="function">symm</span>, <span class="function">swap</span> <span class="variable">x</span> <span class="variable">y</span>, ⟨<span class="variable">x</span>, <span class="variable">y</span>, <span class="variable">hxy</span>, <span class="keyword">rfl</span>⟩, ?_, ?_⟩</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Provide witnesses — take z := b and τ := swap x y.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> We instantiate the existential with z' := b (satisfying b ≠ a by hab.symm) and τ := swap x y (with IsSwap proof ⟨x, y, hxy, rfl⟩). This leaves two sub-goals: (1) τ a = a, and (2) swap x y * swap a b = swap a b * swap x y (commutativity).</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line20', this)">
+                    <span class="line-number">40</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;· <span class="keyword">simp</span> [<span class="function">swap_apply_def</span>]; <span class="keyword">aesop</span>
+                </div>
+                <div id="expl-line20" class="inline-explanation">
+                    <div class="expl-code-snippet">· <span class="keyword">simp</span> [<span class="function">swap_apply_def</span>]; <span class="keyword">aesop</span></div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Prove τ a = a, i.e., swap x y fixes a.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> We show (swap x y) a = a. Since a ≠ x and a ≠ y (from ha after push_neg), unfolding swap_apply_def gives a. <code>aesop</code> closes this.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line21', this)">
+                    <span class="line-number">41</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;· <span class="keyword">rw</span> [<span class="function">swap_mul_swap_comm_of_disjoint</span> <span class="variable">hdisj</span>]
+                </div>
+                <div id="expl-line21" class="inline-explanation">
+                    <div class="expl-code-snippet">· <span class="keyword">rw</span> [<span class="function">swap_mul_swap_comm_of_disjoint</span> <span class="variable">hdisj</span>]</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Prove the commutativity swap x y * swap a b = swap a b * swap x y using the disjoint lemma.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> The lemma <code>swap_mul_swap_comm_of_disjoint</code> states: if {a, b} is disjoint from {x, y}, then swap a b and swap x y commute. Applying it with hdisj closes the goal. This completes the disjoint case and the entire proof. □</p>
+                </div>
+
+            </div>
+            <p class="text-sm text-slate-500 mt-4 italic">💡 Tip: Click on any line above to see its strategy and explanation inline. Click again to hide it.</p>
+        </div>
+    </div>
+
+    <div class="bg-emerald-50 border-l-4 border-emerald-600 p-6 mb-8 rounded-r-lg animate__animated animate__fadeInUp">
+        <h3 class="text-xl font-bold text-emerald-900 mb-3">Proof Structure Summary</h3>
+        <p class="text-slate-700 leading-relaxed mb-4">The proof follows an exhaustive case analysis on the overlap between σ = swap x y and {a, b}:</p>
+        <ul class="list-disc list-inside text-slate-700 space-y-3 ml-4">
+            <li><strong>Case 0 (Cancellation):</strong> If σ = swap a b (or swap b a), then σ · (a b) = 1 by swap_mul_self.</li>
+            <li><strong>Case 1 (σ involves a):</strong> Normalize σ to swap a z for some z ≠ a. Since σ ≠ swap a b, we have z ≠ b. Use swap_mul_swap_share_left to rewrite:
+                <br/><code>swap a z * swap a b = swap a b * swap b z</code>
+                <br/>Take z' := b and τ := swap b z, which fixes a.</li>
+            <li><strong>Case 2 (σ involves b but not a):</strong> Normalize σ to swap b z for some z ≠ b, z ≠ a. Use swap_mul_swap_share_right to rewrite:
+                <br/><code>swap b z * swap a b = swap a z * swap z b</code>
+                <br/>Take z' := z and τ := swap z b, which fixes a.</li>
+            <li><strong>Case 3 (σ is disjoint from {a, b}):</strong> {x, y} ∩ {a, b} = ∅. Use swap_mul_swap_comm_of_disjoint to show:
+                <br/><code>swap x y * swap a b = swap a b * swap x y</code>
+                <br/>Take z' := b and τ := swap x y, which fixes a (and b).</li>
+        </ul>
+        <p class="text-slate-700 leading-relaxed mt-4">
+            <strong>Key insight:</strong> In all non-cancellation cases, the product can be rewritten as (a z) · τ where τ fixes a.
+            This is the algebraic foundation for algorithms that normalize permutations by "moving a element to the left" repeatedly.
+            The proof is constructive: we explicitly provide z and τ in each case, and verify the factorization using the three auxiliary commutation lemmas.
+        </p>
+    </div>
+
+    <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl shadow-xl p-8 text-white animate__animated animate__fadeInUp animate__delay-1s">
+        <h2 class="text-3xl font-bold mb-6 flex items-center gap-3">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z">
+                </path>
+            </svg>
+            Key Lemmas Used
+        </h2>
+
+        <div class="grid md:grid-cols-2 gap-6">
+            <div class="bg-slate-700 rounded-xl p-6">
+                <h3 class="text-xl font-bold mb-3 text-emerald-300">1. swap_mul_swap_share_left</h3>
+                <p class="text-slate-200">
+                    For z ≠ b and z ≠ a, proves <code>swap a z * swap a b = swap a b * swap b z</code>.
+                    Used when σ involves the left element a: we rewrite the product to move (a ·) to the front, producing (a b) · (b z) which fixes a.
+                    This is the core algebraic transformation for the "σ involves a" case.
+                </p>
+            </div>
+
+            <div class="bg-slate-700 rounded-xl p-6">
+                <h3 class="text-xl font-bold mb-3 text-blue-300">2. swap_mul_swap_share_right</h3>
+                <p class="text-slate-200">
+                    For z ≠ a, z ≠ b, and a ≠ b, proves <code>swap b z * swap a b = swap a z * swap z b</code>.
+                    Used when σ involves the right element b but not a: we rewrite the product to factor out (a z) on the left,
+                    with the remainder (z b) fixing a. This handles the "σ involves b" case.
+                </p>
+            </div>
+
+            <div class="bg-slate-700 rounded-xl p-6">
+                <h3 class="text-xl font-bold mb-3 text-purple-300">3. swap_mul_swap_comm_of_disjoint</h3>
+                <p class="text-slate-200">
+                    When {a, b} is disjoint from {c, d}, proves <code>swap a b * swap c d = swap c d * swap a b</code>.
+                    Used when σ = swap x y is disjoint from {a, b}: the transpositions commute, so we can rewrite
+                    σ · (a b) as (a b) · σ. Since σ fixes both a and b, we can take z := b and τ := σ.
+                </p>
+            </div>
+
+            <div class="bg-slate-700 rounded-xl p-6">
+                <h3 class="text-xl font-bold mb-3 text-yellow-300">4. Equiv.swap_mul_self</h3>
+                <p class="text-slate-200">
+                    Proves <code>swap a b * swap a b = 1</code> — a transposition is its own inverse.
+                    Used in the cancellation case when σ = swap a b. This is the base case that terminates
+                    iterative algorithms that repeatedly apply move_swap_left.
+                </p>
+            </div>
+        </div>
+
+        <div class="mt-8 bg-slate-700 rounded-xl p-6">
+            <h3 class="text-xl font-bold mb-3 text-red-300">Mathematical Significance</h3>
+            <p class="text-slate-200 leading-relaxed">
+                This lemma is a key building block for algorithms on permutations in Lean 4. It provides a constructive
+                way to "normalize" products of transpositions by repeatedly moving a fixed element to the left.
+                For example, given a permutation as a product τ₁ · τ₂ · ... · τₙ of transpositions, we can use move_swap_left
+                to rewrite each τᵢ · (a b) into a form where (a ·) appears on the left, eventually factoring out all
+                transpositions involving a. This is the foundation for algorithms computing cycle decompositions,
+                checking permutation equivalence, and proving properties like the sign of a permutation.
+                The exhaustive case analysis (four cases covering all possible overlaps) ensures the lemma applies
+                to every situation, making it a robust tool for permutation reasoning.
+            </p>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    var currentOpen = null;
+    var currentLine = null;
+
+    function toggleExplanation(explId, clickedLine) {
+        var expl = document.getElementById(explId);
+        if (!expl) return;
+
+        if (currentOpen && currentOpen !== expl) {
+            currentOpen.classList.remove('visible');
+        }
+        if (currentLine && currentLine !== clickedLine) {
+            document.querySelectorAll('.full-code-line').forEach(function(el) {
+                el.classList.remove('active-code-line');
+            });
+        }
+
+        if (expl.classList.contains('visible')) {
+            expl.classList.remove('visible');
+            clickedLine.classList.remove('active-code-line');
+            currentOpen = null;
+            currentLine = null;
+        } else {
+            expl.classList.add('visible');
+            document.querySelectorAll('.full-code-line').forEach(function(el) {
+                el.classList.remove('active-code-line');
+            });
+            var siblings = document.querySelectorAll('[onclick="toggleExplanation(\'' + explId + '\', this)"]');
+            siblings.forEach(function(el) {
+                el.classList.add('active-code-line');
+            });
+            currentOpen = expl;
+            currentLine = clickedLine;
+            setTimeout(function() {
+                expl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 50);
+        }
+    }
+
+    document.querySelectorAll('.full-code-line').forEach(function(line) {
+        line.addEventListener('mouseenter', function () {
+            this.style.transform = 'translateX(4px)';
+        });
+        line.addEventListener('mouseleave', function () {
+            this.style.transform = 'translateX(0)';
+        });
+    });
+</script>
+</body>
+</html>

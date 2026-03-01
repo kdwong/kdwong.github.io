@@ -1,0 +1,231 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Lean for Abstract Algebra</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        #banner {
+            padding: 1em 0;   
+            background: #B795C0; /* Light purple */
+            color: white;
+            text-align: center;
+        }
+        #banner h1 {
+            font-size: 150%;
+            margin: 0;
+        }
+
+        .spotlight {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1em;
+            align-items: flex-start;
+        }
+        .spotlight .content {
+            flex: 1;
+        }
+
+        section.wrapper {
+            padding: 1.2em 0;
+        }
+        .inner {
+            padding: 0.5em;
+            max-width: 800px;
+            margin: auto;
+        }
+
+        ol {
+            padding-left: 1.5em;
+        }
+        ol li {
+            margin-bottom: 0.5em;
+        }
+        ul {
+            padding-left: 1.2em;
+        }
+        ul li {
+            margin-bottom: 0.5em;
+        }
+
+        /* Additional styles for the new content */
+        a {
+            color: #B795C0;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        a:hover {
+            color: #9371a8;
+            text-decoration: underline;
+        }
+
+        .proof-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5em;
+            margin-top: 1.5em;
+        }
+
+        .proof-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            padding: 1.2em;
+            transition: all 0.2s ease;
+        }
+
+        .proof-card:hover {
+            border-color: #B795C0;
+            box-shadow: 0 4px 12px rgba(183, 149, 192, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .proof-card h4 {
+            margin-top: 0;
+            margin-bottom: 0.5em;
+            font-size: 1.15em;
+        }
+
+        .proof-card p {
+            margin: 0;
+            font-size: 0.95em;
+            color: #495057;
+        }
+
+        .info-box {
+            background: #f0f4ff;
+            border-left: 4px solid #B795C0;
+            border-radius: 0 8px 8px 0;
+            padding: 1.2em;
+            margin-top: 1.5em;
+        }
+
+        .info-box h4 {
+            margin-top: 0;
+            color: #6c3483;
+        }
+
+        code {
+            background: #f8f9fa;
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Banner -->
+    <section id="banner">
+        <h1>Lean for Abstract Algebra</h1>
+    </section>
+
+    <!-- About -->
+    <section id="two" class="wrapper style2 alt">
+        <div class="inner">
+            <div class="spotlight" id="Introduction">
+                <div class="content">
+                    <h3>Introduction</h3>
+                    <p>
+                        <strong>Lean</strong> is a proof assistant — a programming language where the "programs" are mathematical proofs to make 
+                        sure every step of the proof is justified, and every claim is verified. It has gained serious traction in recent years, 
+                        for formalizing everything from undergraduate calculus to cutting-edge research (see the 
+                        <a href="https://leanprover-community.github.io/" target="_blank">Lean community's mathlib</a>, 
+                        a massive library of formalized mathematics).
+                    </p>
+
+                    <p>
+                        Writing proofs in Lean used to be hard. But with the introduction of <a href="https://aristotle.harmonic.fun/" target="_blank"><strong>Aristotle</strong></a>, 
+                        One can sketch the argument in natural language and translates it into formal code.
+                    </p>
+
+                    <h3>Why This Webpage Exists</h3>
+                    
+                    <p>
+                        This page aims at formalizing some theorems in <strong>MAT 3004 – Abstract Algebra I</strong>. 
+                        The traditional lecture notes cen be found  
+                        <a href="https://github.com/kdwong/Abstract-Algebra-I" target="_blank">here</a>, 
+                        while the formalized proofs live 
+                        <a href="https://github.com/kdwong/Lean-for-Abstract-Algebra" target="_blank">here</a>. 
+                    </p>                        
+
+                    <p>
+			To make the proof more comprehensible, we create an <strong>interactive, 
+                        line-by-line explanations</strong> of the Lean codes using vibe coding.  Click below to see what it's doing and why.
+                    </p>
+
+                    <h3>Interactive Proof Explanations</h3>
+                    
+                    <p>
+                        Below are the formalized proofs with full interactive walkthroughs. Each page lets you click through the proof line-by-line, 
+                        with strategy annotations and mathematical context. These gives you an ideal on building a rigorous argument in a proof assistant.
+                    </p>
+
+                    <div class="proof-cards">
+                        <a href="algproofs/perm swap left.html" class="proof-card">
+                            <h4>Permutation Swap Left</h4>
+                            <p>
+                                <code>move_swap_left</code> — Shows how composing any transposition with (a b) either cancels 
+                                or factors as (a z) · τ where τ fixes a. The key lemma for permutation reduction algorithms.
+                            </p>
+                        </a>
+
+                        <a href="algproofs/perm reduction.html" class="proof-card">
+                            <h4>Permutation Reduction</h4>
+                            <p>
+                                <code>exists_reduction</code> — When you append a transposition to a list of swaps, 
+                                you either reduce the length by 2 (cancellation) or factor out a fixing transposition. 
+                                Proved by strong induction + <code>move_swap_left</code>.
+                            </p>
+                        </a>
+
+                        <a href="algproofs/perm identity even.html" class="proof-card">
+                            <h4> Identity is Even Permutation</h4>
+                            <p>
+                                <code>even_number_of_swaps_of_identity</code> — If a product of transpositions equals the identity, 
+                                the list has even length. This makes the sign homomorphism well-defined. 
+                                Uses strong induction + contradiction to eliminate the "move" case.
+                            </p>
+                        </a>
+
+                        <a href="algproofs/orbit stabilizer.html" class="proof-card">
+                            <h4>Orbit-Stabilizer Theorem</h4>
+                            <p>
+                                <code>orbit_stabilizer_theorem</code> — Proves the bijection G/Stab(x) ≅ Orb(x), 
+                                establishing |G| = |Orb(x)| · |Stab(x)|. The foundation of Burnside's Lemma and all orbit-counting theory. 
+                                Uses quotient induction and the characterization of coset equality.
+                            </p>
+                        </a>
+
+                        <a href="algproofs/burnside lemma.html" class="proof-card">
+                            <h4>Preparation of Burnside's Lemma (Sum)</h4>
+                            <p>
+                                <code>sum_inv_orbit_eq_orbits</code> — Proves that summing 1/|orbit(x)| over every element x equals the number of distinct orbits.
+                                The key counting lemma that makes Burnside's formula work.
+                            </p>
+                        </a>
+
+                        <a href="algproofs/burnside.html" class="proof-card">
+                            <h4>Burnside's Lemma</h4>
+                            <p>
+                                <code>burnside_lemma</code> — The number of orbits equals the average number of fixed points: 
+                                |Orbits| · |G| = Σ |Fix(g)|. Proved by double counting, orbit-stabilizer, and the summation lemma. 
+                                A cornerstone of enumerative combinatorics.
+                            </p>
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+</body>
+</html>

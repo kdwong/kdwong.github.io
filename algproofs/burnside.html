@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:title" content="Lean Proof Explanation: Burnside's Lemma">
+    <meta property="og:description" content="Interactive line-by-line explanation of Burnside's Lemma in Lean 4">
+    <meta property="og:image" content="https://cdn.simulationtheory.ai/gasset/?asset=img&prompt=mathematical proof diagram with group theory orbits&w=64&h=64&style=professional">
+    <meta property="og:type" content="website">
+    <link rel="icon" href="https://cdn.simulationtheory.ai/gasset/?asset=img&prompt=lambda symbol mathematics&w=32&h=32&style=professional">
+    <title>Lean Proof: Burnside's Lemma</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="/chat/cdn/animate.min.css" rel="stylesheet">
+    <style>
+        .proof-line {
+            transition: all 0.2s ease;
+        }
+        .proof-line:hover {
+            background-color: rgba(59, 130, 246, 0.05);
+        }
+        .code-block {
+            font-family: 'Courier New', monospace;
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+        }
+        .keyword  { color: #569cd6; }
+        .type     { color: #4ec9b0; }
+        .variable { color: #9cdcfe; }
+        .comment  { color: #6a9955; }
+        .function { color: #dcdcaa; }
+        .full-code-line {
+            cursor: pointer;
+            transition: all 0.15s ease;
+            padding: 2px 8px;
+            border-left: 3px solid transparent;
+        }
+        .full-code-line:hover {
+            background-color: rgba(59, 130, 246, 0.1);
+            border-left-color: #3b82f6;
+        }
+        .full-code-line.active-code-line {
+            background-color: rgba(251, 191, 36, 0.15);
+            border-left-color: #f59e0b;
+        }
+        .line-number {
+            display: inline-block;
+            width: 40px;
+            color: #858585;
+            user-select: none;
+        }
+        .inline-explanation {
+            display: none;
+            background-color: #f8fafc;
+            border-left: 4px solid #f59e0b;
+            border-radius: 0 0.5rem 0.5rem 0;
+            margin: 4px 0 4px 40px;
+            padding: 14px 18px;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            font-size: 0.95rem;
+            color: #1e293b;
+            animation: fadeSlideIn 0.2s ease;
+        }
+        .inline-explanation.visible {
+            display: block;
+        }
+        @keyframes fadeSlideIn {
+            from { opacity: 0; transform: translateY(-6px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .expl-code-snippet {
+            font-family: 'Courier New', monospace;
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 0.4rem;
+            padding: 10px 14px;
+            font-size: 0.82rem;
+            margin-bottom: 10px;
+            overflow-x: auto;
+            white-space: pre;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen">
+<div class="container mx-auto px-4 py-8 max-w-7xl">
+
+    <div class="text-center mb-12 animate__animated animate__fadeInDown">
+        <h1 class="text-5xl font-bold text-slate-800 mb-4">
+            <span class="text-blue-600">Lean Proof</span> Explanation
+        </h1>
+        <p class="text-xl text-slate-600">Burnside's Lemma: Counting orbits via fixed points</p>
+    </div>
+
+    <div class="bg-emerald-50 border-l-4 border-emerald-600 p-6 mb-8 rounded-r-lg animate__animated animate__fadeInUp">
+        <h3 class="text-xl font-bold text-emerald-900 mb-3">Overview</h3>
+        <p class="text-slate-700 leading-relaxed">
+            Burnside's Lemma states that the number of orbits under a group action equals the average number of fixed points:
+            <strong>|Orbits| · |G| = Σ_{g∈G} |Fix(g)|</strong>.
+            The proof uses a <strong>double counting argument</strong>: we count pairs (g,x) where g·x = x in two ways
+            (sum over g, or sum over x), then apply the <strong>orbit-stabilizer theorem</strong> to convert stabilizer sizes
+            into orbit sizes. Finally, a clever summation lemma shows that Σₓ 1/|Orb(x)| = |Orbits|, completing the circle.
+            This theorem is fundamental in combinatorics for counting objects up to symmetry.
+        </p>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-xl mb-8 overflow-hidden animate__animated animate__fadeInUp">
+        <div class="bg-gradient-to-r from-indigo-600 to-blue-600 p-6">
+            <h2 class="text-3xl font-bold text-white flex items-center gap-3">
+                <span class="bg-white text-indigo-600 rounded-lg px-3 py-1">📝</span>
+                Full Proof Code (Click any line for explanation)
+            </h2>
+            <p class="text-indigo-100 mt-2">Interactive Lean 4 proof — click a line to see its strategy and explanation inline</p>
+        </div>
+
+        <div class="p-8">
+            <div class="code-block p-6 rounded-lg overflow-x-auto">
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line1', this)">
+                    <span class="line-number">1</span><span class="keyword">theorem</span> <span class="function">burnside_lemma</span> :
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line1', this)">
+                    <span class="line-number">2</span>&nbsp;&nbsp;&nbsp;&nbsp;(<span class="type">Fintype</span>.<span class="function">card</span> (<span class="function">orbits</span> <span class="variable">A</span>) : ℚ) * <span class="type">Fintype</span>.<span class="function">card</span> <span class="type">G</span> = ∑ <span class="variable">g</span> : <span class="type">G</span>, <span class="type">Fintype</span>.<span class="function">card</span> (<span class="function">fixed_points</span> <span class="variable">A</span> <span class="variable">g</span>) := <span class="keyword">by</span>
+                </div>
+                <div id="expl-line1" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">theorem</span> <span class="function">burnside_lemma</span> :
+    (<span class="type">Fintype</span>.<span class="function">card</span> (<span class="function">orbits</span> <span class="variable">A</span>) : ℚ) * <span class="type">Fintype</span>.<span class="function">card</span> <span class="type">G</span> = ∑ <span class="variable">g</span> : <span class="type">G</span>, <span class="type">Fintype</span>.<span class="function">card</span> (<span class="function">fixed_points</span> <span class="variable">A</span> <span class="variable">g</span>)</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> State the theorem — the number of orbits times the group size equals the sum of fixed point counts over all group elements.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> Given a group action A : G → (X → X), Burnside's Lemma claims |Orbits| · |G| = Σ_{g∈G} |{x : g·x = x}|. This is a powerful counting tool: instead of enumerating orbits directly, we count fixed points for each group element and average. We work in ℚ to handle division cleanly throughout the proof.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line2', this)">
+                    <span class="line-number">3</span>&nbsp;&nbsp;<span class="keyword">have</span> <span class="variable">h_burnside</span> : (<span class="type">Fintype</span>.<span class="function">card</span> (<span class="function">orbits</span> <span class="variable">A</span>) : ℚ)
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line2', this)">
+                    <span class="line-number">4</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= (∑ <span class="variable">g</span> : <span class="type">G</span>, (<span class="type">Fintype</span>.<span class="function">card</span> (<span class="function">fixed_points</span> <span class="variable">A</span> <span class="variable">g</span>)) : ℚ) / (<span class="type">Fintype</span>.<span class="function">card</span> <span class="type">G</span> : ℚ) := <span class="keyword">by</span>
+                </div>
+                <div id="expl-line2" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">have</span> <span class="variable">h_burnside</span> : (<span class="type">Fintype</span>.<span class="function">card</span> (<span class="function">orbits</span> <span class="variable">A</span>) : ℚ)
+            = (∑ <span class="variable">g</span> : <span class="type">G</span>, (<span class="type">Fintype</span>.<span class="function">card</span> (<span class="function">fixed_points</span> <span class="variable">A</span> <span class="variable">g</span>)) : ℚ) / (<span class="type">Fintype</span>.<span class="function">card</span> <span class="type">G</span> : ℚ)</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Claim the key equality in division form — if we prove this, multiplying by |G| gives the theorem.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> We state h_burnside : |Orbits| = (Σ_g |Fix(g)|)/|G|. Once we establish this, the final goal follows by multiplying both sides by |G|. This reformulation breaks the proof into two phases: (1) prove h_burnside via double counting and orbit-stabilizer, (2) clear the denominator. Working in ℚ allows us to manipulate fractions freely.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line3', this)">
+                    <span class="line-number">5</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">have</span> <span class="variable">h_interchange</span> : (∑ <span class="variable">g</span> : <span class="type">G</span>, <span class="type">Fintype</span>.<span class="function">card</span> (<span class="function">fixed_points</span> <span class="variable">A</span> <span class="variable">g</span>) : ℚ)
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line3', this)">
+                    <span class="line-number">6</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= (∑ <span class="variable">x</span> : <span class="type">X</span>, <span class="type">Fintype</span>.<span class="function">card</span> (<span class="function">stabilizer</span> <span class="variable">A</span> <span class="variable">x</span>) : ℚ) := <span class="keyword">by</span>
+                </div>
+                <div id="expl-line3" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">have</span> <span class="variable">h_interchange</span> : (∑ <span class="variable">g</span> : <span class="type">G</span>, <span class="type">Fintype</span>.<span class="function">card</span> (<span class="function">fixed_points</span> <span class="variable">A</span> <span class="variable">g</span>) : ℚ)
+                        = (∑ <span class="variable">x</span> : <span class="type">X</span>, <span class="type">Fintype</span>.<span class="function">card</span> (<span class="function">stabilizer</span> <span class="variable">A</span> <span class="variable">x</span>) : ℚ)</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Double counting — interchange the order of summation to switch from summing over group elements to summing over set elements.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> Both sides count the same set of pairs {(g,x) : g·x = x}. The left side groups by g: for each g, count how many x satisfy g·x = x (the fixed points of g). The right side groups by x: for each x, count how many g satisfy g·x = x (the stabilizer of x). Since we're counting the same finite set two ways, the sums are equal. This is the classical "double counting" technique.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line4', this)">
+                    <span class="line-number">7</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">simp only</span> [<span class="function">fixed_points</span>, <span class="type">Fintype</span>.<span class="function">card_subtype</span>]
+                </div>
+                <div id="expl-line4" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">simp only</span> [<span class="function">fixed_points</span>, <span class="type">Fintype</span>.<span class="function">card_subtype</span>]</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Unfold the definition of fixed_points and express its cardinality.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> Expand fixed_points A g to the subtype {x : X | A.act g x = x}, and use Fintype.card_subtype to express its cardinality as the number of elements satisfying the predicate. This prepares the left side for the interchange step.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line5', this)">
+                    <span class="line-number">8</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">simp only</span> [<span class="type">Finset</span>.<span class="function">card_filter</span>, <span class="function">stabilizer</span>]
+                </div>
+                <div id="expl-line5" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">simp only</span> [<span class="type">Finset</span>.<span class="function">card_filter</span>, <span class="function">stabilizer</span>]</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Unfold the definition of stabilizer and express its cardinality.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> Expand stabilizer A x to the subset {g : G | A.act g x = x}, and use Finset.card_filter to express its cardinality as the number of group elements satisfying the predicate. Now both sides are sums over filtered sets with the same predicate g·x = x, just with the roles of g and x swapped.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line6', this)">
+                    <span class="line-number">9</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">exact</span> <span class="function">mod_cast</span> <span class="type">Finset</span>.<span class="function">sum_comm</span>
+                </div>
+                <div id="expl-line6" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">exact</span> <span class="function">mod_cast</span> <span class="type">Finset</span>.<span class="function">sum_comm</span></div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Apply the summation commutativity lemma to complete the interchange.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> Finset.sum_comm states that Σᵢ Σⱼ f(i,j) = Σⱼ Σᵢ f(i,j) — we can swap the order of nested summations. Here, f(g,x) = 1 if g·x = x, else 0. The left side computes Σ_g (Σ_x f(g,x)) and the right side computes Σ_x (Σ_g f(g,x)), which are equal. The mod_cast handles coercion from ℕ to ℚ. This completes h_interchange.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line7', this)">
+                    <span class="line-number">10</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">have</span> <span class="variable">h_orbit_stabilizer</span> : ∀ <span class="variable">x</span> : <span class="type">X</span>, <span class="type">Fintype</span>.<span class="function">card</span> (<span class="function">stabilizer</span> <span class="variable">A</span> <span class="variable">x</span>)
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line7', this)">
+                    <span class="line-number">11</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= (<span class="type">Fintype</span>.<span class="function">card</span> <span class="type">G</span> : ℚ) / (<span class="type">Fintype</span>.<span class="function">card</span> (<span class="function">orbit</span> <span class="variable">A</span> <span class="variable">x</span>) : ℚ) := <span class="keyword">by</span>
+                </div>
+                <div id="expl-line7" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">have</span> <span class="variable">h_orbit_stabilizer</span> : ∀ <span class="variable">x</span> : <span class="type">X</span>, <span class="type">Fintype</span>.<span class="function">card</span> (<span class="function">stabilizer</span> <span class="variable">A</span> <span class="variable">x</span>)
+                          = (<span class="type">Fintype</span>.<span class="function">card</span> <span class="type">G</span> : ℚ) / (<span class="type">Fintype</span>.<span class="function">card</span> (<span class="function">orbit</span> <span class="variable">A</span> <span class="variable">x</span>) : ℚ)</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Apply the orbit-stabilizer theorem to relate stabilizer size to orbit size for each element.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> For every x ∈ X, we claim |Stab(x)| = |G| / |Orb(x)|. This is derived from the orbit-stabilizer theorem: |Orb(x)| · |Stab(x)| = |G|. We'll prove this by invoking the multiplicative form, showing the orbit is non-empty, and then dividing. This is the key bridge from stabilizers (which appear after the interchange) to orbits (which we need for the final summation lemma).</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line8', this)">
+                    <span class="line-number">12</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">intro</span> <span class="variable">x</span>
+                </div>
+                <div id="expl-line8" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">intro</span> <span class="variable">x</span></div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Fix an arbitrary element x to prove the universal statement.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> To prove ∀ x : X, P(x), we use the intro tactic to introduce an arbitrary x and then prove P(x). This is standard universal introduction in natural deduction.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line9', this)">
+                    <span class="line-number">13</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">have</span> <span class="variable">h_orbit_stabilizer</span> : <span class="type">Fintype</span>.<span class="function">card</span> (<span class="function">stabilizer</span> <span class="variable">A</span> <span class="variable">x</span>) * <span class="type">Fintype</span>.<span class="function">card</span> (<span class="function">orbit</span> <span class="variable">A</span> <span class="variable">x</span>)
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line9', this)">
+                    <span class="line-number">14</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <span class="type">Fintype</span>.<span class="function">card</span> <span class="type">G</span> := <span class="keyword">by</span>
+                </div>
+                <div id="expl-line9" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">have</span> <span class="variable">h_orbit_stabilizer</span> : <span class="type">Fintype</span>.<span class="function">card</span> (<span class="function">stabilizer</span> <span class="variable">A</span> <span class="variable">x</span>) * <span class="type">Fintype</span>.<span class="function">card</span> (<span class="function">orbit</span> <span class="variable">A</span> <span class="variable">x</span>)
+                                = <span class="type">Fintype</span>.<span class="function">card</span> <span class="type">G</span></div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> State the multiplicative form of the orbit-stabilizer theorem.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> We claim |Stab(x)| · |Orb(x)| = |G|. This is the fundamental orbit-stabilizer theorem: the size of the stabilizer times the size of the orbit equals the size of the group. We'll apply the library lemma card_orbit_mul_card_stabilizer (possibly after rearranging factors) to establish this.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line10', this)">
+                    <span class="line-number">15</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">rw</span> [<span class="function">mul_comm</span>, <span class="function">card_orbit_mul_card_stabilizer</span>]
+                </div>
+                <div id="expl-line10" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">rw</span> [<span class="function">mul_comm</span>, <span class="function">card_orbit_mul_card_stabilizer</span>]</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Swap factors and apply the orbit-stabilizer lemma from the library.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> We use mul_comm to rewrite |Stab(x)| · |Orb(x)| as |Orb(x)| · |Stab(x)|, then apply card_orbit_mul_card_stabilizer which states exactly this equality. (The library lemma may have the factors in a specific order, hence the commutativity step.) This closes the nested have, establishing the multiplicative form.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line11', this)">
+                    <span class="line-number">16</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">have</span> <span class="variable">h_nonzero</span> : <span class="type">Fintype</span>.<span class="function">card</span> (<span class="function">orbit</span> <span class="variable">A</span> <span class="variable">x</span>) ≠ <span class="keyword">0</span> := <span class="keyword">by</span>
+                </div>
+                <div id="expl-line11" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">have</span> <span class="variable">h_nonzero</span> : <span class="type">Fintype</span>.<span class="function">card</span> (<span class="function">orbit</span> <span class="variable">A</span> <span class="variable">x</span>) ≠ <span class="keyword">0</span></div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Prove that orbits are non-empty to justify division.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> To derive |Stab(x)| = |G| / |Orb(x)| from |Stab(x)| · |Orb(x)| = |G|, we need |Orb(x)| ≠ 0. Every orbit contains at least one element: x itself, since 1 · x = x (the identity element acts as the identity function). Therefore, |Orb(x)| ≥ 1, so it's non-zero.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line12', this)">
+                    <span class="line-number">17</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">simp only</span> [<span class="type">Fintype</span>.<span class="function">card_ofFinset</span>, <span class="function">ne_eq</span>, <span class="type">Finset</span>.<span class="function">card_eq_zero</span>,
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line12', this)">
+                    <span class="line-number">18</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="type">Finset</span>.<span class="function">filter_eq_empty_iff</span>, <span class="type">Finset</span>.<span class="function">mem_univ</span>, <span class="function">forall_const</span>, <span class="function">not_forall</span>,
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line12', this)">
+                    <span class="line-number">19</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="type">Decidable</span>.<span class="function">not_not</span>] <span class="keyword">at</span> *
+                </div>
+                <div id="expl-line12" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">simp only</span> [<span class="type">Fintype</span>.<span class="function">card_ofFinset</span>, <span class="function">ne_eq</span>, <span class="type">Finset</span>.<span class="function">card_eq_zero</span>,
+          <span class="type">Finset</span>.<span class="function">filter_eq_empty_iff</span>, <span class="type">Finset</span>.<span class="function">mem_univ</span>, <span class="function">forall_const</span>, <span class="function">not_forall</span>,
+          <span class="type">Decidable</span>.<span class="function">not_not</span>] <span class="keyword">at</span> *</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Simplify the non-zero condition to an existence statement.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> We unfold the definition of orbit cardinality and simplify the statement "|Orb(x)| ≠ 0" to "there exists an element in Orb(x)". The simp only chain expands Fintype.card_ofFinset (cardinality of a finset), Finset.card_eq_zero (a set has cardinality 0 iff it's empty), Finset.filter_eq_empty_iff (a filtered set is empty iff no element satisfies the predicate), and various logical simplifications. This reduces the goal to proving ∃ y, y ∈ Orb(x), which is easy to witness.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line13', this)">
+                    <span class="line-number">20</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">exact</span> ⟨_, ⟨<span class="keyword">1</span>, <span class="keyword">rfl</span>⟩⟩
+                </div>
+                <div id="expl-line13" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">exact</span> ⟨_, ⟨<span class="keyword">1</span>, <span class="keyword">rfl</span>⟩⟩</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Witness that x is in its own orbit via the identity element.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> To prove ∃ y ∈ Orb(x), we provide the witness y := x along with a proof that x ∈ Orb(x). By definition, x ∈ Orb(x) iff ∃ g ∈ G, g·x = x. We witness g := 1 (the identity), and the proof that 1·x = x is rfl (reflexivity, since group actions preserve identity). The anonymous constructor ⟨_, ⟨1, rfl⟩⟩ packages this: the first _ is x, the inner ⟨1, rfl⟩ is the proof that 1·x = x. This completes h_nonzero.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line14', this)">
+                    <span class="line-number">21</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">exact</span> <span class="function">eq_div_of_mul_eq</span> (<span class="type">Nat</span>.<span class="function">cast_ne_zero</span>.<span class="function">mpr</span> <span class="variable">h_nonzero</span>) (<span class="function">mod_cast</span> <span class="variable">h_orbit_stabilizer</span>)
+                </div>
+                <div id="expl-line14" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">exact</span> <span class="function">eq_div_of_mul_eq</span> (<span class="type">Nat</span>.<span class="function">cast_ne_zero</span>.<span class="function">mpr</span> <span class="variable">h_nonzero</span>) (<span class="function">mod_cast</span> <span class="variable">h_orbit_stabilizer</span>)</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Convert the multiplicative equality to the divisional form.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> Apply eq_div_of_mul_eq, which states: if b ≠ 0 and a · b = c, then a = c / b. Here a := |Stab(x)|, b := |Orb(x)|, c := |G|. We have h_orbit_stabilizer : |Stab(x)| · |Orb(x)| = |G| and h_nonzero : |Orb(x)| ≠ 0. We cast |Orb(x)| ≠ 0 from ℕ to ℚ using Nat.cast_ne_zero.mpr, and cast the multiplicative equality using mod_cast. This derives |Stab(x)| = |G| / |Orb(x)| in ℚ, completing the h_orbit_stabilizer proof for the fixed x.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line15', this)">
+                    <span class="line-number">22</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">have</span> <span class="variable">h</span> := <span class="function">sum_inv_orbit_eq_orbits</span> <span class="variable">A</span>
+                </div>
+                <div id="expl-line15" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">have</span> <span class="variable">h</span> := <span class="function">sum_inv_orbit_eq_orbits</span> <span class="variable">A</span></div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Invoke the orbit counting lemma that sums reciprocals of orbit sizes.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> Apply sum_inv_orbit_eq_orbits, which states Σₓ∈X 1/|Orb(x)| = |Orbits|. This is a beautiful combinatorial identity: each orbit O of size k contributes 1/k exactly k times (once for each of its k elements), so the total contribution of O is k · (1/k) = 1. Summing over all elements thus counts each orbit exactly once, giving |Orbits|. This lemma is the key to converting the sum over elements (which we have after applying h_orbit_stabilizer) into the number of orbits.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line16', this)">
+                    <span class="line-number">23</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">simp_all</span> [<span class="function">div_eq_mul_inv</span>, <span class="function">mul_comm</span>, <span class="type">Finset</span>.<span class="function">mul_sum</span> _ _ _]
+                </div>
+                <div id="expl-line16" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">simp_all</span> [<span class="function">div_eq_mul_inv</span>, <span class="function">mul_comm</span>, <span class="type">Finset</span>.<span class="function">mul_sum</span> _ _ _]</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Algebraically combine all the pieces to prove h_burnside.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> This single simp_all tactic orchestrates the entire calculation:
+                        <br>1. Substitute h_orbit_stabilizer into h_interchange: Σ_g |Fix(g)| = Σₓ |Stab(x)| = Σₓ |G|/|Orb(x)|.
+                        <br>2. Rewrite division as multiplication by reciprocal: Σₓ |G|/|Orb(x)| = Σₓ |G| · (1/|Orb(x)|).
+                        <br>3. Factor out the constant |G| from the sum: Σₓ |G| · (1/|Orb(x)|) = |G| · Σₓ (1/|Orb(x)|) (using Finset.mul_sum).
+                        <br>4. Apply sum_inv_orbit_eq_orbits (hypothesis h): Σₓ (1/|Orb(x)|) = |Orbits|.
+                        <br>5. Conclude: Σ_g |Fix(g)| = |G| · |Orbits|, which rearranges to |Orbits| = (Σ_g |Fix(g)|)/|G|.
+                        <br>The simp_all tactic applies all these algebraic rewrites automatically, closing the proof of h_burnside.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line17', this)">
+                    <span class="line-number">24</span>&nbsp;&nbsp;<span class="keyword">rw</span> [<span class="variable">h_burnside</span>, <span class="function">div_mul_cancel₀</span> _ (<span class="type">Nat</span>.<span class="function">cast_ne_zero</span>.<span class="function">mpr</span> <span class="type">Fintype</span>.<span class="function">card_ne_zero</span>)]
+                </div>
+                <div id="expl-line17" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">rw</span> [<span class="variable">h_burnside</span>, <span class="function">div_mul_cancel₀</span> _ (<span class="type">Nat</span>.<span class="function">cast_ne_zero</span>.<span class="function">mpr</span> <span class="type">Fintype</span>.<span class="function">card_ne_zero</span>)]</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Clear the denominator by multiplying both sides by |G|.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> The goal is |Orbits| · |G| = Σ_g |Fix(g)|. We rewrite the left side using h_burnside: |Orbits| = (Σ_g |Fix(g)|)/|G|, giving ((Σ_g |Fix(g)|)/|G|) · |G| = Σ_g |Fix(g)|. Apply div_mul_cancel₀, which states (a/b) · b = a when b ≠ 0. We prove |G| ≠ 0 using Fintype.card_ne_zero (finite groups are non-empty, a foundational axiom in the library), then cast this to ℚ via Nat.cast_ne_zero.mpr. This simplifies the left side to Σ_g |Fix(g)|, matching the right side.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line18', this)">
+                    <span class="line-number">25</span>&nbsp;&nbsp;<span class="keyword">norm_cast</span>
+                </div>
+                <div id="expl-line18" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">norm_cast</span></div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Normalize type coercions to finish the proof.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> Throughout the proof, we worked in ℚ (rationals) to handle division cleanly. The final goal statement is in ℚ, but all our cardinalities are natural numbers coerced to ℚ. The norm_cast tactic normalizes all the ℕ → ℚ coercions, verifying that the equality holds as stated. This completes the proof of Burnside's Lemma. □</p>
+                </div>
+
+            </div>
+            <p class="text-sm text-slate-500 mt-4 italic">💡 Tip: Click on any line above to see its strategy and explanation inline. Click again to hide it.</p>
+        </div>
+    </div>
+
+    <div class="bg-emerald-50 border-l-4 border-emerald-600 p-6 mb-8 rounded-r-lg animate__animated animate__fadeInUp">
+        <h3 class="text-xl font-bold text-emerald-900 mb-3">Proof Structure Summary</h3>
+        <p class="text-slate-700 leading-relaxed mb-4">The proof follows a clean double-counting argument combined with the orbit-stabilizer theorem:</p>
+        <ul class="list-disc list-inside text-slate-700 space-y-3 ml-4">
+            <li><strong>Setup:</strong> Claim that |Orbits| = (Σ_g |Fix(g)|)/|G|. Proving this and multiplying by |G| gives the theorem.</li>
+            <li><strong>Step 1 (Double Counting / Interchange):</strong> Show Σ_g |Fix(g)| = Σₓ |Stab(x)| by counting pairs (g,x) where g·x = x in two ways. Use Finset.sum_comm to interchange the order of summation.</li>
+            <li><strong>Step 2 (Orbit-Stabilizer Theorem):</strong> For each x ∈ X, derive |Stab(x)| = |G|/|Orb(x)|:
+                <ul class="list-circle list-inside ml-6 mt-2">
+                    <li>Apply the multiplicative form: |Orb(x)| · |Stab(x)| = |G| (via card_orbit_mul_card_stabilizer)</li>
+                    <li>Prove |Orb(x)| ≠ 0 by witnessing that x ∈ Orb(x) (via identity: 1·x = x)</li>
+                    <li>Divide both sides to get |Stab(x)| = |G|/|Orb(x)| (using eq_div_of_mul_eq)</li>
+                </ul>
+            </li>
+            <li><strong>Step 3 (Orbit Counting Lemma):</strong> Substitute Step 2 into Step 1:
+                <ul class="list-circle list-inside ml-6 mt-2">
+                    <li>Σ_g |Fix(g)| = Σₓ |Stab(x)| = Σₓ |G|/|Orb(x)| = |G| · Σₓ 1/|Orb(x)|</li>
+                    <li>Apply sum_inv_orbit_eq_orbits: Σₓ 1/|Orb(x)| = |Orbits| (each orbit of size k contributes k·(1/k) = 1)</li>
+                    <li>Conclude: Σ_g |Fix(g)| = |G| · |Orbits|, so |Orbits| = (Σ_g |Fix(g)|)/|G|</li>
+                </ul>
+            </li>
+            <li><strong>Conclusion:</strong> Multiply both sides by |G| and normalize coercions to finish.</li>
+        </ul>
+        <p class="text-slate-700 leading-relaxed mt-4">
+            <strong>Key insight:</strong> The set of pairs {(g,x) : g·x = x} can be counted by summing over g (fixed points) or over x (stabilizers). The orbit-stabilizer theorem converts stabilizer sizes to orbit sizes, and the orbit counting lemma converts the sum Σₓ 1/|Orb(x)| into |Orbits|. This chain of equalities proves Burnside's Lemma: counting orbits is the same as averaging fixed point counts over all group elements.
+        </p>
+    </div>
+
+    <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl shadow-xl p-8 text-white animate__animated animate__fadeInUp animate__delay-1s">
+        <h2 class="text-3xl font-bold mb-6 flex items-center gap-3">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z">
+                </path>
+            </svg>
+            Key Lemmas Used
+        </h2>
+
+        <div class="grid md:grid-cols-2 gap-6">
+            <div class="bg-slate-700 rounded-xl p-6">
+                <h3 class="text-xl font-bold mb-3 text-emerald-300">1. Finset.sum_comm</h3>
+                <p class="text-slate-200">
+                    Interchanges the order of nested summations: Σᵢ Σⱼ f(i,j) = Σⱼ Σᵢ f(i,j). Critical for the double counting argument that equates summing over group elements (Σ_g |Fix(g)|) with summing over set elements (Σₓ |Stab(x)|). Both count the same set of pairs {(g,x) : g·x = x}, just grouped differently.
+                </p>
+            </div>
+
+            <div class="bg-slate-700 rounded-xl p-6">
+                <h3 class="text-xl font-bold mb-3 text-blue-300">2. card_orbit_mul_card_stabilizer</h3>
+                <p class="text-slate-200">
+                    The orbit-stabilizer theorem: |Orb(x)| · |Stab(x)| = |G|. This is the fundamental relationship between the size of an orbit and its stabilizer. Every element x induces a bijection between Orb(x) and the cosets G/Stab(x), establishing this multiplicative identity. Essential for converting stabilizer counts into orbit-based expressions.
+                </p>
+            </div>
+
+            <div class="bg-slate-700 rounded-xl p-6">
+                <h3 class="text-xl font-bold mb-3 text-purple-300">3. sum_inv_orbit_eq_orbits</h3>
+                <p class="text-slate-200">
+                    States that Σₓ∈X 1/|Orb(x)| = |Orbits|. A beautiful combinatorial identity: each orbit O of size k contributes 1/k exactly k times (once per element in O), totaling k · (1/k) = 1 per orbit. Summing over all elements thus counts each orbit once. This is the magic step that converts a sum over elements into a count of orbits.
+                </p>
+            </div>
+
+            <div class="bg-slate-700 rounded-xl p-6">
+                <h3 class="text-xl font-bold mb-3 text-yellow-300">4. eq_div_of_mul_eq & div_mul_cancel₀</h3>
+                <p class="text-slate-200">
+                    Algebraic lemmas for manipulating division. eq_div_of_mul_eq: if b≠0 and a·b=c, then a=c/b (used to derive |Stab(x)| = |G|/|Orb(x)| from the multiplicative form). div_mul_cancel₀: (a/b)·b = a when b≠0 (used to clear the denominator in the final step, multiplying |Orbits| = (Σ|Fix(g)|)/|G| by |G|).
+                </p>
+            </div>
+        </div>
+
+        <div class="mt-8 bg-slate-700 rounded-xl p-6">
+            <h3 class="text-xl font-bold mb-3 text-red-300">Mathematical Significance</h3>
+            <p class="text-slate-200 leading-relaxed">
+                Burnside's Lemma is a cornerstone of enumerative combinatorics and group theory. It provides a practical method for counting distinct configurations under symmetry: instead of explicitly constructing orbits (which can be computationally hard), you count fixed points for each group element (which is often straightforward) and average. Applications include counting distinct necklaces up to rotation, distinct colorings of polyhedra up to rotation/reflection, chemical isomers, and graph automorphisms. The lemma elegantly connects the local information (how many elements does each group element fix?) to the global structure (how many equivalence classes are there?). Its proof showcases the power of double counting and the orbit-stabilizer theorem working in concert.
+            </p>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    var currentOpen = null;
+    var currentLine = null;
+
+    function toggleExplanation(explId, clickedLine) {
+        var expl = document.getElementById(explId);
+        if (!expl) return;
+
+        if (currentOpen && currentOpen !== expl) {
+            currentOpen.classList.remove('visible');
+        }
+        if (currentLine && currentLine !== clickedLine) {
+            document.querySelectorAll('.full-code-line').forEach(function(el) {
+                el.classList.remove('active-code-line');
+            });
+        }
+
+        if (expl.classList.contains('visible')) {
+            expl.classList.remove('visible');
+            clickedLine.classList.remove('active-code-line');
+            currentOpen = null;
+            currentLine = null;
+        } else {
+            expl.classList.add('visible');
+            document.querySelectorAll('.full-code-line').forEach(function(el) {
+                el.classList.remove('active-code-line');
+            });
+            var siblings = document.querySelectorAll('[onclick="toggleExplanation(\'' + explId + '\', this)"]');
+            siblings.forEach(function(el) {
+                el.classList.add('active-code-line');
+            });
+            currentOpen = expl;
+            currentLine = clickedLine;
+            setTimeout(function() {
+                expl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 50);
+        }
+    }
+
+    document.querySelectorAll('.full-code-line').forEach(function(line) {
+        line.addEventListener('mouseenter', function () {
+            this.style.transform = 'translateX(4px)';
+        });
+        line.addEventListener('mouseleave', function () {
+            this.style.transform = 'translateX(0)';
+        });
+    });
+</script>
+</body>
+</html>

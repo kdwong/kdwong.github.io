@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:title" content="Lean Proof Explanation: Orbit Map & Orbit-Stabilizer Theorem">
+    <meta property="og:description" content="Interactive line-by-line explanation of the orbit-stabilizer theorem in Lean 4">
+    <meta property="og:image" content="https://cdn.simulationtheory.ai/gasset/?asset=img&prompt=mathematical proof diagram with group theory orbits&w=64&h=64&style=professional">
+    <meta property="og:type" content="website">
+    <link rel="icon" href="https://cdn.simulationtheory.ai/gasset/?asset=img&prompt=lambda symbol mathematics&w=32&h=32&style=professional">
+    <title>Lean Proof: Orbit-Stabilizer Theorem</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="/chat/cdn/animate.min.css" rel="stylesheet">
+    <style>
+        .proof-line {
+            transition: all 0.2s ease;
+        }
+        .proof-line:hover {
+            background-color: rgba(59, 130, 246, 0.05);
+        }
+        .code-block {
+            font-family: 'Courier New', monospace;
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+        }
+        .keyword  { color: #569cd6; }
+        .type     { color: #4ec9b0; }
+        .variable { color: #9cdcfe; }
+        .comment  { color: #6a9955; }
+        .function { color: #dcdcaa; }
+        .full-code-line {
+            cursor: pointer;
+            transition: all 0.15s ease;
+            padding: 2px 8px;
+            border-left: 3px solid transparent;
+        }
+        .full-code-line:hover {
+            background-color: rgba(59, 130, 246, 0.1);
+            border-left-color: #3b82f6;
+        }
+        .full-code-line.active-code-line {
+            background-color: rgba(251, 191, 36, 0.15);
+            border-left-color: #f59e0b;
+        }
+        .line-number {
+            display: inline-block;
+            width: 40px;
+            color: #858585;
+            user-select: none;
+        }
+        .inline-explanation {
+            display: none;
+            background-color: #f8fafc;
+            border-left: 4px solid #f59e0b;
+            border-radius: 0 0.5rem 0.5rem 0;
+            margin: 4px 0 4px 40px;
+            padding: 14px 18px;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            font-size: 0.95rem;
+            color: #1e293b;
+            animation: fadeSlideIn 0.2s ease;
+        }
+        .inline-explanation.visible {
+            display: block;
+        }
+        @keyframes fadeSlideIn {
+            from { opacity: 0; transform: translateY(-6px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .expl-code-snippet {
+            font-family: 'Courier New', monospace;
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 0.4rem;
+            padding: 10px 14px;
+            font-size: 0.82rem;
+            margin-bottom: 10px;
+            overflow-x: auto;
+            white-space: pre;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen">
+<div class="container mx-auto px-4 py-8 max-w-7xl">
+
+    <div class="text-center mb-12 animate__animated animate__fadeInDown">
+        <h1 class="text-5xl font-bold text-slate-800 mb-4">
+            <span class="text-blue-600">Lean Proof</span> Explanation
+        </h1>
+        <p class="text-xl text-slate-600">Orbit Map & Orbit-Stabilizer Theorem: The fundamental bijection</p>
+    </div>
+
+    <div class="bg-emerald-50 border-l-4 border-emerald-600 p-6 mb-8 rounded-r-lg animate__animated animate__fadeInUp">
+        <h3 class="text-xl font-bold text-emerald-900 mb-3">Overview</h3>
+        <p class="text-slate-700 leading-relaxed">
+            The <strong>orbit-stabilizer theorem</strong> establishes a fundamental bijection between the quotient <strong>G/Stab(x)</strong> 
+            (left cosets of the stabilizer) and <strong>Orb(x)</strong> (the orbit of x). This bijection proves that 
+            <strong>|G| = |Orb(x)| · |Stab(x)|</strong>, one of the most important identities in group theory. 
+            The proof constructs an explicit map from cosets to orbit elements, shows it's well-defined (independent of coset representative), 
+            then proves it's both injective and surjective. This theorem is the foundation for Burnside's Lemma and countless 
+            applications in algebra, combinatorics, and geometry.
+        </p>
+    </div>
+
+    <!-- ORBIT MAP SECTION -->
+    <div class="bg-white rounded-2xl shadow-xl mb-8 overflow-hidden animate__animated animate__fadeInUp">
+        <div class="bg-gradient-to-r from-indigo-600 to-blue-600 p-6">
+            <h2 class="text-3xl font-bold text-white flex items-center gap-3">
+                <span class="bg-white text-indigo-600 rounded-lg px-3 py-1">🗺️</span>
+                Orbit Map Definition (Click any line for explanation)
+            </h2>
+            <p class="text-indigo-100 mt-2">Interactive Lean 4 proof — click a line to see its strategy and explanation inline</p>
+        </div>
+
+        <div class="p-8">
+            <div class="code-block p-6 rounded-lg overflow-x-auto">
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-orbitmap1', this)">
+                    <span class="line-number">1</span><span class="keyword">def</span> <span class="function">orbit_map</span> {<span class="type">G</span> <span class="type">X</span> : <span class="type">Type</span>*} [<span class="type">Group</span> <span class="type">G</span>] (<span class="variable">A</span> : <span class="type">MyGroupAction</span> <span class="type">G</span> <span class="type">X</span>) (<span class="variable">x</span> : <span class="type">X</span>) :
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-orbitmap1', this)">
+                    <span class="line-number">2</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="type">G</span> ⧸ <span class="function">stabilizer</span> <span class="variable">A</span> <span class="variable">x</span> → <span class="function">orbit</span> <span class="variable">A</span> <span class="variable">x</span> :=
+                </div>
+                <div id="expl-orbitmap1" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">def</span> <span class="function">orbit_map</span> {<span class="type">G</span> <span class="type">X</span> : <span class="type">Type</span>*} [<span class="type">Group</span> <span class="type">G</span>] (<span class="variable">A</span> : <span class="type">MyGroupAction</span> <span class="type">G</span> <span class="type">X</span>) (<span class="variable">x</span> : <span class="type">X</span>) :
+    <span class="type">G</span> ⧸ <span class="function">stabilizer</span> <span class="variable">A</span> <span class="variable">x</span> → <span class="function">orbit</span> <span class="variable">A</span> <span class="variable">x</span></div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Define the orbit map's type signature — from cosets of the stabilizer to the orbit.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> We're constructing a function from G ⧸ Stab(x) (the quotient group, whose elements are left cosets g·Stab(x)) to Orb(x) (the set {g·x | g ∈ G}). This map will send each coset ⟦g⟧ to the orbit element g·x. The key challenge is proving this is well-defined: if ⟦a⟧ = ⟦b⟧ (same coset), we must show a·x = b·x. This signature sets up the fundamental bijection of the orbit-stabilizer theorem.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-orbitmap2', this)">
+                    <span class="line-number">3</span>&nbsp;&nbsp;<span class="type">Quotient</span>.<span class="function">lift</span> (<span class="keyword">fun</span> <span class="variable">g</span> => ⟨<span class="variable">A</span>.<span class="function">act</span> <span class="variable">g</span> <span class="variable">x</span>, ⟨<span class="variable">g</span>, <span class="keyword">rfl</span>⟩⟩) (<span class="keyword">by</span>
+                </div>
+                <div id="expl-orbitmap2" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="type">Quotient</span>.<span class="function">lift</span> (<span class="keyword">fun</span> <span class="variable">g</span> => ⟨<span class="variable">A</span>.<span class="function">act</span> <span class="variable">g</span> <span class="variable">x</span>, ⟨<span class="variable">g</span>, <span class="keyword">rfl</span>⟩⟩)</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Use Quotient.lift to define a function on the quotient by providing a function on representatives.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> Quotient.lift is the standard way to define functions out of quotient types. We provide: (1) A function g ↦ A.act g x on representatives (raw group elements), which produces an element of Orb(x). The angle brackets ⟨A.act g x, ⟨g, rfl⟩⟩ package the orbit element: the first component is g·x, the second is the proof that g·x ∈ Orb(x) (witnessed by g itself, with rfl proving g·x = g·x). (2) A proof (the by block) that this function respects the equivalence relation: if a ≈ b (same coset), then a·x = b·x. This well-definedness proof is crucial.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-orbitmap3', this)">
+                    <span class="line-number">4</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">intro</span> <span class="variable">a</span> <span class="variable">b</span> <span class="variable">hab</span>
+                </div>
+                <div id="expl-orbitmap3" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">intro</span> <span class="variable">a</span> <span class="variable">b</span> <span class="variable">hab</span></div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Introduce the two representatives a and b and the hypothesis that they're equivalent (same coset).</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> We need to prove: if a ≈ b (i.e., ⟦a⟧ = ⟦b⟧ as cosets), then our function gives the same result. The intro tactic brings in arbitrary group elements a, b and the hypothesis hab : a ≈ b. In the quotient group G ⧸ Stab(x), the relation ≈ is defined by: a ≈ b iff a⁻¹·b ∈ Stab(x) iff (a⁻¹·b)·x = x. Our goal is to show A.act a x = A.act b x.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-orbitmap4', this)">
+                    <span class="line-number">5</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">simp only</span> [<span class="type">Subtype</span>.<span class="function">mk</span>.<span class="function">injEq</span>]
+                </div>
+                <div id="expl-orbitmap4" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">simp only</span> [<span class="type">Subtype</span>.<span class="function">mk</span>.<span class="function">injEq</span>]</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Simplify the goal to strip away the subtype packaging.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> Our goal is ⟨A.act a x, ...⟩ = ⟨A.act b x, ...⟩ where these are subtypes (elements of Orb(x) with their membership proofs). Subtype.mk.injEq states that two subtype values are equal iff their underlying values are equal (the proofs are irrelevant by proof irrelevance). This simplifies the goal to just A.act a x = A.act b x, stripping away the membership proof components.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-orbitmap5', this)">
+                    <span class="line-number">6</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">-- 1. Convert the relation a ≈ b into an equality of quotient classes: ⟦a⟧ = ⟦b⟧</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-orbitmap5', this)">
+                    <span class="line-number">7</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">-- This works regardless of how ≈ is internally represented.</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-orbitmap5', this)">
+                    <span class="line-number">8</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">let</span> <span class="variable">q_eq</span> : <span class="type">QuotientGroup</span>.<span class="function">mk</span> <span class="variable">a</span> = <span class="type">QuotientGroup</span>.<span class="function">mk</span> <span class="variable">b</span> := <span class="type">Quotient</span>.<span class="function">sound</span> <span class="variable">hab</span>
+                </div>
+                <div id="expl-orbitmap5" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">let</span> <span class="variable">q_eq</span> : <span class="type">QuotientGroup</span>.<span class="function">mk</span> <span class="variable">a</span> = <span class="type">QuotientGroup</span>.<span class="function">mk</span> <span class="variable">b</span> := <span class="type">Quotient</span>.<span class="function">sound</span> <span class="variable">hab</span></div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Use Quotient.sound to convert the equivalence relation into an equality of quotient elements.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> Quotient.sound is the fundamental lemma for quotients: if a ≈ b (as an equivalence relation), then ⟦a⟧ = ⟦b⟧ (as quotient elements). We apply it to hab : a ≈ b to get q_eq : QuotientGroup.mk a = QuotientGroup.mk b. This converts from the abstract relation (which might be defined in various ways) to a concrete equality statement in the quotient type. This equality is what we'll unpack to extract information about the stabilizer.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-orbitmap6', this)">
+                    <span class="line-number">9</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">-- 2. Use the standard group theory lemma to convert ⟦a⟧ = ⟦b⟧ into a⁻¹ * b ∈ Stabilizer</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-orbitmap6', this)">
+                    <span class="line-number">10</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">rw</span> [<span class="type">QuotientGroup</span>.<span class="function">eq</span>] <span class="keyword">at</span> <span class="variable">q_eq</span>
+                </div>
+                <div id="expl-orbitmap6" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">rw</span> [<span class="type">QuotientGroup</span>.<span class="function">eq</span>] <span class="keyword">at</span> <span class="variable">q_eq</span></div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Rewrite the quotient equality using the characterization of coset equality.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> QuotientGroup.eq is the key lemma: ⟦a⟧ = ⟦b⟧ in G/H iff a⁻¹·b ∈ H. For our quotient G ⧸ Stab(x), this becomes: ⟦a⟧ = ⟦b⟧ iff a⁻¹·b ∈ Stab(x). We rewrite q_eq using this lemma, transforming it from an equality in the quotient type to a membership statement in the stabilizer. Now q_eq states exactly what we need: a⁻¹·b is in the stabilizer of x.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-orbitmap7', this)">
+                    <span class="line-number">11</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">-- 3. Now q_eq is exactly: a⁻¹ * b ∈ stabilizer A x</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-orbitmap7', this)">
+                    <span class="line-number">12</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">-- This means acting by (a⁻¹ * b) fixes x.</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-orbitmap7', this)">
+                    <span class="line-number">13</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">have</span> <span class="variable">h_stab</span> : <span class="variable">A</span>.<span class="function">act</span> (<span class="variable">a</span>⁻¹ * <span class="variable">b</span>) <span class="variable">x</span> = <span class="variable">x</span> := <span class="variable">q_eq</span>
+                </div>
+                <div id="expl-orbitmap7" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">have</span> <span class="variable">h_stab</span> : <span class="variable">A</span>.<span class="function">act</span> (<span class="variable">a</span>⁻¹ * <span class="variable">b</span>) <span class="variable">x</span> = <span class="variable">x</span> := <span class="variable">q_eq</span></div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Extract the concrete meaning of stabilizer membership: the element fixes x.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> By definition, g ∈ Stab(x) means A.act g x = x. Since q_eq now states a⁻¹·b ∈ Stab(x), we can extract the defining property: A.act (a⁻¹·b) x = x. We name this h_stab — this is the key fact we'll use to show a·x = b·x. The element a⁻¹·b fixes x, which geometrically means a and b send x to the same place in the orbit.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-orbitmap8', this)">
+                    <span class="line-number">14</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">-- 4. Finish the calculation</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-orbitmap8', this)">
+                    <span class="line-number">15</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">calc</span> <span class="variable">A</span>.<span class="function">act</span> <span class="variable">a</span> <span class="variable">x</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-orbitmap8', this)">
+                    <span class="line-number">16</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_ = <span class="variable">A</span>.<span class="function">act</span> <span class="variable">a</span> (<span class="variable">A</span>.<span class="function">act</span> (<span class="variable">a</span>⁻¹ * <span class="variable">b</span>) <span class="variable">x</span>) := <span class="keyword">by</span> <span class="keyword">rw</span> [<span class="variable">h_stab</span>]
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-orbitmap8', this)">
+                    <span class="line-number">17</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_ = <span class="variable">A</span>.<span class="function">act</span> (<span class="variable">a</span> * (<span class="variable">a</span>⁻¹ * <span class="variable">b</span>)) <span class="variable">x</span>     := <span class="keyword">by</span> <span class="keyword">rw</span> [← <span class="variable">A</span>.<span class="function">mul_act</span>]
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-orbitmap8', this)">
+                    <span class="line-number">18</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_ = <span class="variable">A</span>.<span class="function">act</span> <span class="variable">b</span> <span class="variable">x</span>                   := <span class="keyword">by</span> <span class="keyword">simp</span>
+                </div>
+                <div id="expl-orbitmap8" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">calc</span> <span class="variable">A</span>.<span class="function">act</span> <span class="variable">a</span> <span class="variable">x</span>
+      _ = <span class="variable">A</span>.<span class="function">act</span> <span class="variable">a</span> (<span class="variable">A</span>.<span class="function">act</span> (<span class="variable">a</span>⁻¹ * <span class="variable">b</span>) <span class="variable">x</span>) := <span class="keyword">by</span> <span class="keyword">rw</span> [<span class="variable">h_stab</span>]
+      _ = <span class="variable">A</span>.<span class="function">act</span> (<span class="variable">a</span> * (<span class="variable">a</span>⁻¹ * <span class="variable">b</span>)) <span class="variable">x</span>     := <span class="keyword">by</span> <span class="keyword">rw</span> [← <span class="variable">A</span>.<span class="function">mul_act</span>]
+      _ = <span class="variable">A</span>.<span class="function">act</span> <span class="variable">b</span> <span class="variable">x</span>                   := <span class="keyword">by</span> <span class="keyword">simp</span></div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Use equational reasoning to show a·x = b·x by inserting the fixing element.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> This calc chain is the heart of the well-definedness proof:
+                        <br>• Start with A.act a x (what we want to show equals A.act b x).
+                        <br>• Step 1: Replace x with A.act (a⁻¹·b) x using h_stab (since (a⁻¹·b)·x = x, we can substitute).
+                        <br>• Step 2: Use mul_act backwards to combine the two actions: a·((a⁻¹·b)·x) = (a·(a⁻¹·b))·x.
+                        <br>• Step 3: Simplify the group multiplication: a·(a⁻¹·b) = (a·a⁻¹)·b = 1·b = b, so we get b·x.
+                        <br>This completes the proof that a·x = b·x, establishing well-definedness. The orbit map is now properly defined! □</p>
+                </div>
+
+            </div>
+            <p class="text-sm text-slate-500 mt-4 italic">💡 Tip: Click on any line above to see its strategy and explanation inline. Click again to hide it.</p>
+        </div>
+    </div>
+
+    <!-- ORBIT-STABILIZER THEOREM SECTION -->
+    <div class="bg-white rounded-2xl shadow-xl mb-8 overflow-hidden animate__animated animate__fadeInUp">
+        <div class="bg-gradient-to-r from-purple-600 to-pink-600 p-6">
+            <h2 class="text-3xl font-bold text-white flex items-center gap-3">
+                <span class="bg-white text-purple-600 rounded-lg px-3 py-1">⚖️</span>
+                Orbit-Stabilizer Theorem (Click any line for explanation)
+            </h2>
+            <p class="text-indigo-100 mt-2">Proving the orbit map is a bijection — both injective and surjective</p>
+        </div>
+
+        <div class="p-8">
+            <div class="code-block p-6 rounded-lg overflow-x-auto">
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-thm1', this)">
+                    <span class="line-number">19</span><span class="keyword">theorem</span> <span class="function">orbit_stabilizer_theorem</span> {<span class="type">G</span> <span class="type">X</span> : <span class="type">Type</span>*} [<span class="type">Group</span> <span class="type">G</span>] (<span class="variable">A</span> : <span class="type">MyGroupAction</span> <span class="type">G</span> <span class="type">X</span>) (<span class="variable">x</span> : <span class="type">X</span>) :
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-thm1', this)">
+                    <span class="line-number">20</span>&nbsp;&nbsp;<span class="type">Function</span>.<span class="type">Bijective</span> (<span class="function">orbit_map</span> <span class="variable">A</span> <span class="variable">x</span>) := <span class="keyword">by</span>
+                </div>
+                <div id="expl-thm1" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">theorem</span> <span class="function">orbit_stabilizer_theorem</span> {<span class="type">G</span> <span class="type">X</span> : <span class="type">Type</span>*} [<span class="type">Group</span> <span class="type">G</span>] (<span class="variable">A</span> : <span class="type">MyGroupAction</span> <span class="type">G</span> <span class="type">X</span>) (<span class="variable">x</span> : <span class="type">X</span>) :
+  <span class="type">Function</span>.<span class="type">Bijective</span> (<span class="function">orbit_map</span> <span class="variable">A</span> <span class="variable">x</span>)</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> State the theorem — orbit_map is a bijection.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> We claim that orbit_map A x : G ⧸ Stab(x) → Orb(x) is bijective, meaning it's both injective (one-to-one) and surjective (onto). Function.Bijective is defined as the conjunction Injective ∧ Surjective, so we'll need to prove both properties. This bijection is the heart of the orbit-stabilizer theorem: it establishes a perfect correspondence between cosets and orbit elements, which immediately implies |G/Stab(x)| = |Orb(x)|, and by Lagrange's theorem, |G|/|Stab(x)| = |Orb(x)|.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-thm2', this)">
+                    <span class="line-number">21</span>&nbsp;&nbsp;<span class="keyword">constructor</span>
+                </div>
+                <div id="expl-thm2" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">constructor</span></div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Split the bijection proof into injectivity and surjectivity.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> Since Function.Bijective is defined as a conjunction (Injective f ∧ Surjective f), the constructor tactic splits the goal into two subgoals: (1) prove orbit_map is injective, (2) prove orbit_map is surjective. We'll tackle injectivity first (if the map sends two cosets to the same orbit element, they must be the same coset), then surjectivity (every orbit element is hit by some coset).</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-inj1', this)">
+                    <span class="line-number">22</span>&nbsp;&nbsp;<span class="comment">· intro qa qb h_eq</span>
+                </div>
+                <div id="expl-inj1" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">intro</span> <span class="variable">qa</span> <span class="variable">qb</span> <span class="variable">h_eq</span></div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Begin the injectivity proof by introducing two quotient elements and the hypothesis that they map to the same orbit element.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> To prove injectivity, we assume orbit_map(qa) = orbit_map(qb) for quotient elements qa, qb ∈ G/Stab(x), and must show qa = qb. The intro tactic brings in qa, qb (arbitrary cosets) and h_eq : orbit_map A x qa = orbit_map A x qb. But qa and qb are wrapped in the quotient type — we need to unwrap them to work with actual group elements.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-inj2', this)">
+                    <span class="line-number">23</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">revert</span> <span class="variable">qa</span> <span class="variable">qb</span>
+                </div>
+                <div id="expl-inj2" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">revert</span> <span class="variable">qa</span> <span class="variable">qb</span></div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Revert qa and qb back into the goal to prepare for quotient induction.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> We use revert to move qa and qb from the context back into the goal, changing the goal from "qa = qb" to "∀ qa qb, orbit_map qa = orbit_map qb → qa = qb". This is necessary because Quotient.inductionOn₂ (which we'll apply next) expects a goal that's universally quantified over two quotient elements. Revert is the opposite of intro — it generalizes specific variables back to quantified ones.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-inj3', this)">
+                    <span class="line-number">24</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">intro</span> <span class="variable">qa</span> <span class="variable">qb</span>
+                </div>
+                <div id="expl-inj3" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">intro</span> <span class="variable">qa</span> <span class="variable">qb</span></div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Re-introduce qa and qb in preparation for induction.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> We immediately intro them back — this seems redundant, but it sets up the proper structure for Quotient.inductionOn₂. The goal is now structured as "∀ qa qb, P(qa, qb)" where we can apply quotient induction. This is a common pattern when working with quotient types: revert to generalize, then intro to get the right shape for induction.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-inj4', this)">
+                    <span class="line-number">25</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">refine</span> <span class="type">Quotient</span>.<span class="function">inductionOn₂</span> <span class="variable">qa</span> <span class="variable">qb</span> ?_
+                </div>
+                <div id="expl-inj4" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">refine</span> <span class="type">Quotient</span>.<span class="function">inductionOn₂</span> <span class="variable">qa</span> <span class="variable">qb</span> ?_</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Apply quotient induction to unwrap both quotient elements simultaneously.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> Quotient.inductionOn₂ is the key tactic for working with quotients. It says: to prove a property P(qa, qb) for all quotient elements qa, qb, it suffices to prove P(⟦a⟧, ⟦b⟧) for all representatives a, b. After this tactic, qa and qb will be replaced by ⟦a⟧ and ⟦b⟧ where a and b are ordinary group elements. This "lifts" the proof from the abstract quotient level to the concrete element level, where we can use group operations directly. The ?_ placeholder says "I'll prove the resulting goal next".</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-inj5', this)">
+                    <span class="line-number">26</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">intro</span> <span class="variable">a</span> <span class="variable">b</span> <span class="variable">h_eq</span>
+                </div>
+                <div id="expl-inj5" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">intro</span> <span class="variable">a</span> <span class="variable">b</span> <span class="variable">h_eq</span></div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Introduce the unwrapped representatives a and b and the equality hypothesis.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> After induction, we're now working with concrete group elements a, b : G (not quotient elements). The goal is now: if orbit_map(⟦a⟧) = orbit_map(⟦b⟧), then ⟦a⟧ = ⟦b⟧. The hypothesis h_eq will be orbit_map A x ⟦a⟧ = orbit_map A x ⟦b⟧, which by definition of orbit_map simplifies to a·x = b·x (the two representatives send x to the same place). Our goal ⟦a⟧ = ⟦b⟧ means the cosets are equal.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-inj6', this)">
+                    <span class="line-number">27</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">-- Now we are working with standard group elements a and b</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-inj6', this)">
+                    <span class="line-number">28</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">simp only</span> [<span class="function">orbit_map</span>, <span class="type">Quotient</span>.<span class="function">lift_mk</span>, <span class="type">Subtype</span>.<span class="function">ext_iff</span>] <span class="keyword">at</span> <span class="variable">h_eq</span>
+                </div>
+                <div id="expl-inj6" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">simp only</span> [<span class="function">orbit_map</span>, <span class="type">Quotient</span>.<span class="function">lift_mk</span>, <span class="type">Subtype</span>.<span class="function">ext_iff</span>] <span class="keyword">at</span> <span class="variable">h_eq</span></div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Simplify the hypothesis to extract the concrete equality.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> We simplify h_eq using:
+                        <br>• orbit_map: unfold the definition of orbit_map.
+                        <br>• Quotient.lift_mk: when you apply Quotient.lift to ⟦a⟧, it evaluates to the function applied to a directly.
+                        <br>• Subtype.ext_iff: two subtype elements are equal iff their underlying values are equal.
+                        <br>After these simplifications, h_eq becomes simply: A.act a x = A.act b x. This is the concrete fact we'll use to prove the cosets are equal.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-inj7', this)">
+                    <span class="line-number">29</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">-- Goal: Prove ⟦a⟧ = ⟦b⟧, which is equivalent to a⁻¹ * b ∈ Stabilizer</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-inj7', this)">
+                    <span class="line-number">30</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">apply</span> <span class="type">QuotientGroup</span>.<span class="function">eq</span>.<span class="function">mpr</span>
+                </div>
+                <div id="expl-inj7" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">apply</span> <span class="type">QuotientGroup</span>.<span class="function">eq</span>.<span class="function">mpr</span></div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Apply the characterization of quotient equality in the reverse direction.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> QuotientGroup.eq states: ⟦a⟧ = ⟦b⟧ ↔ a⁻¹·b ∈ Stab(x). The .mpr ("modus ponens reverse") applies the right-to-left direction: to prove ⟦a⟧ = ⟦b⟧, it suffices to prove a⁻¹·b ∈ Stab(x). This changes our goal from a quotient equality to a group membership statement. Now we need to show a⁻¹·b ∈ Stab(x), which by definition means (a⁻¹·b)·x = x.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-inj8', this)">
+                    <span class="line-number">31</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">-- Definition of Stabilizer: act (a⁻¹ * b) x = x</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-inj8', this)">
+                    <span class="line-number">32</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">change</span> <span class="variable">A</span>.<span class="function">act</span> (<span class="variable">a</span>⁻¹ * <span class="variable">b</span>) <span class="variable">x</span> = <span class="variable">x</span>
+                </div>
+                <div id="expl-inj8" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">change</span> <span class="variable">A</span>.<span class="function">act</span> (<span class="variable">a</span>⁻¹ * <span class="variable">b</span>) <span class="variable">x</span> = <span class="variable">x</span></div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Make the goal explicit — we need to show (a⁻¹·b) fixes x.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> The change tactic replaces the goal with a definitionally equal one, making it clearer. After applying QuotientGroup.eq.mpr, the goal is expressed in terms of the stabilizer membership predicate, which might be abstracted. We make it concrete: a⁻¹·b ∈ Stab(x) means by definition A.act (a⁻¹·b) x = x. This is the explicit form we'll prove using our hypothesis h_eq : a·x = b·x.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-inj9', this)">
+                    <span class="line-number">33</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">calc</span> <span class="variable">A</span>.<span class="function">act</span> (<span class="variable">a</span>⁻¹ * <span class="variable">b</span>) <span class="variable">x</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-inj9', this)">
+                    <span class="line-number">34</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_ = <span class="variable">A</span>.<span class="function">act</span> <span class="variable">a</span>⁻¹ (<span class="variable">A</span>.<span class="function">act</span> <span class="variable">b</span> <span class="variable">x</span>) := <span class="keyword">by</span> <span class="keyword">rw</span> [<span class="variable">A</span>.<span class="function">mul_act</span>]
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-inj9', this)">
+                    <span class="line-number">35</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_ = <span class="variable">A</span>.<span class="function">act</span> <span class="variable">a</span>⁻¹ (<span class="variable">A</span>.<span class="function">act</span> <span class="variable">a</span> <span class="variable">x</span>) := <span class="keyword">by</span> <span class="keyword">rw</span> [<span class="variable">h_eq</span>]
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-inj9', this)">
+                    <span class="line-number">36</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_ = <span class="variable">A</span>.<span class="function">act</span> (<span class="variable">a</span>⁻¹ * <span class="variable">a</span>) <span class="variable">x</span>     := <span class="keyword">by</span> <span class="keyword">rw</span> [← <span class="variable">A</span>.<span class="function">mul_act</span>]
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-inj9', this)">
+                    <span class="line-number">37</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_ = <span class="variable">A</span>.<span class="function">act</span> <span class="keyword">1</span> <span class="variable">x</span>             := <span class="keyword">by</span> <span class="keyword">rw</span> [<span class="function">inv_mul_cancel</span>]
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-inj9', this)">
+                    <span class="line-number">38</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_ = <span class="variable">x</span>                     := <span class="keyword">by</span> <span class="keyword">rw</span> [<span class="variable">A</span>.<span class="function">one_act</span>]
+                </div>
+                <div id="expl-inj9" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">calc</span> <span class="variable">A</span>.<span class="function">act</span> (<span class="variable">a</span>⁻¹ * <span class="variable">b</span>) <span class="variable">x</span>
+      _ = <span class="variable">A</span>.<span class="function">act</span> <span class="variable">a</span>⁻¹ (<span class="variable">A</span>.<span class="function">act</span> <span class="variable">b</span> <span class="variable">x</span>) := <span class="keyword">by</span> <span class="keyword">rw</span> [<span class="variable">A</span>.<span class="function">mul_act</span>]
+      _ = <span class="variable">A</span>.<span class="function">act</span> <span class="variable">a</span>⁻¹ (<span class="variable">A</span>.<span class="function">act</span> <span class="variable">a</span> <span class="variable">x</span>) := <span class="keyword">by</span> <span class="keyword">rw</span> [<span class="variable">h_eq</span>]
+      _ = <span class="variable">A</span>.<span class="function">act</span> (<span class="variable">a</span>⁻¹ * <span class="variable">a</span>) <span class="variable">x</span>     := <span class="keyword">by</span> <span class="keyword">rw</span> [← <span class="variable">A</span>.<span class="function">mul_act</span>]
+      _ = <span class="variable">A</span>.<span class="function">act</span> <span class="keyword">1</span> <span class="variable">x</span>             := <span class="keyword">by</span> <span class="keyword">rw</span> [<span class="function">inv_mul_cancel</span>]
+      _ = <span class="variable">x</span>                     := <span class="keyword">by</span> <span class="keyword">rw</span> [<span class="variable">A</span>.<span class="function">one_act</span>]</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Use equational reasoning to show (a⁻¹·b)·x = x from the hypothesis a·x = b·x.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> This calc chain is the mirror image of the orbit_map well-definedness proof:
+                        <br>• Start with A.act (a⁻¹·b) x.
+                        <br>• Step 1: Expand using mul_act: (a⁻¹·b)·x = a⁻¹·(b·x).
+                        <br>• Step 2: Use h_eq : a·x = b·x backwards to replace b·x with a·x: a⁻¹·(b·x) = a⁻¹·(a·x).
+                        <br>• Step 3: Combine using mul_act backwards: a⁻¹·(a·x) = (a⁻¹·a)·x.
+                        <br>• Step 4: Simplify group multiplication: a⁻¹·a = 1, so (a⁻¹·a)·x = 1·x.
+                        <br>• Step 5: Identity acts as identity: 1·x = x.
+                        <br>This proves (a⁻¹·b)·x = x, so a⁻¹·b ∈ Stab(x), so ⟦a⟧ = ⟦b⟧. Injectivity is complete! □</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-surj1', this)">
+                    <span class="line-number">39</span>&nbsp;&nbsp;<span class="comment">· intro ⟨y, hy⟩</span>
+                </div>
+                <div id="expl-surj1" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">intro</span> ⟨<span class="variable">y</span>, <span class="variable">hy</span>⟩</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Begin the surjectivity proof by introducing an arbitrary orbit element.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> To prove surjectivity, we must show: for every element in Orb(x), there exists a coset in G/Stab(x) that maps to it. The intro with pattern-matching ⟨y, hy⟩ unpacks an arbitrary element of orbit A x: y is the underlying element of X, and hy is the proof that y ∈ Orb(x). Our goal is now to produce some quotient element ⟦g⟧ ∈ G/Stab(x) such that orbit_map(⟦g⟧) = ⟨y, hy⟩.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-surj2', this)">
+                    <span class="line-number">40</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">obtain</span> ⟨<span class="variable">g</span>, <span class="keyword">rfl</span>⟩ := <span class="variable">hy</span>
+                </div>
+                <div id="expl-surj2" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">obtain</span> ⟨<span class="variable">g</span>, <span class="keyword">rfl</span>⟩ := <span class="variable">hy</span></div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Extract the witness from the orbit membership proof.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> Since y ∈ Orb(x), by definition there exists some g ∈ G such that g·x = y. The hypothesis hy is exactly this existential proof. The obtain tactic (also called rcases or cases) extracts the witness g and the proof. The rfl pattern says "the proof is that y = g·x definitionally" — after obtain, y is replaced everywhere by A.act g x (it's not just equal, it IS g·x by definition). This is crucial: we don't just know y = g·x, we know y is literally g·x, so we can work with g·x directly.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-surj3', this)">
+                    <span class="line-number">41</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">use</span> ⟦<span class="variable">g</span>⟧
+                </div>
+                <div id="expl-surj3" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">use</span> ⟦<span class="variable">g</span>⟧</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Provide the preimage — the coset of g.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> To prove surjectivity (∃ q, orbit_map q = y), we must provide a witness. The use tactic supplies ⟦g⟧ (the coset of g) as this witness. Now we need to prove that orbit_map(⟦g⟧) = ⟨A.act g x, ...⟩. But by definition, orbit_map(⟦g⟧) sends ⟦g⟧ to ⟨A.act g x, ⟨g, rfl⟩⟩, which is exactly the form we need. This should close the goal automatically.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-surj4', this)">
+                    <span class="line-number">42</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">rfl</span>
+                </div>
+                <div id="expl-surj4" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">rfl</span></div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> The goal is true by reflexivity — the definitions unfold to identical terms.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> After providing ⟦g⟧ as the witness, the goal becomes: orbit_map A x ⟦g⟧ = ⟨A.act g x, ...⟩. By definition, orbit_map A x ⟦g⟧ evaluates to exactly ⟨A.act g x, ⟨g, rfl⟩⟩. The two sides are definitionally equal (they're literally the same term after unfolding definitions), so rfl (reflexivity) proves it. Surjectivity is complete! □
+                        <br><br>
+                        <strong>Conclusion:</strong> We've proved both injectivity and surjectivity, so orbit_map is bijective. This establishes the orbit-stabilizer theorem: there's a perfect correspondence between G/Stab(x) and Orb(x). Taking cardinalities: |G/Stab(x)| = |Orb(x)|, and by Lagrange's theorem |G/Stab(x)| = |G|/|Stab(x)|, we get the classical identity |G| = |Orb(x)| · |Stab(x)|. ∎</p>
+                </div>
+
+            </div>
+            <p class="text-sm text-slate-500 mt-4 italic">💡 Tip: Click on any line above to see its strategy and explanation inline. Click again to hide it.</p>
+        </div>
+    </div>
+
+    <div class="bg-emerald-50 border-l-4 border-emerald-600 p-6 mb-8 rounded-r-lg animate__animated animate__fadeInUp">
+        <h3 class="text-xl font-bold text-emerald-900 mb-3">Proof Structure Summary</h3>
+        <p class="text-slate-700 leading-relaxed mb-4">The orbit-stabilizer theorem proof has two main components:</p>
+        <ul class="list-disc list-inside text-slate-700 space-y-3 ml-4">
+            <li><strong>Orbit Map Definition (Well-definedness):</strong> Use Quotient.lift to define a map from cosets to orbit elements. The key challenge is proving it's well-defined:
+                <ul class="list-circle list-inside ml-6 mt-2">
+                    <li>If ⟦a⟧ = ⟦b⟧ (same coset), show a·x = b·x (same orbit element)</li>
+                    <li>Use QuotientGroup.eq to convert coset equality to: a⁻¹·b ∈ Stab(x)</li>
+                    <li>This means (a⁻¹·b)·x = x, which we use to insert into the calc chain</li>
+                    <li>Calculation: a·x = a·((a⁻¹·b)·x) = (a·(a⁻¹·b))·x = b·x ✓</li>
+                </ul>
+            </li>
+            <li><strong>Injectivity:</strong> Show that if orbit_map(⟦a⟧) = orbit_map(⟦b⟧), then ⟦a⟧ = ⟦b⟧:
+                <ul class="list-circle list-inside ml-6 mt-2">
+                    <li>Use Quotient.inductionOn₂ to work with concrete representatives a, b</li>
+                    <li>The hypothesis simplifies to a·x = b·x</li>
+                    <li>Goal: prove ⟦a⟧ = ⟦b⟧, i.e., a⁻¹·b ∈ Stab(x), i.e., (a⁻¹·b)·x = x</li>
+                    <li>Calculation: (a⁻¹·b)·x = a⁻¹·(b·x) = a⁻¹·(a·x) = (a⁻¹·a)·x = 1·x = x ✓</li>
+                </ul>
+            </li>
+            <li><strong>Surjectivity:</strong> Show that every orbit element has a preimage coset:
+                <ul class="list-circle list-inside ml-6 mt-2">
+                    <li>Given y ∈ Orb(x), extract witness g such that g·x = y</li>
+                    <li>Use ⟦g⟧ as the preimage coset</li>
+                    <li>By definition, orbit_map(⟦g⟧) = g·x = y, done by reflexivity ✓</li>
+                </ul>
+            </li>
+        </ul>
+        <p class="text-slate-700 leading-relaxed mt-4">
+            <strong>Key insight:</strong> The orbit and stabilizer are dual views of the same symmetry. The orbit describes "where can x go?" (the equivalence class of x under the action), while the stabilizer describes "what fixes x?" (the subgroup preserving x). The bijection G/Stab(x) ≅ Orb(x) shows these are two sides of the same coin: each coset corresponds to exactly one orbit element, and the coset structure encodes the symmetry. This fundamental correspondence drives all of orbit-counting theory.
+        </p>
+    </div>
+
+    <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl shadow-xl p-8 text-white animate__animated animate__fadeInUp animate__delay-1s">
+        <h2 class="text-3xl font-bold mb-6 flex items-center gap-3">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z">
+                </path>
+            </svg>
+            Key Lemmas Used
+        </h2>
+
+        <div class="grid md:grid-cols-2 gap-6">
+            <div class="bg-slate-700 rounded-xl p-6">
+                <h3 class="text-xl font-bold mb-3 text-emerald-300">1. Quotient.lift</h3>
+                <p class="text-slate-200">
+                    The fundamental way to define functions out of quotient types. To define f : Quotient R → Y, provide: (1) a function g : X → Y on representatives, and (2) a proof that if x ≈ x' then g(x) = g(x'). This ensures the function is well-defined (independent of which representative you choose). Without well-definedness, the function wouldn't make sense on the quotient.
+                </p>
+            </div>
+
+            <div class="bg-slate-700 rounded-xl p-6">
+                <h3 class="text-xl font-bold mb-3 text-blue-300">2. QuotientGroup.eq</h3>
+                <p class="text-slate-200">
+                    The characterization of equality in quotient groups: ⟦a⟧ = ⟦b⟧ in G/H iff a⁻¹·b ∈ H. This bidirectional equivalence is the workhorse of quotient group reasoning. The forward direction (Quotient.sound) converts abstract equivalence to concrete membership. The reverse direction (.mpr) is used to prove coset equality by proving stabilizer membership. Essential for both well-definedness and injectivity.
+                </p>
+            </div>
+
+            <div class="bg-slate-700 rounded-xl p-6">
+                <h3 class="text-xl font-bold mb-3 text-purple-300">3. Quotient.inductionOn₂</h3>
+                <p class="text-slate-200">
+                    Quotient induction principle for two variables: to prove ∀ qa qb : Quotient R, P(qa, qb), it suffices to prove ∀ a b : X, P(⟦a⟧, ⟦b⟧) for representatives. This "lifts" proofs from the concrete level (where you can use the underlying structure) to the quotient level (where you work with equivalence classes). Critical for proving properties about orbit_map since the domain is a quotient type.
+                </p>
+            </div>
+
+            <div class="bg-slate-700 rounded-xl p-6">
+                <h3 class="text-xl font-bold mb-3 text-yellow-300">4. Group Action Axioms (mul_act, one_act)</h3>
+                <p class="text-slate-200">
+                    The defining properties of group actions: (1) mul_act: (g·h)·x = g·(h·x) (actions compose correctly), and (2) one_act: 1·x = x (identity acts as identity). These axioms are used in every calc chain to manipulate action expressions. mul_act allows us to split or combine actions, while one_act provides the base case for simplification. These are the "rewrite rules" that make group action calculations work.
+                </p>
+            </div>
+        </div>
+
+        <div class="mt-8 bg-slate-700 rounded-xl p-6">
+            <h3 class="text-xl font-bold mb-3 text-red-300">Mathematical Significance</h3>
+            <p class="text-slate-200 leading-relaxed">
+                The orbit-stabilizer theorem is one of the most fundamental results in group theory, with far-reaching consequences. It establishes the equation <strong>|G| = |Orb(x)| · |Stab(x)|</strong>, which has profound implications:
+                <br><br>
+                <strong>Counting orbits:</strong> It's the foundation for Burnside's Lemma and Pólya enumeration theory, enabling us to count distinct configurations under symmetry.
+                <br><br>
+                <strong>Lagrange's theorem:</strong> When X = G with left multiplication action, Orb(x) = G and Stab(x) = {1}, recovering |G| = |G| · 1. For general subgroups H ≤ G, the action of G on G/H by left multiplication gives |G| = |G/H| · |H|, which is Lagrange's theorem.
+                <br><br>
+                <strong>Representation theory:</strong> The orbit-stabilizer theorem underlies the decomposition of representations into isotypic components, connecting representation theory and character theory.
+                <br><br>
+                <strong>Geometry and physics:</strong> In differential geometry and physics, orbits represent symmetry classes (e.g., energy levels, particle types), while stabilizers represent residual symmetries (isotropy groups). The theorem quantifies how symmetry breaking works.
+                <br><br>
+                The bijection G/Stab(x) ≅ Orb(x) is not just a cardinality statement — it's a natural isomorphism of G-sets, preserving all the group action structure. This makes it a cornerstone of equivariant mathematics.
+            </p>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    var currentOpen = null;
+    var currentLine = null;
+
+    function toggleExplanation(explId, clickedLine) {
+        var expl = document.getElementById(explId);
+        if (!expl) return;
+
+        if (currentOpen && currentOpen !== expl) {
+            currentOpen.classList.remove('visible');
+        }
+        if (currentLine && currentLine !== clickedLine) {
+            document.querySelectorAll('.full-code-line').forEach(function(el) {
+                el.classList.remove('active-code-line');
+            });
+        }
+
+        if (expl.classList.contains('visible')) {
+            expl.classList.remove('visible');
+            clickedLine.classList.remove('active-code-line');
+            currentOpen = null;
+            currentLine = null;
+        } else {
+            expl.classList.add('visible');
+            document.querySelectorAll('.full-code-line').forEach(function(el) {
+                el.classList.remove('active-code-line');
+            });
+            var siblings = document.querySelectorAll('[onclick="toggleExplanation(\'' + explId + '\', this)"]');
+            siblings.forEach(function(el) {
+                el.classList.add('active-code-line');
+            });
+            currentOpen = expl;
+            currentLine = clickedLine;
+            setTimeout(function() {
+                expl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 50);
+        }
+    }
+
+    document.querySelectorAll('.full-code-line').forEach(function(line) {
+        line.addEventListener('mouseenter', function () {
+            this.style.transform = 'translateX(4px)';
+        });
+        line.addEventListener('mouseleave', function () {
+            this.style.transform = 'translateX(0)';
+        });
+    });
+</script>
+</body>
+</html>

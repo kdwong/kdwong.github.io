@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:title" content="Lean Proof Explanation: even_number_of_swaps_of_identity">
+    <meta property="og:description" content="Interactive line-by-line explanation of even_number_of_swaps_of_identity in Lean 4">
+    <meta property="og:image" content="https://cdn.simulationtheory.ai/gasset/?asset=img&prompt=mathematical proof diagram with permutation group theory&w=64&h=64&style=professional">
+    <meta property="og:type" content="website">
+    <link rel="icon" href="https://cdn.simulationtheory.ai/gasset/?asset=img&prompt=lambda symbol mathematics&w=32&h=32&style=professional">
+    <title>Lean Proof: even_number_of_swaps_of_identity</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="/chat/cdn/animate.min.css" rel="stylesheet">
+    <style>
+        .proof-line { transition: all 0.2s ease; }
+        .proof-line:hover { background-color: rgba(59, 130, 246, 0.05); }
+        .code-block { font-family: 'Courier New', monospace; background-color: #1e1e1e; color: #d4d4d4; }
+        .keyword  { color: #569cd6; }
+        .type     { color: #4ec9b0; }
+        .variable { color: #9cdcfe; }
+        .comment  { color: #6a9955; }
+        .function { color: #dcdcaa; }
+        .full-code-line {
+            cursor: pointer;
+            transition: all 0.15s ease;
+            padding: 2px 8px;
+            border-left: 3px solid transparent;
+        }
+        .full-code-line:hover { background-color: rgba(59, 130, 246, 0.1); border-left-color: #3b82f6; }
+        .full-code-line.active-code-line { background-color: rgba(251, 191, 36, 0.15); border-left-color: #f59e0b; }
+        .line-number { display: inline-block; width: 40px; color: #858585; user-select: none; }
+        .inline-explanation {
+            display: none;
+            background-color: #f8fafc;
+            border-left: 4px solid #f59e0b;
+            border-radius: 0 0.5rem 0.5rem 0;
+            margin: 4px 0 4px 40px;
+            padding: 14px 18px;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            font-size: 0.95rem;
+            color: #1e293b;
+            animation: fadeSlideIn 0.2s ease;
+        }
+        .inline-explanation.visible { display: block; }
+        @keyframes fadeSlideIn {
+            from { opacity: 0; transform: translateY(-6px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .expl-code-snippet {
+            font-family: 'Courier New', monospace;
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 0.4rem;
+            padding: 10px 14px;
+            font-size: 0.82rem;
+            margin-bottom: 10px;
+            overflow-x: auto;
+            white-space: pre;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen">
+<div class="container mx-auto px-4 py-8 max-w-7xl">
+
+    <div class="text-center mb-12 animate__animated animate__fadeInDown">
+        <h1 class="text-5xl font-bold text-slate-800 mb-4">
+            <span class="text-blue-600">Lean Proof</span> Explanation
+        </h1>
+        <p class="text-xl text-slate-600">even_number_of_swaps_of_identity: Identity permutations require an even number of transpositions</p>
+    </div>
+
+    <div class="bg-emerald-50 border-l-4 border-emerald-600 p-6 mb-8 rounded-r-lg animate__animated animate__fadeInUp">
+        <h3 class="text-xl font-bold text-emerald-900 mb-3">Overview</h3>
+        <p class="text-slate-700 leading-relaxed">
+            This theorem proves that if a list <strong>L</strong> of transpositions has product equal to the identity permutation,
+            then <strong>L.length must be even</strong>. The proof uses strong induction on the list length combined with a key
+            reduction lemma (<code>exists_reduction</code>) that produces two cases: either the list can be shortened by 2
+            while preserving the product (Case 1, handled by the induction hypothesis), or the product takes a specific
+            form that leads to a contradiction when the product is the identity (Case 2). The parity is therefore
+            preserved all the way down to the empty-list base case, where length 0 is trivially even.
+        </p>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-xl mb-8 overflow-hidden animate__animated animate__fadeInUp">
+        <div class="bg-gradient-to-r from-indigo-600 to-blue-600 p-6">
+            <h2 class="text-3xl font-bold text-white flex items-center gap-3">
+                <span class="bg-white text-indigo-600 rounded-lg px-3 py-1">📝</span>
+                Full Proof Code (Click any line for explanation)
+            </h2>
+            <p class="text-indigo-100 mt-2">Interactive Lean 4 proof — click a line to see its strategy and explanation inline</p>
+        </div>
+
+        <div class="p-8">
+            <div class="code-block p-6 rounded-lg overflow-x-auto">
+
+                <!-- Lines 1-2: theorem signature -->
+                <div class="full-code-line" onclick="toggleExplanation('expl-line1', this)">
+                    <span class="line-number">1</span><span class="keyword">theorem</span> <span class="function">even_number_of_swaps_of_identity</span> {α : <span class="type">Type</span>*} [<span class="type">DecidableEq</span> α] [<span class="type">Fintype</span> α]
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line1', this)">
+                    <span class="line-number">2</span>&nbsp;&nbsp;&nbsp;&nbsp;(<span class="variable">L</span> : <span class="type">List</span> (<span class="type">Perm</span> α)) (<span class="variable">hL</span> : ∀ σ ∈ <span class="variable">L</span>, σ.<span class="function">IsSwap</span>) (<span class="variable">hprod</span> : <span class="variable">L</span>.prod = <span class="keyword">1</span>) : <span class="type">Even</span> <span class="variable">L</span>.length := <span class="keyword">by</span>
+                </div>
+                <div id="expl-line1" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">theorem</span> <span class="function">even_number_of_swaps_of_identity</span> {α : <span class="type">Type</span>*} [<span class="type">DecidableEq</span> α] [<span class="type">Fintype</span> α]
+    (<span class="variable">L</span> : <span class="type">List</span> (<span class="type">Perm</span> α)) (<span class="variable">hL</span> : ∀ σ ∈ <span class="variable">L</span>, σ.<span class="function">IsSwap</span>) (<span class="variable">hprod</span> : <span class="variable">L</span>.prod = <span class="keyword">1</span>) : <span class="type">Even</span> <span class="variable">L</span>.length</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> State the theorem — a list of swaps whose product is the identity must have even length.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> The theorem takes three inputs: <strong>L</strong>, a list of permutations on a finite decidably-equal type α; <strong>hL</strong>, the hypothesis that every element of L is a transposition (IsSwap); and <strong>hprod</strong>, the hypothesis that the product of all elements equals the identity. The type-class assumptions <code>[DecidableEq α]</code> and <code>[Fintype α]</code> are needed to work with Lean's permutation API and to talk about swaps concretely. The conclusion <code>Even L.length</code> asserts that the list has even length. This is the foundational result that makes the sign of a permutation well-defined.</p>
+                </div>
+
+                <!-- Line 3: generalize -->
+                <div class="full-code-line" onclick="toggleExplanation('expl-line2', this)">
+                    <span class="line-number">3</span>&nbsp;&nbsp;<span class="keyword">generalize</span> <span class="variable">hn</span> : <span class="variable">L</span>.length = <span class="variable">n</span>
+                </div>
+                <div id="expl-line2" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">generalize</span> <span class="variable">hn</span> : <span class="variable">L</span>.length = <span class="variable">n</span></div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Name the list length so we can perform strong induction on it.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> We introduce a fresh natural number <code>n</code> and record the equality <code>hn : L.length = n</code>. This is necessary because <code>Nat.strong_induction_on</code> requires a standalone variable to induct on. Without this step, inducting directly on <code>L.length</code> would be syntactically awkward and would not allow us to generalize over different lists of the same length in the induction hypothesis.</p>
+                </div>
+
+                <!-- Lines 4-5: strong induction -->
+                <div class="full-code-line" onclick="toggleExplanation('expl-line3', this)">
+                    <span class="line-number">4</span>&nbsp;&nbsp;<span class="keyword">induction</span> <span class="variable">n</span> <span class="keyword">using</span> <span class="function">Nat.strong_induction_on</span> <span class="keyword">generalizing</span> <span class="variable">L</span> <span class="keyword">with</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line3', this)">
+                    <span class="line-number">5</span>&nbsp;&nbsp;| h <span class="variable">n</span> <span class="variable">ih</span> =>
+                </div>
+                <div id="expl-line3" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">induction</span> <span class="variable">n</span> <span class="keyword">using</span> <span class="function">Nat.strong_induction_on</span> <span class="keyword">generalizing</span> <span class="variable">L</span> <span class="keyword">with</span>
+| h <span class="variable">n</span> <span class="variable">ih</span> =></div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Strong induction on n — the induction hypothesis covers all strictly smaller lengths.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> Strong induction gives <code>ih : ∀ k &lt; n, ∀ L', (∀ σ ∈ L', σ.IsSwap) → L'.prod = 1 → L'.length = k → Even k</code>. We need strong (not simple) induction because the reduction lemma shortens the list by 2, not by 1 — so we cannot just appeal to the immediate predecessor. The <code>generalizing L</code> keeps L universally quantified so the IH can be applied to different lists of the same smaller length.</p>
+                </div>
+
+                <!-- Line 6: subst -->
+                <div class="full-code-line" onclick="toggleExplanation('expl-line4', this)">
+                    <span class="line-number">6</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">subst</span> <span class="variable">hn</span>
+                </div>
+                <div id="expl-line4" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">subst</span> <span class="variable">hn</span></div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Substitute n back to L.length, cleaning up the context.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> Since <code>hn : L.length = n</code>, the <code>subst</code> tactic replaces every occurrence of <code>n</code> with <code>L.length</code> throughout the goal and hypotheses. This restores the goal to a direct statement about L and eliminates the auxiliary variable n, leaving a cleaner context for the structural induction that follows.</p>
+                </div>
+
+                <!-- Line 7: reverse induction -->
+                <div class="full-code-line" onclick="toggleExplanation('expl-line5', this)">
+                    <span class="line-number">7</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">induction</span> <span class="variable">L</span> <span class="keyword">using</span> <span class="function">List.reverseRecOn</span> <span class="keyword">with</span>
+                </div>
+                <div id="expl-line5" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">induction</span> <span class="variable">L</span> <span class="keyword">using</span> <span class="function">List.reverseRecOn</span> <span class="keyword">with</span></div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Reverse induction on L — split as nil or M ++ [s].</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> <code>List.reverseRecOn</code> gives two cases: the empty list, and a list of the form <code>M ++ [s]</code> where <code>s</code> is the last element. We use reverse (right-to-left) induction rather than the standard front-cons induction because the reduction lemma <code>exists_reduction</code> is stated in terms of a prefix list M followed by a trailing swap — exactly the shape <code>M ++ [swap a b]</code>.</p>
+                </div>
+
+                <!-- Line 8: nil base case -->
+                <div class="full-code-line" onclick="toggleExplanation('expl-line6', this)">
+                    <span class="line-number">8</span>&nbsp;&nbsp;&nbsp;&nbsp;| nil => <span class="keyword">simp</span>
+                </div>
+                <div id="expl-line6" class="inline-explanation">
+                    <div class="expl-code-snippet">| nil => <span class="keyword">simp</span></div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Base case — the empty list has length 0, which is even.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> When L = [], we need <code>Even 0</code>. The empty list's product is 1 by definition (the identity of the monoid), so <code>hprod</code> is trivially satisfied. <code>Even 0</code> holds since 0 = 2 · 0, and <code>simp</code> closes this immediately using the standard simp lemma for <code>Even 0</code>.</p>
+                </div>
+
+                <!-- Line 9: append_singleton -->
+                <div class="full-code-line" onclick="toggleExplanation('expl-line7', this)">
+                    <span class="line-number">9</span>&nbsp;&nbsp;&nbsp;&nbsp;| append_singleton <span class="variable">M</span> <span class="variable">s</span> _ =>
+                </div>
+                <div id="expl-line7" class="inline-explanation">
+                    <div class="expl-code-snippet">| append_singleton <span class="variable">M</span> <span class="variable">s</span> _ =></div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Inductive case — L = M ++ [s] where s is the last element.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> By reverse induction, L splits as <code>M ++ [s]</code>. The underscore discards the internal IH from <code>List.reverseRecOn</code> — we will use the strong IH <code>ih</code> instead, which is strictly more powerful since it applies to any strictly shorter list, not just M.</p>
+                </div>
+
+                <!-- Line 10: have hs -->
+                <div class="full-code-line" onclick="toggleExplanation('expl-line8', this)">
+                    <span class="line-number">10</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">have</span> <span class="variable">hs</span> : <span class="variable">s</span>.<span class="function">IsSwap</span> := <span class="variable">hL</span> <span class="variable">s</span> (<span class="keyword">by</span> <span class="keyword">simp</span>)
+                </div>
+                <div id="expl-line8" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">have</span> <span class="variable">hs</span> : <span class="variable">s</span>.<span class="function">IsSwap</span> := <span class="variable">hL</span> <span class="variable">s</span> (<span class="keyword">by</span> <span class="keyword">simp</span>)</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Extract that the last element s is a transposition.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> From <code>hL : ∀ σ ∈ L, σ.IsSwap</code> and the fact that <code>s ∈ M ++ [s]</code> (proved by <code>simp</code>), we derive <code>hs : s.IsSwap</code>. This is needed to destructure s into its two constituent elements in the next step.</p>
+                </div>
+
+                <!-- Line 11: rcases hs -->
+                <div class="full-code-line" onclick="toggleExplanation('expl-line9', this)">
+                    <span class="line-number">11</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">rcases</span> <span class="variable">hs</span> <span class="keyword">with</span> ⟨<span class="variable">a</span>, <span class="variable">b</span>, <span class="variable">hab</span>, <span class="keyword">rfl</span>⟩
+                </div>
+                <div id="expl-line9" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">rcases</span> <span class="variable">hs</span> <span class="keyword">with</span> ⟨<span class="variable">a</span>, <span class="variable">b</span>, <span class="variable">hab</span>, <span class="keyword">rfl</span>⟩</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Destructure the swap — extract elements a, b with a ≠ b and substitute s = swap a b.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> <code>IsSwap s</code> means <code>∃ a b, a ≠ b ∧ s = swap a b</code>. The <code>rcases</code> destructs this, giving us <code>a b : α</code>, <code>hab : a ≠ b</code>, and the <code>rfl</code> substitutes <code>s</code> with <code>swap a b</code> everywhere in the goal and context. From this point on, L is concretely <code>M ++ [swap a b]</code>.</p>
+                </div>
+
+                <!-- Line 12: hM_swaps -->
+                <div class="full-code-line" onclick="toggleExplanation('expl-line10', this)">
+                    <span class="line-number">12</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">have</span> <span class="variable">hM_swaps</span> : ∀ <span class="variable">x</span> ∈ <span class="variable">M</span>, <span class="variable">x</span>.<span class="function">IsSwap</span> := <span class="keyword">fun</span> <span class="variable">x</span> <span class="variable">hx</span> => <span class="variable">hL</span> <span class="variable">x</span> (<span class="keyword">by</span> <span class="keyword">simp</span> [<span class="variable">hx</span>])
+                </div>
+                <div id="expl-line10" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">have</span> <span class="variable">hM_swaps</span> : ∀ <span class="variable">x</span> ∈ <span class="variable">M</span>, <span class="variable">x</span>.<span class="function">IsSwap</span> := <span class="keyword">fun</span> <span class="variable">x</span> <span class="variable">hx</span> => <span class="variable">hL</span> <span class="variable">x</span> (<span class="keyword">by</span> <span class="keyword">simp</span> [<span class="variable">hx</span>])</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Prove every element of the prefix M is also a swap.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> For any <code>x ∈ M</code>, we know <code>x ∈ M ++ [swap a b]</code> (proved by <code>simp [hx]</code>), so <code>hL</code> gives <code>x.IsSwap</code>. This hypothesis is required by <code>exists_reduction</code>, which needs to know that all elements of M are swaps before it can perform its reduction.</p>
+                </div>
+
+                <!-- Lines 13-14: exists_reduction -->
+                <div class="full-code-line" onclick="toggleExplanation('expl-line11', this)">
+                    <span class="line-number">13</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">rcases</span> <span class="function">exists_reduction</span> <span class="variable">M</span> <span class="variable">a</span> <span class="variable">b</span> <span class="variable">hab</span> <span class="variable">hM_swaps</span> <span class="keyword">with</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line11', this)">
+                    <span class="line-number">14</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⟨<span class="variable">M'</span>, <span class="variable">hlen</span>, <span class="variable">hM'_swaps</span>, <span class="variable">h_equiv</span>⟩ | ⟨<span class="variable">z</span>, <span class="variable">hza</span>, <span class="variable">M'</span>, <span class="variable">hM'_fix</span>, <span class="variable">h_equiv</span>⟩
+                </div>
+                <div id="expl-line11" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">rcases</span> <span class="function">exists_reduction</span> <span class="variable">M</span> <span class="variable">a</span> <span class="variable">b</span> <span class="variable">hab</span> <span class="variable">hM_swaps</span> <span class="keyword">with</span>
+  ⟨<span class="variable">M'</span>, <span class="variable">hlen</span>, <span class="variable">hM'_swaps</span>, <span class="variable">h_equiv</span>⟩ | ⟨<span class="variable">z</span>, <span class="variable">hza</span>, <span class="variable">M'</span>, <span class="variable">hM'_fix</span>, <span class="variable">h_equiv</span>⟩</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Apply the key reduction lemma — the combinatorial engine of the proof.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> <code>exists_reduction M a b hab hM_swaps</code> produces one of two outcomes. <strong>Left (Reduction):</strong> there exists a shorter list M' of swaps with <code>M'.length + 2 = (M ++ [swap a b]).length</code> and the same product — the list can be shortened by 2 while preserving the product. <strong>Right (Move):</strong> there exists <code>z ≠ a</code> and a list M' of swaps such that <code>(M ++ [swap a b]).prod = swap a z * M'.prod</code> and every element of M' fixes a pointwise. These are the only two possibilities.</p>
+                </div>
+
+                <!-- Line 15: Case 1 rw -->
+                <div class="full-code-line" onclick="toggleExplanation('expl-line12', this)">
+                    <span class="line-number">15</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;· <span class="keyword">rw</span> [← <span class="variable">h_equiv</span>] <span class="keyword">at</span> <span class="variable">hprod</span>
+                </div>
+                <div id="expl-line12" class="inline-explanation">
+                    <div class="expl-code-snippet">· <span class="keyword">rw</span> [← <span class="variable">h_equiv</span>] <span class="keyword">at</span> <span class="variable">hprod</span></div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Case 1 (Reduction) — transfer the product-equals-identity hypothesis to M'.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> In the reduction case, <code>h_equiv : M'.prod = (M ++ [swap a b]).prod</code>. Since <code>hprod : (M ++ [swap a b]).prod = 1</code>, rewriting backwards with <code>← h_equiv</code> gives <code>hprod : M'.prod = 1</code>. Now M' satisfies all the hypotheses needed to apply the strong induction hypothesis.</p>
+                </div>
+
+                <!-- Lines 16-18: h_lt -->
+                <div class="full-code-line" onclick="toggleExplanation('expl-line13', this)">
+                    <span class="line-number">16</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">have</span> <span class="variable">h_lt</span> : <span class="variable">M'</span>.length &lt; (<span class="variable">M</span> ++ [<span class="function">swap</span> <span class="variable">a</span> <span class="variable">b</span>]).length := <span class="keyword">by</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line13', this)">
+                    <span class="line-number">17</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">simp only</span> [<span class="function">List.length_append</span>, <span class="function">List.length_singleton</span>] <span class="keyword">at</span> <span class="variable">hlen</span> ⊢
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line13', this)">
+                    <span class="line-number">18</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">omega</span>
+                </div>
+                <div id="expl-line13" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">have</span> <span class="variable">h_lt</span> : <span class="variable">M'</span>.length &lt; (<span class="variable">M</span> ++ [<span class="function">swap</span> <span class="variable">a</span> <span class="variable">b</span>]).length := <span class="keyword">by</span>
+  <span class="keyword">simp only</span> [<span class="function">List.length_append</span>, <span class="function">List.length_singleton</span>] <span class="keyword">at</span> <span class="variable">hlen</span> ⊢
+  <span class="keyword">omega</span></div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Prove M' is strictly shorter than L — the key condition for the strong IH.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> From <code>hlen : M'.length + 2 = (M ++ [swap a b]).length</code>, we need <code>M'.length &lt; (M ++ [swap a b]).length</code>. After <code>simp only</code> unfolds the append and singleton lengths to arithmetic expressions, this becomes a simple linear arithmetic fact that <code>omega</code> closes immediately: if M'.length + 2 = k then M'.length &lt; k.</p>
+                </div>
+
+                <!-- Line 19: specialize ih -->
+                <div class="full-code-line" onclick="toggleExplanation('expl-line14', this)">
+                    <span class="line-number">19</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">specialize</span> <span class="variable">ih</span> <span class="variable">M'</span>.length <span class="variable">h_lt</span> <span class="variable">M'</span> <span class="variable">hM'_swaps</span> <span class="variable">hprod</span> <span class="keyword">rfl</span>
+                </div>
+                <div id="expl-line14" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">specialize</span> <span class="variable">ih</span> <span class="variable">M'</span>.length <span class="variable">h_lt</span> <span class="variable">M'</span> <span class="variable">hM'_swaps</span> <span class="variable">hprod</span> <span class="keyword">rfl</span></div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Instantiate the strong induction hypothesis at M' to get Even M'.length.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> We supply all required arguments to <code>ih</code>: the smaller length <code>M'.length</code>, the strict inequality <code>h_lt</code>, the list <code>M'</code> itself, the swap hypothesis <code>hM'_swaps</code>, the product hypothesis <code>hprod</code> (now rewritten to <code>M'.prod = 1</code>), and <code>rfl</code> for the trivial equality <code>M'.length = M'.length</code>. After specialization, <code>ih : Even M'.length</code>.</p>
+                </div>
+
+                <!-- Lines 20-22: conclude Case 1 -->
+                <div class="full-code-line" onclick="toggleExplanation('expl-line15', this)">
+                    <span class="line-number">20</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">simp only</span> [<span class="function">List.length_append</span>, <span class="function">List.length_singleton</span>]
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line15', this)">
+                    <span class="line-number">21</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">rw</span> [← <span class="variable">hlen</span>]
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line15', this)">
+                    <span class="line-number">22</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">grind</span>
+                </div>
+                <div id="expl-line15" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">simp only</span> [<span class="function">List.length_append</span>, <span class="function">List.length_singleton</span>]
+<span class="keyword">rw</span> [← <span class="variable">hlen</span>]
+<span class="keyword">grind</span></div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Conclude Even L.length from Even M'.length and the length relation.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> The goal is <code>Even (M ++ [swap a b]).length</code>. After <code>simp only</code> this becomes <code>Even (M.length + 1)</code>. Rewriting with <code>← hlen</code> (which says <code>M'.length + 2 = M.length + 1</code>) transforms the goal to <code>Even (M'.length + 2)</code>. Since <code>Even M'.length</code> holds (from the IH), and <code>Even (k + 2) ↔ Even k</code> for any k, <code>grind</code> closes this arithmetic parity argument automatically.</p>
+                </div>
+
+                <!-- Line 23: Case 2 rw -->
+                <div class="full-code-line" onclick="toggleExplanation('expl-line16', this)">
+                    <span class="line-number">23</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;· <span class="keyword">rw</span> [<span class="variable">h_equiv</span>] <span class="keyword">at</span> <span class="variable">hprod</span>
+                </div>
+                <div id="expl-line16" class="inline-explanation">
+                    <div class="expl-code-snippet">· <span class="keyword">rw</span> [<span class="variable">h_equiv</span>] <span class="keyword">at</span> <span class="variable">hprod</span></div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Case 2 (Move) — rewrite hprod using h_equiv to expose the contradiction.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> In the move case, <code>h_equiv : (M ++ [swap a b]).prod = swap a z * M'.prod</code>. Rewriting <code>hprod</code> with this gives <code>hprod : swap a z * M'.prod = 1</code>. This is the starting point for deriving a contradiction: if the product is identity, then applying both sides to <code>a</code> will force <code>a = z</code>, contradicting <code>hza : z ≠ a</code>.</p>
+                </div>
+
+                <!-- Line 24: h_apply -->
+                <div class="full-code-line" onclick="toggleExplanation('expl-line17', this)">
+                    <span class="line-number">24</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">have</span> <span class="variable">h_apply</span> : (<span class="keyword">1</span> : <span class="type">Perm</span> α) <span class="variable">a</span> = (<span class="function">swap</span> <span class="variable">a</span> <span class="variable">z</span> * <span class="variable">M'</span>.prod) <span class="variable">a</span> := <span class="keyword">by</span> <span class="keyword">rw</span> [<span class="variable">hprod</span>]
+                </div>
+                <div id="expl-line17" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">have</span> <span class="variable">h_apply</span> : (<span class="keyword">1</span> : <span class="type">Perm</span> α) <span class="variable">a</span> = (<span class="function">swap</span> <span class="variable">a</span> <span class="variable">z</span> * <span class="variable">M'</span>.prod) <span class="variable">a</span> := <span class="keyword">by</span> <span class="keyword">rw</span> [<span class="variable">hprod</span>]</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Apply both sides of the identity equation to the element a.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> Since <code>hprod : swap a z * M'.prod = 1</code>, rewriting gives <code>h_apply : (1 : Perm α) a = (swap a z * M'.prod) a</code>. Applying a permutation equality pointwise to a specific element is the standard technique for extracting concrete information from an abstract permutation equation. The left side will simplify to <code>a</code>, and the right side will eventually simplify to <code>z</code>.</p>
+                </div>
+
+                <!-- Line 25: simp h_apply -->
+                <div class="full-code-line" onclick="toggleExplanation('expl-line18', this)">
+                    <span class="line-number">25</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">simp only</span> [<span class="function">Equiv.Perm.coe_one</span>, <span class="function">id_eq</span>, <span class="function">Equiv.Perm.mul_apply</span>] <span class="keyword">at</span> <span class="variable">h_apply</span>
+                </div>
+                <div id="expl-line18" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">simp only</span> [<span class="function">Equiv.Perm.coe_one</span>, <span class="function">id_eq</span>, <span class="function">Equiv.Perm.mul_apply</span>] <span class="keyword">at</span> <span class="variable">h_apply</span></div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Simplify the pointwise application — reduce to a = swap a z (M'.prod a).</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> <code>Equiv.Perm.coe_one</code> and <code>id_eq</code> simplify <code>(1 : Perm α) a</code> to just <code>a</code>. <code>Equiv.Perm.mul_apply</code> expands <code>(swap a z * M'.prod) a</code> to <code>swap a z (M'.prod a)</code> (function composition, right-to-left). After simplification, <code>h_apply : a = swap a z (M'.prod a)</code>.</p>
+                </div>
+
+                <!-- Lines 26-35: h_fix -->
+                <div class="full-code-line" onclick="toggleExplanation('expl-line19', this)">
+                    <span class="line-number">26</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">have</span> <span class="variable">h_fix</span> : <span class="variable">M'</span>.prod <span class="variable">a</span> = <span class="variable">a</span> := <span class="keyword">by</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line19', this)">
+                    <span class="line-number">27</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">have</span> <span class="variable">helper</span> : ∀ (<span class="variable">lst</span> : <span class="type">List</span> (<span class="type">Perm</span> α)), (∀ <span class="variable">x</span> ∈ <span class="variable">lst</span>, <span class="variable">x</span> <span class="variable">a</span> = <span class="variable">a</span>) → <span class="variable">lst</span>.prod <span class="variable">a</span> = <span class="variable">a</span> := <span class="keyword">by</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line19', this)">
+                    <span class="line-number">28</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">intro</span> <span class="variable">lst</span> <span class="variable">h</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line19', this)">
+                    <span class="line-number">29</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">induction</span> <span class="variable">lst</span> <span class="keyword">with</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line19', this)">
+                    <span class="line-number">30</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| nil => <span class="keyword">simp</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line19', this)">
+                    <span class="line-number">31</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| cons <span class="variable">x</span> <span class="variable">xs</span> <span class="variable">ih_xs</span> =>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line19', this)">
+                    <span class="line-number">32</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">simp only</span> [<span class="function">List.prod_cons</span>, <span class="function">mul_apply</span>]
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line19', this)">
+                    <span class="line-number">33</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">rw</span> [<span class="variable">ih_xs</span> (<span class="keyword">fun</span> <span class="variable">y</span> <span class="variable">hy</span> => <span class="variable">h</span> <span class="variable">y</span> (<span class="keyword">by</span> <span class="keyword">simp</span> [<span class="variable">hy</span>]))]
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line19', this)">
+                    <span class="line-number">34</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">exact</span> <span class="variable">h</span> <span class="variable">x</span> (<span class="keyword">by</span> <span class="keyword">simp</span>)
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line19', this)">
+                    <span class="line-number">35</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">exact</span> <span class="variable">helper</span> <span class="variable">M'</span> (<span class="keyword">fun</span> <span class="variable">x</span> <span class="variable">hx</span> => (<span class="variable">hM'_fix</span> <span class="variable">x</span> <span class="variable">hx</span>).2)
+                </div>
+                <div id="expl-line19" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">have</span> <span class="variable">h_fix</span> : <span class="variable">M'</span>.prod <span class="variable">a</span> = <span class="variable">a</span> := <span class="keyword">by</span>
+  <span class="keyword">have</span> <span class="variable">helper</span> : ∀ (<span class="variable">lst</span> : <span class="type">List</span> (<span class="type">Perm</span> α)), (∀ <span class="variable">x</span> ∈ <span class="variable">lst</span>, <span class="variable">x</span> <span class="variable">a</span> = <span class="variable">a</span>) → <span class="variable">lst</span>.prod <span class="variable">a</span> = <span class="variable">a</span> := <span class="keyword">by</span>
+    <span class="keyword">intro</span> <span class="variable">lst</span> <span class="variable">h</span>
+    <span class="keyword">induction</span> <span class="variable">lst</span> <span class="keyword">with</span>
+    | nil => <span class="keyword">simp</span>
+    | cons <span class="variable">x</span> <span class="variable">xs</span> <span class="variable">ih_xs</span> =>
+      <span class="keyword">simp only</span> [<span class="function">List.prod_cons</span>, <span class="function">mul_apply</span>]
+      <span class="keyword">rw</span> [<span class="variable">ih_xs</span> (<span class="keyword">fun</span> <span class="variable">y</span> <span class="variable">hy</span> => <span class="variable">h</span> <span class="variable">y</span> (<span class="keyword">by</span> <span class="keyword">simp</span> [<span class="variable">hy</span>]))]
+      <span class="keyword">exact</span> <span class="variable">h</span> <span class="variable">x</span> (<span class="keyword">by</span> <span class="keyword">simp</span>)
+  <span class="keyword">exact</span> <span class="variable">helper</span> <span class="variable">M'</span> (<span class="keyword">fun</span> <span class="variable">x</span> <span class="variable">hx</span> => (<span class="variable">hM'_fix</span> <span class="variable">x</span> <span class="variable">hx</span>).2)</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Prove M'.prod fixes a — inline mini-lemma by structural induction on the list.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> We prove a helper: if every permutation in a list fixes a, then their product also fixes a. <strong>Base case (nil):</strong> the empty product is the identity, which fixes everything — <code>simp</code> closes this. <strong>Inductive case (x :: xs):</strong> <code>(x · xs.prod)(a) = x(xs.prod(a))</code> by <code>mul_apply</code>; by the IH <code>xs.prod(a) = a</code>; then <code>x(a) = a</code> by hypothesis. We apply this helper to M' using <code>hM'_fix</code>, which says every element of M' fixes a (the second component <code>.2</code> of the conjunction).</p>
+                </div>
+
+                <!-- Line 36: rw h_fix swap_apply_left -->
+                <div class="full-code-line" onclick="toggleExplanation('expl-line20', this)">
+                    <span class="line-number">36</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">rw</span> [<span class="variable">h_fix</span>, <span class="function">swap_apply_left</span>] <span class="keyword">at</span> <span class="variable">h_apply</span>
+                </div>
+                <div id="expl-line20" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">rw</span> [<span class="variable">h_fix</span>, <span class="function">swap_apply_left</span>] <span class="keyword">at</span> <span class="variable">h_apply</span></div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Substitute the fixed point and evaluate the swap — reducing h_apply to a = z.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> We have <code>h_apply : a = swap a z (M'.prod a)</code>. Rewriting with <code>h_fix</code> (which says <code>M'.prod a = a</code>) gives <code>a = swap a z a</code>. Then <code>swap_apply_left</code> is the lemma <code>swap a z a = z</code> (a swap sends its left argument to its right argument). So after both rewrites, <code>h_apply : a = z</code>.</p>
+                </div>
+
+                <!-- Line 37: contradiction -->
+                <div class="full-code-line" onclick="toggleExplanation('expl-line21', this)">
+                    <span class="line-number">37</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">exact</span> (<span class="variable">hza</span> <span class="variable">h_apply</span>.symm).elim
+                </div>
+                <div id="expl-line21" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">exact</span> (<span class="variable">hza</span> <span class="variable">h_apply</span>.symm).elim</div>
+                                        <p><span class="font-semibold text-blue-700">Strategy:</span> Derive the final contradiction — Case 2 is impossible.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> We have proven <code>h_apply : a = z</code>. But <code>hza : z ≠ a</code>!
+                        <ul class="list-disc ml-6 mt-2">
+                            <li><code>h_apply.symm</code> gives: <code>z = a</code></li>
+                            <li><code>hza (z = a)</code> produces: <code>False</code> (applying the inequality to the equality)</li>
+                            <li><code>.elim</code>: from False, prove anything (including the current goal)</li>
+                        </ul>
+                        This contradiction shows Case 2 is impossible — we can never have the "move" case when the product is identity. The proof is complete. □
+                    </p>
+                </div>
+
+            </div>
+            <p class="text-sm text-slate-500 mt-4 italic">💡 Tip: Click on any line above to see its strategy and explanation inline. Click again to hide it.</p>
+        </div>
+    </div>
+
+    <div class="bg-emerald-50 border-l-4 border-emerald-600 p-6 mb-8 rounded-r-lg animate__animated animate__fadeInUp">
+        <h3 class="text-xl font-bold text-emerald-900 mb-3">Proof Structure Summary</h3>
+        <p class="text-slate-700 leading-relaxed mb-4">The proof follows a strong induction + contradiction argument:</p>
+        <ul class="list-disc list-inside text-slate-700 space-y-3 ml-4">
+            <li><strong>Setup (generalize + strong induction):</strong> Name the length n and induct strongly on it, generalizing over all lists of that length</li>
+            <li><strong>Base case (nil):</strong> Empty list has length 0, which is trivially even</li>
+            <li><strong>Inductive step (append_singleton):</strong> L = M ++ [swap a b]; extract that s = swap a b, then apply exists_reduction:
+                <ul class="list-disc list-inside ml-6 mt-2">
+                    <li><strong>Case 1 (Reduction):</strong> Get shorter list M' with M'.prod = 1 and M'.length + 2 = L.length
+                        <ul class="list-disc list-inside ml-6 mt-1">
+                            <li>Apply strong IH to get Even M'.length</li>
+                            <li>Since L.length = M'.length + 2, conclude Even L.length ✓</li>
+                        </ul>
+                    </li>
+                    <li><strong>Case 2 (Move):</strong> L.prod = swap(a,z) · M'.prod with M' fixing a pointwise
+                        <ul class="list-disc list-inside ml-6 mt-1">
+                            <li>Since L.prod = 1, we get swap(a,z) · M'.prod = 1</li>
+                            <li>Apply to a: a = swap(a,z)(M'.prod(a))</li>
+                            <li>Since M' fixes a: a = swap(a,z)(a) = z</li>
+                            <li>But z ≠ a by construction → Contradiction! ✗</li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+        <p class="text-slate-700 leading-relaxed mt-4">
+            <strong>Key insight:</strong> The "move" case is impossible when the product is identity, because
+            moving a swap to the front would create swap(a,z) as a factor of the identity, but then applying
+            both sides to 'a' reveals that z must equal a, contradicting the construction. So we always get
+            reduction, which decreases length by 2, preserving parity until we reach the base case.
+        </p>
+    </div>
+
+    <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl shadow-xl p-8 text-white animate__animated animate__fadeInUp animate__delay-1s">
+        <h2 class="text-3xl font-bold mb-6 flex items-center gap-3">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z">
+                </path>
+            </svg>
+            Proof Techniques Used
+        </h2>
+
+        <div class="grid md:grid-cols-2 gap-6">
+            <div class="bg-slate-700 rounded-xl p-6">
+                <h3 class="text-xl font-bold mb-3 text-emerald-300">1. Strong Induction</h3>
+                <p class="text-slate-200">
+                    Uses <code>Nat.strong_induction_on</code> on the list length so the IH applies to
+                    any strictly shorter list, not just the immediate predecessor. This is essential because
+                    the reduction lemma shortens the list by 2, skipping over the predecessor entirely.
+                </p>
+            </div>
+
+            <div class="bg-slate-700 rounded-xl p-6">
+                <h3 class="text-xl font-bold mb-3 text-blue-300">2. exists_reduction Lemma</h3>
+                <p class="text-slate-200">
+                    The key modular lemma that drives the proof. Given M and swap(a,b), it either
+                    produces a shorter equivalent list (Case 1) or rewrites the product as swap(a,z)·M'
+                    where M' fixes a (Case 2). This clean case split is the combinatorial heart of the argument.
+                </p>
+            </div>
+
+            <div class="bg-slate-700 rounded-xl p-6">
+                <h3 class="text-xl font-bold mb-3 text-red-300">3. Proof by Contradiction</h3>
+                <p class="text-slate-200">
+                    Case 2 is eliminated via contradiction: if the product is identity,
+                    the "move" form forces swap(a,z)·M'.prod = 1. Applying to a and using
+                    the fixed-point property of M' yields a = z, contradicting z ≠ a.
+                </p>
+            </div>
+
+            <div class="bg-slate-700 rounded-xl p-6">
+                <h3 class="text-xl font-bold mb-3 text-purple-300">4. Inline Mini-Lemma (helper)</h3>
+                <p class="text-slate-200">
+                    Proves by structural induction that if every permutation in a list fixes a point,
+                    their product also fixes that point. Base case: identity fixes everything.
+                    Inductive case: compose the fixed-point properties step by step.
+                </p>
+            </div>
+        </div>
+
+        <div class="mt-8 bg-slate-700 rounded-xl p-6">
+            <h3 class="text-xl font-bold mb-3 text-yellow-300">Mathematical Significance</h3>
+            <p class="text-slate-200 leading-relaxed">
+                This theorem is fundamental in permutation group theory. It shows that the parity of a permutation
+                (even vs. odd) is well-defined: you cannot write the identity using an odd number of transpositions.
+                Combined with the other direction (any even-length list of swaps gives an even permutation),
+                this establishes that the sign homomorphism sgn: Sₙ → {±1} is well-defined and that the
+                alternating group Aₙ (even permutations) is indeed a proper subgroup of Sₙ of index 2.
+                The proof technique — strong induction with a reduction lemma producing a strict length decrease —
+                is a standard and reusable pattern for parity arguments in combinatorial formalisation in Lean 4.
+            </p>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    var currentOpen = null;
+    var currentLine = null;
+
+    function toggleExplanation(explId, clickedLine) {
+        var expl = document.getElementById(explId);
+        if (!expl) return;
+
+        if (currentOpen && currentOpen !== expl) {
+            currentOpen.classList.remove('visible');
+        }
+        if (currentLine && currentLine !== clickedLine) {
+            document.querySelectorAll('.full-code-line').forEach(function(el) {
+                el.classList.remove('active-code-line');
+            });
+        }
+
+        if (expl.classList.contains('visible')) {
+            expl.classList.remove('visible');
+            clickedLine.classList.remove('active-code-line');
+            currentOpen = null;
+            currentLine = null;
+        } else {
+            expl.classList.add('visible');
+            document.querySelectorAll('.full-code-line').forEach(function(el) {
+                el.classList.remove('active-code-line');
+            });
+            var siblings = document.querySelectorAll('[onclick="toggleExplanation(\'' + explId + '\', this)"]');
+            siblings.forEach(function(el) {
+                el.classList.add('active-code-line');
+            });
+            currentOpen = expl;
+            currentLine = clickedLine;
+            setTimeout(function() {
+                expl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 50);
+        }
+    }
+
+    document.querySelectorAll('.full-code-line').forEach(function(line) {
+        line.addEventListener('mouseenter', function () {
+            this.style.transform = 'translateX(4px)';
+        });
+        line.addEventListener('mouseleave', function () {
+            this.style.transform = 'translateX(0)';
+        });
+    });
+</script>
+</body>
+</html>

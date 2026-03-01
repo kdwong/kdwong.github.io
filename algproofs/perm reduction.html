@@ -1,0 +1,494 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:title" content="Lean Proof Explanation: exists_reduction">
+    <meta property="og:description" content="Interactive line-by-line explanation of exists_reduction in Lean 4">
+    <meta property="og:image" content="https://cdn.simulationtheory.ai/gasset/?asset=img&prompt=mathematical induction diagram with lists and permutations&w=64&h=64&style=professional">
+    <meta property="og:type" content="website">
+    <link rel="icon" href="https://cdn.simulationtheory.ai/gasset/?asset=img&prompt=lambda symbol mathematics&w=32&h=32&style=professional">
+    <title>Lean Proof: exists_reduction</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="/chat/cdn/animate.min.css" rel="stylesheet">
+    <style>
+        .proof-line {
+            transition: all 0.2s ease;
+        }
+        .proof-line:hover {
+            background-color: rgba(59, 130, 246, 0.05);
+        }
+        .code-block {
+            font-family: 'Courier New', monospace;
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+        }
+        .keyword  { color: #569cd6; }
+        .type     { color: #4ec9b0; }
+        .variable { color: #9cdcfe; }
+        .comment  { color: #6a9955; }
+        .function { color: #dcdcaa; }
+        .full-code-line {
+            cursor: pointer;
+            transition: all 0.15s ease;
+            padding: 2px 8px;
+            border-left: 3px solid transparent;
+        }
+        .full-code-line:hover {
+            background-color: rgba(59, 130, 246, 0.1);
+            border-left-color: #3b82f6;
+        }
+        .full-code-line.active-code-line {
+            background-color: rgba(251, 191, 36, 0.15);
+            border-left-color: #f59e0b;
+        }
+        .line-number {
+            display: inline-block;
+            width: 40px;
+            color: #858585;
+            user-select: none;
+        }
+        .inline-explanation {
+            display: none;
+            background-color: #f8fafc;
+            border-left: 4px solid #f59e0b;
+            border-radius: 0 0.5rem 0.5rem 0;
+            margin: 4px 0 4px 40px;
+            padding: 14px 18px;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            font-size: 0.95rem;
+            color: #1e293b;
+            animation: fadeSlideIn 0.2s ease;
+        }
+        .inline-explanation.visible {
+            display: block;
+        }
+        @keyframes fadeSlideIn {
+            from { opacity: 0; transform: translateY(-6px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .expl-code-snippet {
+            font-family: 'Courier New', monospace;
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 0.4rem;
+            padding: 10px 14px;
+            font-size: 0.82rem;
+            margin-bottom: 10px;
+            overflow-x: auto;
+            white-space: pre;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen">
+<div class="container mx-auto px-4 py-8 max-w-7xl">
+
+    <div class="text-center mb-12 animate__animated animate__fadeInDown">
+        <h1 class="text-5xl font-bold text-slate-800 mb-4">
+            <span class="text-blue-600">Lean Proof</span> Explanation
+        </h1>
+        <p class="text-xl text-slate-600">exists_reduction: Reducing a list of transpositions</p>
+    </div>
+
+    <div class="bg-emerald-50 border-l-4 border-emerald-600 p-6 mb-8 rounded-r-lg animate__animated animate__fadeInUp">
+        <h3 class="text-xl font-bold text-emerald-900 mb-3">Overview</h3>
+        <p class="text-slate-700 leading-relaxed">
+            This lemma proves that when you append a transposition (a b) to a list M of transpositions, one of two outcomes occurs:
+            either the product can be <strong>reduced</strong> (cancellation happens, shortening the list by 1), or it can be <strong>factored</strong>
+            as (a z) · M' where all transpositions in M' fix the element a. This is a key step in algorithms that normalize permutations
+            by repeatedly applying move_swap_left. The proof uses <strong>structural induction</strong> on the list M (via reverseRecOn),
+            processing transpositions from right to left. At each step, we apply move_swap_left to the rightmost transposition s and the new (a b),
+            then recursively handle the remaining list. The two base cases (cancellation vs. factorization) propagate through the induction,
+            maintaining the invariant that we either reduce the length or factor out a transposition fixing a.
+        </p>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-xl mb-8 overflow-hidden animate__animated animate__fadeInUp">
+        <div class="bg-gradient-to-r from-indigo-600 to-blue-600 p-6">
+            <h2 class="text-3xl font-bold text-white flex items-center gap-3">
+                <span class="bg-white text-indigo-600 rounded-lg px-3 py-1">📝</span>
+                Full Proof Code (Click any line for explanation)
+            </h2>
+            <p class="text-indigo-100 mt-2">Interactive Lean 4 proof — click a line to see its strategy and explanation inline</p>
+        </div>
+
+        <div class="p-8">
+            <div class="code-block p-6 rounded-lg overflow-x-auto">
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line1', this)">
+                    <span class="line-number">1</span><span class="keyword">lemma</span> <span class="function">exists_reduction</span> {<span class="variable">α</span> : <span class="type">Type</span>*} [<span class="type">DecidableEq</span> <span class="variable">α</span>]
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line1', this)">
+                    <span class="line-number">2</span>&nbsp;&nbsp;&nbsp;&nbsp;(<span class="variable">M</span> : <span class="type">List</span> (<span class="type">Perm</span> <span class="variable">α</span>)) (<span class="variable">a</span> <span class="variable">b</span> : <span class="variable">α</span>) (<span class="variable">hab</span> : <span class="variable">a</span> ≠ <span class="variable">b</span>) (<span class="variable">h_swaps</span> : ∀ <span class="variable">s</span> ∈ <span class="variable">M</span>, <span class="variable">s</span>.<span class="function">IsSwap</span>) :
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line1', this)">
+                    <span class="line-number">3</span>&nbsp;&nbsp;&nbsp;&nbsp;(∃ <span class="variable">M'</span> : <span class="type">List</span> (<span class="type">Perm</span> <span class="variable">α</span>), <span class="variable">M'</span>.<span class="function">length</span> + <span class="keyword">2</span> = <span class="variable">M</span>.<span class="function">length</span> + <span class="keyword">1</span> ∧ (∀ <span class="variable">s</span> ∈ <span class="variable">M'</span>, <span class="variable">s</span>.<span class="function">IsSwap</span>) ∧
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line1', this)">
+                    <span class="line-number">4</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">M'</span>.<span class="function">prod</span> = (<span class="variable">M</span> ++ [<span class="function">swap</span> <span class="variable">a</span> <span class="variable">b</span>]).<span class="function">prod</span>)
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line1', this)">
+                    <span class="line-number">5</span>&nbsp;&nbsp;&nbsp;&nbsp;∨ (∃ <span class="variable">z</span>, <span class="variable">z</span> ≠ <span class="variable">a</span> ∧ ∃ <span class="variable">M'</span> : <span class="type">List</span> (<span class="type">Perm</span> <span class="variable">α</span>), (∀ <span class="variable">s</span> ∈ <span class="variable">M'</span>, <span class="variable">s</span>.<span class="function">IsSwap</span> ∧ <span class="variable">s</span> <span class="variable">a</span> = <span class="variable">a</span>) ∧
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line1', this)">
+                    <span class="line-number">6</span>&nbsp;&nbsp;&nbsp;&nbsp;(<span class="variable">M</span> ++ [<span class="function">swap</span> <span class="variable">a</span> <span class="variable">b</span>]).<span class="function">prod</span> = <span class="function">swap</span> <span class="variable">a</span> <span class="variable">z</span> * <span class="variable">M'</span>.<span class="function">prod</span>) := <span class="keyword">by</span>
+                </div>
+                <div id="expl-line1" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">lemma</span> <span class="function">exists_reduction</span> {<span class="variable">α</span> : <span class="type">Type</span>*} [<span class="type">DecidableEq</span> <span class="variable">α</span>]
+    (<span class="variable">M</span> : <span class="type">List</span> (<span class="type">Perm</span> <span class="variable">α</span>)) (<span class="variable">a</span> <span class="variable">b</span> : <span class="variable">α</span>) (<span class="variable">hab</span> : <span class="variable">a</span> ≠ <span class="variable">b</span>) (<span class="variable">h_swaps</span> : ∀ <span class="variable">s</span> ∈ <span class="variable">M</span>, <span class="variable">s</span>.<span class="function">IsSwap</span>) :
+    (∃ <span class="variable">M'</span> : <span class="type">List</span> (<span class="type">Perm</span> <span class="variable">α</span>), <span class="variable">M'</span>.<span class="function">length</span> + <span class="keyword">2</span> = <span class="variable">M</span>.<span class="function">length</span> + <span class="keyword">1</span> ∧ (∀ <span class="variable">s</span> ∈ <span class="variable">M'</span>, <span class="variable">s</span>.<span class="function">IsSwap</span>) ∧
+    <span class="variable">M'</span>.<span class="function">prod</span> = (<span class="variable">M</span> ++ [<span class="function">swap</span> <span class="variable">a</span> <span class="variable">b</span>]).<span class="function">prod</span>)
+    ∨ (∃ <span class="variable">z</span>, <span class="variable">z</span> ≠ <span class="variable">a</span> ∧ ∃ <span class="variable">M'</span> : <span class="type">List</span> (<span class="type">Perm</span> <span class="variable">α</span>), (∀ <span class="variable">s</span> ∈ <span class="variable">M'</span>, <span class="variable">s</span>.<span class="function">IsSwap</span> ∧ <span class="variable">s</span> <span class="variable">a</span> = <span class="variable">a</span>) ∧
+    (<span class="variable">M</span> ++ [<span class="function">swap</span> <span class="variable">a</span> <span class="variable">b</span>]).<span class="function">prod</span> = <span class="function">swap</span> <span class="variable">a</span> <span class="variable">z</span> * <span class="variable">M'</span>.<span class="function">prod</span>)</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> State the lemma — appending (a b) to a list M of transpositions either reduces the length or factors out (a z).</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> Given a list M of transpositions and a new transposition (a b) with a ≠ b, we prove a disjunction: either (1) there exists a shorter list M' with M'.length + 2 = M.length + 1 (i.e., we reduced by 1) such that M'.prod equals (M ++ [swap a b]).prod, or (2) the product factors as (a z) · M'.prod where all transpositions in M' fix a. This captures the two outcomes of move_swap_left when applied iteratively: cancellation (reduction) or factorization (moving a to the left).</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line2', this)">
+                    <span class="line-number">7</span>&nbsp;&nbsp;<span class="keyword">induction</span> <span class="variable">M</span> <span class="keyword">using</span> <span class="function">List.reverseRecOn</span> <span class="keyword">generalizing</span> <span class="variable">a</span> <span class="variable">b</span>
+                </div>
+                <div id="expl-line2" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">induction</span> <span class="variable">M</span> <span class="keyword">using</span> <span class="function">List.reverseRecOn</span> <span class="keyword">generalizing</span> <span class="variable">a</span> <span class="variable">b</span></div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Induct on the list M using reverseRecOn to process from right to left.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> We use structural induction on M via List.reverseRecOn, which provides two cases: (1) nil (empty list), and (2) append_singleton (list L with a single element s appended). This allows us to process the list from right to left, matching the natural order of multiplication: (M ++ [swap a b]).prod = M.prod * swap a b. We generalize over a and b so the induction hypothesis can be applied with different elements (specifically, a and z when we apply move_swap_left).</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line3', this)">
+                    <span class="line-number">8</span>&nbsp;&nbsp;<span class="keyword">case</span> <span class="function">nil</span> => <span class="keyword">right</span>; <span class="keyword">refine</span> ⟨<span class="variable">b</span>, <span class="variable">hab</span>.<span class="function">symm</span>, [], <span class="keyword">by</span> <span class="keyword">simp</span>, <span class="keyword">by</span> <span class="keyword">simp</span>⟩
+                </div>
+                <div id="expl-line3" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">case</span> <span class="function">nil</span> => <span class="keyword">right</span>; <span class="keyword">refine</span> ⟨<span class="variable">b</span>, <span class="variable">hab</span>.<span class="function">symm</span>, [], <span class="keyword">by</span> <span class="keyword">simp</span>, <span class="keyword">by</span> <span class="keyword">simp</span>⟩</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Base case — if M is empty, factor as (a b) · [] (the identity).</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> When M = [], we have ([] ++ [swap a b]).prod = swap a b. We choose the right disjunct (factorization) with z := b (satisfying b ≠ a by hab.symm) and M' := []. The empty list trivially satisfies "all elements fix a" (vacuously true), and swap a b = swap a b * 1 by simp. This establishes the base case for the induction.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line4', this)">
+                    <span class="line-number">9</span>&nbsp;&nbsp;<span class="keyword">case</span> <span class="function">append_singleton</span> <span class="variable">L</span> <span class="variable">s</span> <span class="variable">ih</span> =>
+                </div>
+                <div id="expl-line4" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">case</span> <span class="function">append_singleton</span> <span class="variable">L</span> <span class="variable">s</span> <span class="variable">ih</span> =></div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Inductive case — assume M = L ++ [s] and we have an induction hypothesis ih for L.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> In the inductive step, we assume M can be written as L ++ [s] for some list L and transposition s. The induction hypothesis ih states that the lemma holds for L (with arbitrary a and b). We'll apply move_swap_left to s and swap a b, then use ih to handle the remaining list L.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line5', this)">
+                    <span class="line-number">10</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">have</span> <span class="variable">hs</span> : <span class="variable">s</span>.<span class="function">IsSwap</span> := <span class="keyword">by</span> <span class="keyword">simp_all</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line5', this)">
+                    <span class="line-number">11</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">have</span> <span class="variable">hL_swaps</span> : ∀ <span class="variable">x</span> ∈ <span class="variable">L</span>, <span class="variable">x</span>.<span class="function">IsSwap</span> := <span class="keyword">by</span> <span class="keyword">simp_all</span>
+                </div>
+                <div id="expl-line5" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">have</span> <span class="variable">hs</span> : <span class="variable">s</span>.<span class="function">IsSwap</span> := <span class="keyword">by</span> <span class="keyword">simp_all</span>
+<span class="keyword">have</span> <span class="variable">hL_swaps</span> : ∀ <span class="variable">x</span> ∈ <span class="variable">L</span>, <span class="variable">x</span>.<span class="function">IsSwap</span> := <span class="keyword">by</span> <span class="keyword">simp_all</span></div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Extract hypotheses — s is a swap, and all elements of L are swaps.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> From the hypothesis h_swaps : ∀ x ∈ M, x.IsSwap and the fact that M = L ++ [s], we deduce that s.IsSwap (since s ∈ M) and ∀ x ∈ L, x.IsSwap (since L ⊆ M). The tactic simp_all simplifies and uses the context to close both goals. These facts will be needed when applying move_swap_left and the induction hypothesis.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line6', this)">
+                    <span class="line-number">12</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">rcases</span> <span class="function">move_swap_left</span> <span class="variable">hab</span> <span class="variable">s</span> <span class="variable">hs</span> <span class="keyword">with</span> <span class="variable">h_cancel</span> | ⟨<span class="variable">z</span>, <span class="variable">hza</span>, <span class="variable">τ</span>, <span class="variable">hτ_swap</span>, <span class="variable">hτ_fix</span>, <span class="variable">h_comm</span>⟩
+                </div>
+                <div id="expl-line6" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">rcases</span> <span class="function">move_swap_left</span> <span class="variable">hab</span> <span class="variable">s</span> <span class="variable">hs</span> <span class="keyword">with</span> <span class="variable">h_cancel</span> | ⟨<span class="variable">z</span>, <span class="variable">hza</span>, <span class="variable">τ</span>, <span class="variable">hτ_swap</span>, <span class="variable">hτ_fix</span>, <span class="variable">h_comm</span>⟩</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Apply move_swap_left to s and swap a b, case-splitting on cancellation vs. factorization.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> We invoke move_swap_left with a ≠ b (hab), the transposition s, and the proof hs that s is a swap. This gives us two cases: (1) h_cancel : s * swap a b = 1 (cancellation), or (2) witnesses z ≠ a, τ a swap fixing a, and h_comm : s * swap a b = swap a z * τ (factorization). We use rcases to destructure the result and proceed with case analysis.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line7', this)">
+                    <span class="line-number">13</span>&nbsp;&nbsp;&nbsp;&nbsp;· <span class="keyword">left</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line7', this)">
+                    <span class="line-number">14</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">refine</span> ⟨<span class="variable">L</span>, <span class="keyword">by</span> <span class="keyword">simp</span>, <span class="variable">hL_swaps</span>, ?_⟩
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line7', this)">
+                    <span class="line-number">15</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">simp</span> [<span class="function">List.prod_append</span>, <span class="variable">h_cancel</span>]
+                </div>
+                <div id="expl-line7" class="inline-explanation">
+                    <div class="expl-code-snippet">· <span class="keyword">left</span>
+  <span class="keyword">refine</span> ⟨<span class="variable">L</span>, <span class="keyword">by</span> <span class="keyword">simp</span>, <span class="variable">hL_swaps</span>, ?_⟩
+  <span class="keyword">simp</span> [<span class="function">List.prod_append</span>, <span class="variable">h_cancel</span>]</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Cancellation case — s and (a b) cancel, so the reduced list is just L.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> When s * swap a b = 1, we have (L ++ [s] ++ [swap a b]).prod = L.prod * s * swap a b = L.prod * 1 = L.prod. We choose the left disjunct (reduction) with M' := L. The length condition L.length + 2 = (L ++ [s]).length + 1 simplifies to L.length + 2 = L.length + 1 + 1, which is true. All elements of L are swaps (hL_swaps), and the product equality follows from h_cancel. This closes the cancellation branch.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line8', this)">
+                    <span class="line-number">16</span>&nbsp;&nbsp;&nbsp;&nbsp;· <span class="keyword">specialize</span> <span class="variable">ih</span> <span class="variable">a</span> <span class="variable">z</span> <span class="variable">hza</span>.<span class="function">symm</span> <span class="variable">hL_swaps</span>
+                </div>
+                <div id="expl-line8" class="inline-explanation">
+                    <div class="expl-code-snippet">· <span class="keyword">specialize</span> <span class="variable">ih</span> <span class="variable">a</span> <span class="variable">z</span> <span class="variable">hza</span>.<span class="function">symm</span> <span class="variable">hL_swaps</span></div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Factorization case — apply the induction hypothesis to L with the new pair (a, z).</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> In the factorization case, we have s * swap a b = swap a z * τ where z ≠ a and τ fixes a. We now need to handle L ++ [swap a z]. We specialize the induction hypothesis ih with the elements a and z (note: z ≠ a becomes a ≠ z via hza.symm), and the hypothesis hL_swaps that all elements of L are swaps. This gives us the reduction/factorization for (L ++ [swap a z]).prod.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line9', this)">
+                    <span class="line-number">17</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">rcases</span> <span class="variable">ih</span> <span class="keyword">with</span> ⟨<span class="variable">L'</span>, <span class="variable">hlen</span>, <span class="variable">hops'</span>, <span class="variable">hprod</span>⟩ | ⟨<span class="variable">w</span>, <span class="variable">hwa</span>, <span class="variable">L'</span>, <span class="variable">hops'</span>, <span class="variable">hprod</span>⟩
+                </div>
+                <div id="expl-line9" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">rcases</span> <span class="variable">ih</span> <span class="keyword">with</span> ⟨<span class="variable">L'</span>, <span class="variable">hlen</span>, <span class="variable">hops'</span>, <span class="variable">hprod</span>⟩ | ⟨<span class="variable">w</span>, <span class="variable">hwa</span>, <span class="variable">L'</span>, <span class="variable">hops'</span>, <span class="variable">hprod</span>⟩</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Case-split on the result of the induction hypothesis — reduction or factorization for L.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> The induction hypothesis ih gives us two cases for (L ++ [swap a z]).prod: (1) reduction — there exists L' with L'.length + 2 = L.length + 1, all elements are swaps, and L'.prod = (L ++ [swap a z]).prod, or (2) factorization — (L ++ [swap a z]).prod = swap a w * L'.prod where w ≠ a and all elements of L' fix a. We use rcases to handle both cases separately.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line10', this)">
+                    <span class="line-number">18</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;· <span class="keyword">left</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line10', this)">
+                    <span class="line-number">19</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">refine</span> ⟨<span class="variable">L'</span> ++ [<span class="variable">τ</span>], ?_, ?_, ?_⟩
+                </div>
+                <div id="expl-line10" class="inline-explanation">
+                    <div class="expl-code-snippet">· <span class="keyword">left</span>
+  <span class="keyword">refine</span> ⟨<span class="variable">L'</span> ++ [<span class="variable">τ</span>], ?_, ?_, ?_⟩</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> IH reduction case — if L reduced, append τ to get the final reduced list.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> If the induction hypothesis gave us a reduction for L (case 1), we have L'.prod = (L ++ [swap a z]).prod where L'.length + 2 = L.length + 1. We need to show that (L ++ [s] ++ [swap a b]).prod can be reduced. Using h_comm : s * swap a b = swap a z * τ, we can rewrite the product to involve (L ++ [swap a z]) * τ. The reduced list is L' ++ [τ], and we must verify three properties: length, all swaps, and product equality.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line11', this)">
+                    <span class="line-number">20</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;· <span class="keyword">simp</span> [<span class="function">List.length_append</span>]; <span class="keyword">omega</span>
+                </div>
+                <div id="expl-line11" class="inline-explanation">
+                    <div class="expl-code-snippet">· <span class="keyword">simp</span> [<span class="function">List.length_append</span>]; <span class="keyword">omega</span></div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Verify the length condition using arithmetic.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> We must show (L' ++ [τ]).length + 2 = (L ++ [s]).length + 1. Simplifying with List.length_append, this becomes (L'.length + 1) + 2 = (L.length + 1) + 1, i.e., L'.length + 3 = L.length + 2. From the IH, we have L'.length + 2 = L.length + 1, so L'.length = L.length - 1. Substituting gives (L.length - 1) + 3 = L.length + 2, which simplifies to L.length + 2 = L.length + 2. The omega tactic solves this linear arithmetic goal.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line12', this)">
+                    <span class="line-number">21</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;· <span class="keyword">intro</span> <span class="variable">x</span> <span class="variable">hx</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line12', this)">
+                    <span class="line-number">22</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">rw</span> [<span class="function">List.mem_append</span>, <span class="function">List.mem_singleton</span>] <span class="keyword">at</span> <span class="variable">hx</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line12', this)">
+                    <span class="line-number">23</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">rcases</span> <span class="variable">hx</span> <span class="keyword">with</span> <span class="variable">hx</span> | <span class="keyword">rfl</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line12', this)">
+                    <span class="line-number">24</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;· <span class="keyword">exact</span> <span class="variable">hops'</span> <span class="variable">x</span> <span class="variable">hx</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line12', this)">
+                    <span class="line-number">25</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;· <span class="keyword">exact</span> <span class="variable">hτ_swap</span>
+                </div>
+                <div id="expl-line12" class="inline-explanation">
+                    <div class="expl-code-snippet">· <span class="keyword">intro</span> <span class="variable">x</span> <span class="variable">hx</span>
+  <span class="keyword">rw</span> [<span class="function">List.mem_append</span>, <span class="function">List.mem_singleton</span>] <span class="keyword">at</span> <span class="variable">hx</span>
+  <span class="keyword">rcases</span> <span class="variable">hx</span> <span class="keyword">with</span> <span class="variable">hx</span> | <span class="keyword">rfl</span>
+  · <span class="keyword">exact</span> <span class="variable">hops'</span> <span class="variable">x</span> <span class="variable">hx</span>
+  · <span class="keyword">exact</span> <span class="variable">hτ_swap</span></div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Prove all elements of L' ++ [τ] are swaps.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> We must show ∀ x ∈ L' ++ [τ], x.IsSwap. For any x in the list, by List.mem_append and List.mem_singleton, either x ∈ L' or x = τ. If x ∈ L', then x.IsSwap by hops' (from the IH). If x = τ, then x.IsSwap by hτ_swap (from move_swap_left). This case analysis closes the goal.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line13', this)">
+                    <span class="line-number">26</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;· <span class="keyword">simp</span> [<span class="function">List.prod_append</span>, <span class="variable">h_comm</span>, <span class="function">mul_assoc</span>, <span class="variable">hprod</span>]
+                </div>
+                <div id="expl-line13" class="inline-explanation">
+                    <div class="expl-code-snippet">· <span class="keyword">simp</span> [<span class="function">List.prod_append</span>, <span class="variable">h_comm</span>, <span class="function">mul_assoc</span>, <span class="variable">hprod</span>]</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Prove the product equality using h_comm and the IH product equation.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> We must show (L' ++ [τ]).prod = (L ++ [s] ++ [swap a b]).prod. By List.prod_append, the RHS is L.prod * s * swap a b. Using h_comm : s * swap a b = swap a z * τ, this becomes L.prod * (swap a z * τ) = (L.prod * swap a z) * τ by mul_assoc. From the IH, hprod : L'.prod = (L ++ [swap a z]).prod = L.prod * swap a z. Substituting gives L'.prod * τ = (L' ++ [τ]).prod, which is the goal. The simp tactic with these lemmas closes this.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line14', this)">
+                    <span class="line-number">27</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;· <span class="keyword">right</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line14', this)">
+                    <span class="line-number">28</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">refine</span> ⟨<span class="variable">w</span>, <span class="variable">hwa</span>, <span class="variable">L'</span> ++ [<span class="variable">τ</span>], ?_, ?_⟩
+                </div>
+                <div id="expl-line14" class="inline-explanation">
+                    <div class="expl-code-snippet">· <span class="keyword">right</span>
+  <span class="keyword">refine</span> ⟨<span class="variable">w</span>, <span class="variable">hwa</span>, <span class="variable">L'</span> ++ [<span class="variable">τ</span>], ?_, ?_⟩</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> IH factorization case — if L factored as (a w) · M', append τ and factor the entire product.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> If the induction hypothesis gave us a factorization for L (case 2), we have (L ++ [swap a z]).prod = swap a w * L'.prod where w ≠ a and all elements of L' fix a. We choose the right disjunct (factorization) with the same z' := w and the extended list L' ++ [τ]. We must verify two properties: (1) all elements fix a, and (2) the product equality.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line15', this)">
+                    <span class="line-number">29</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;· <span class="keyword">intro</span> <span class="variable">x</span> <span class="variable">hx</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line15', this)">
+                    <span class="line-number">30</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">rw</span> [<span class="function">List.mem_append</span>, <span class="function">List.mem_singleton</span>] <span class="keyword">at</span> <span class="variable">hx</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line15', this)">
+                    <span class="line-number">31</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">rcases</span> <span class="variable">hx</span> <span class="keyword">with</span> <span class="variable">hx</span> | <span class="keyword">rfl</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line15', this)">
+                    <span class="line-number">32</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;· <span class="keyword">exact</span> <span class="variable">hops'</span> <span class="variable">x</span> <span class="variable">hx</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line15', this)">
+                    <span class="line-number">33</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;· <span class="keyword">exact</span> ⟨<span class="variable">hτ_swap</span>, <span class="variable">hτ_fix</span>⟩
+                </div>
+                <div id="expl-line15" class="inline-explanation">
+                    <div class="expl-code-snippet">· <span class="keyword">intro</span> <span class="variable">x</span> <span class="variable">hx</span>
+  <span class="keyword">rw</span> [<span class="function">List.mem_append</span>, <span class="function">List.mem_singleton</span>] <span class="keyword">at</span> <span class="variable">hx</span>
+  <span class="keyword">rcases</span> <span class="variable">hx</span> <span class="keyword">with</span> <span class="variable">hx</span> | <span class="keyword">rfl</span>
+  · <span class="keyword">exact</span> <span class="variable">hops'</span> <span class="variable">x</span> <span class="variable">hx</span>
+  · <span class="keyword">exact</span> ⟨<span class="variable">hτ_swap</span>, <span class="variable">hτ_fix</span>⟩</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Prove all elements of L' ++ [τ] are swaps that fix a.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> We must show ∀ x ∈ L' ++ [τ], x.IsSwap ∧ x a = a. For any x in the list, either x ∈ L' or x = τ. If x ∈ L', then x.IsSwap ∧ x a = a by hops' (from the IH factorization case). If x = τ, then x.IsSwap by hτ_swap and x a = a by hτ_fix (both from move_swap_left). This case analysis closes the goal.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line16', this)">
+                    <span class="line-number">34</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;· <span class="keyword">simp only</span> [<span class="function">List.prod_append</span>, <span class="function">List.prod_singleton</span>] <span class="keyword">at</span> <span class="variable">hprod</span> ⊢
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line16', this)">
+                    <span class="line-number">35</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">rw</span> [<span class="function">mul_assoc</span>, <span class="variable">h_comm</span>, ← <span class="function">mul_assoc</span>, <span class="variable">hprod</span>, <span class="function">mul_assoc</span>]
+                </div>
+                <div id="expl-line16" class="inline-explanation">
+                    <div class="expl-code-snippet">· <span class="keyword">simp only</span> [<span class="function">List.prod_append</span>, <span class="function">List.prod_singleton</span>] <span class="keyword">at</span> <span class="variable">hprod</span> ⊢
+  <span class="keyword">rw</span> [<span class="function">mul_assoc</span>, <span class="variable">h_comm</span>, ← <span class="function">mul_assoc</span>, <span class="variable">hprod</span>, <span class="function">mul_assoc</span>]</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Prove the product factorization using h_comm and the IH factorization equation.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> We must show (L ++ [s] ++ [swap a b]).prod = swap a w * (L' ++ [τ]).prod. The LHS is L.prod * s * swap a b. Using h_comm : s * swap a b = swap a z * τ, this becomes L.prod * (swap a z * τ). By mul_assoc, this is (L.prod * swap a z) * τ. From the IH, hprod : (L ++ [swap a z]).prod = swap a w * L'.prod, which simplifies to L.prod * swap a z = swap a w * L'.prod. Substituting gives (swap a w * L'.prod) * τ = swap a w * (L'.prod * τ) by associativity = swap a w * (L' ++ [τ]).prod. The sequence of rewrites closes this goal, completing the proof.</p>
+                </div>
+
+            </div>
+            <p class="text-sm text-slate-500 mt-4 italic">💡 Tip: Click on any line above to see its strategy and explanation inline. Click again to hide it.</p>
+        </div>
+    </div>
+
+    <div class="bg-emerald-50 border-l-4 border-emerald-600 p-6 mb-8 rounded-r-lg animate__animated animate__fadeInUp">
+        <h3 class="text-xl font-bold text-emerald-900 mb-3">Proof Structure Summary</h3>
+        <p class="text-slate-700 leading-relaxed mb-4">The proof uses structural induction on the list M via List.reverseRecOn, processing transpositions from right to left:</p>
+        <ul class="list-disc list-inside text-slate-700 space-y-3 ml-4">
+            <li><strong>Base case (M = []):</strong> When the list is empty, ([] ++ [swap a b]).prod = swap a b. We factor this as swap a b * 1 = swap a b * [].prod, taking z := b and M' := [] (the empty list vacuously satisfies "all elements fix a").</li>
+            <li><strong>Inductive case (M = L ++ [s]):</strong> Assume the lemma holds for L. We apply move_swap_left to s and swap a b:
+                <ul class="list-disc list-inside ml-6 mt-2 space-y-2">
+                    <li><strong>Cancellation:</strong> If s * swap a b = 1, the reduced list is just L (length decreases by 1).</li>
+                    <li><strong>Factorization:</strong> If s * swap a b = swap a z * τ where τ fixes a, we recursively apply the IH to L ++ [swap a z]:
+                        <ul class="list-disc list-inside ml-6 mt-2 space-y-1">
+                            <li><strong>IH reduction:</strong> If L reduces, the final reduced list is L' ++ [τ].</li>
+                            <li><strong>IH factorization:</strong> If L factors as (a w) · M', the final list is M' ++ [τ], all fixing a.</li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+        <p class="text-slate-700 leading-relaxed mt-4">
+            <strong>Key insight:</strong> The lemma maintains the invariant that appending a transposition to a list either reduces the length (via cancellation)
+            or factors out a transposition fixing a specific element. This is the foundation for algorithms that normalize permutations to canonical forms
+            by iteratively "moving elements to the left" until all cancellations are performed and the remaining product is in a standard factorization.
+        </p>
+    </div>
+
+    <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl shadow-xl p-8 text-white animate__animated animate__fadeInUp animate__delay-1s">
+        <h2 class="text-3xl font-bold mb-6 flex items-center gap-3">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z">
+                </path>
+            </svg>
+            Key Lemmas and Techniques Used
+        </h2>
+
+        <div class="grid md:grid-cols-2 gap-6">
+            <div class="bg-slate-700 rounded-xl p-6">
+                <h3 class="text-xl font-bold mb-3 text-emerald-300">1. move_swap_left</h3>
+                <p class="text-slate-200">
+                    The core algebraic lemma — for any transposition σ and (a b), either σ · (a b) = 1 (cancellation), or σ · (a b) = (a z) · τ
+                    where τ fixes a. This lemma is applied at each inductive step to handle the rightmost transposition s composed with swap a b.
+                    The two cases (cancellation and factorization) drive the two branches of the exists_reduction proof.
+                </p>
+            </div>
+
+            <div class="bg-slate-700 rounded-xl p-6">
+                <h3 class="text-xl font-bold mb-3 text-blue-300">2. List.reverseRecOn</h3>
+                <p class="text-slate-200">
+                    A structural induction principle for lists that processes from right to left. For a list M, we get two cases:
+                    (1) M = [] (base), and (2) M = L ++ [s] (inductive). This matches the natural multiplication order (M ++ [x]).prod = M.prod * x,
+                    making the proof flow naturally. We generalize over a and b to allow the IH to be applied with different elements.
+                </p>
+            </div>
+
+            <div class="bg-slate-700 rounded-xl p-6">
+                <h3 class="text-xl font-bold mb-3 text-purple-300">3. List.prod_append and mul_assoc</h3>
+                <p class="text-slate-200">
+                    List.prod_append states (L ++ M).prod = L.prod * M.prod, allowing us to split products across list concatenation.
+                    Combined with mul_assoc (associativity of multiplication), we can rearrange products to match the factorizations from
+                    move_swap_left and the induction hypothesis. These are the workhorses for manipulating product equalities.
+                </p>
+            </div>
+
+            <div class="bg-slate-700 rounded-xl p-6">
+                <h3 class="text-xl font-bold mb-3 text-yellow-300">4. omega (arithmetic solver)</h3>
+                <p class="text-slate-200">
+                    An automated tactic for linear integer arithmetic. Used to verify length conditions like (L'.length + 1) + 2 = (L.length + 1) + 1
+                    given the IH constraint L'.length + 2 = L.length + 1. This handles the bookkeeping of list lengths during reduction,
+                    ensuring the "length decreased by 1" property is maintained correctly through the induction.
+                </p>
+            </div>
+        </div>
+
+        <div class="mt-8 bg-slate-700 rounded-xl p-6">
+            <h3 class="text-xl font-bold mb-3 text-red-300">Mathematical Significance</h3>
+            <p class="text-slate-200 leading-relaxed">
+                This lemma is a crucial component of algorithms for normalizing permutations represented as products of transpositions.
+                Given a permutation π = τ₁ · τ₂ · ... · τₙ (a product of transpositions), we can repeatedly apply exists_reduction
+                to simplify the representation: either cancel adjacent transpositions (reducing length), or factor out transpositions
+                that fix a chosen element a. By iterating this process, we can compute canonical forms such as cycle decompositions,
+                determine the sign of a permutation (via the parity of reductions), and verify permutation equivalence.
+                The proof demonstrates a powerful pattern: <strong>structural induction + local rewriting (move_swap_left) = global normalization</strong>.
+                This technique generalizes to many problems in computational group theory and algebraic combinatorics.
+            </p>
+        </div>
+
+        <div class="mt-6 bg-slate-700 rounded-xl p-6">
+            <h3 class="text-xl font-bold mb-3 text-orange-300">Algorithm Perspective</h3>
+            <p class="text-slate-200 leading-relaxed">
+                From an algorithmic viewpoint, exists_reduction provides a <strong>termination certificate</strong> for permutation reduction algorithms.
+                Each application either shortens the list (reduction case) or maintains length while factoring out a fixing transposition
+                (factorization case). By tracking the number of reductions, we can bound the number of steps needed to reach a normal form.
+                This is the foundation for efficient algorithms that compute with permutations in polynomial time, avoiding exponential blowup
+                from naive representations. The constructive nature of the proof (we explicitly build M' in each case) means the lemma
+                can be computationally realized, not just used for reasoning about existence.
+            </p>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    var currentOpen = null;
+    var currentLine = null;
+
+    function toggleExplanation(explId, clickedLine) {
+        var expl = document.getElementById(explId);
+        if (!expl) return;
+
+        if (currentOpen && currentOpen !== expl) {
+            currentOpen.classList.remove('visible');
+        }
+        if (currentLine && currentLine !== clickedLine) {
+            document.querySelectorAll('.full-code-line').forEach(function(el) {
+                el.classList.remove('active-code-line');
+            });
+        }
+
+        if (expl.classList.contains('visible')) {
+            expl.classList.remove('visible');
+            clickedLine.classList.remove('active-code-line');
+            currentOpen = null;
+            currentLine = null;
+        } else {
+            expl.classList.add('visible');
+            document.querySelectorAll('.full-code-line').forEach(function(el) {
+                el.classList.remove('active-code-line');
+            });
+            var siblings = document.querySelectorAll('[onclick="toggleExplanation(\'' + explId + '\', this)"]');
+            siblings.forEach(function(el) {
+                el.classList.add('active-code-line');
+            });
+            currentOpen = expl;
+            currentLine = clickedLine;
+            setTimeout(function() {
+                expl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 50);
+        }
+    }
+
+    document.querySelectorAll('.full-code-line').forEach(function(line) {
+        line.addEventListener('mouseenter', function () {
+            this.style.transform = 'translateX(4px)';
+        });
+        line.addEventListener('mouseleave', function () {
+            this.style.transform = 'translateX(0)';
+        });
+    });
+</script>
+</body>
+</html>
+        
