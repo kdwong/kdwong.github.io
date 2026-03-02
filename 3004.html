@@ -134,7 +134,7 @@
                 <div class="content">
                     <h3>Introduction</h3>
                     <p>
-                        <strong>Lean</strong> is a proof assistant — a programming language where the "programs" are mathematical proofs to make 
+                        <a href="https://lean-lang.org/" target="_blank"><strong>Lean</strong></a> is a mathematics proof assistant — a programming language where the "programs" are mathematical proofs, to make 
                         sure every step of the proof is justified, and every claim is verified. It has gained serious traction in recent years, 
                         for formalizing everything from undergraduate calculus to cutting-edge research (see the 
                         <a href="https://leanprover-community.github.io/" target="_blank">Lean community's mathlib</a>, 
@@ -142,14 +142,9 @@
                     </p>
 
                     <p>
-                        Writing proofs in Lean used to be hard. But with the introduction of <a href="https://aristotle.harmonic.fun/" target="_blank"><strong>Aristotle</strong></a>, 
+                        Writing proofs in Lean used to be hard. With the introduction of <a href="https://aristotle.harmonic.fun/" target="_blank"><strong>Aristotle</strong></a>, 
                         One can sketch the argument in natural language and translates it into formal code.
-                    </p>
-
-                    <h3>Why This Webpage Exists</h3>
-                    
-                    <p>
-                        This page aims at formalizing some theorems in <strong>MAT 3004 – Abstract Algebra I</strong>. 
+                        This page aims at formalizing some theorems in MAT 3004 – Abstract Algebra I. 
                         The traditional lecture notes cen be found  
                         <a href="https://github.com/kdwong/Abstract-Algebra-I" target="_blank">here</a>, 
                         while the formalized proofs live 
@@ -158,14 +153,14 @@
 
                     <p>
 			To make the proof more comprehensible, we create an <strong>interactive, 
-                        line-by-line explanations</strong> of the Lean codes using vibe coding.  Click below to see what it's doing and why.
+                        line-by-line explanations</strong> of the Lean codes via vibe coding.  Click below to see what it's doing and why.
                     </p>
 
                     <h3>Interactive Proof Explanations</h3>
                     
                     <p>
-                        Below are the formalized proofs with full interactive walkthroughs. Each page lets you click through the proof line-by-line, 
-                        with strategy annotations and mathematical context. These gives you an ideal on building a rigorous argument in a proof assistant.
+                        Below are some formalized proofs with full interactive walkthroughs. Each page lets you click through the proof line-by-line, 
+                        with strategy annotations and mathematical context.
                     </p>
 
                     <div class="proof-cards">
@@ -218,6 +213,14 @@
                                 <code>burnside_lemma</code> — The number of orbits equals the average number of fixed points: 
                                 |Orbits| · |G| = Σ |Fix(g)|. Proved by double counting, orbit-stabilizer, and the summation lemma. 
                                 A cornerstone of enumerative combinatorics.
+                            </p>
+                        </a>
+
+                        <a href="algproofs/first isom.html" class="proof-card">
+                            <h4>First Isomorphism Theorem</h4>
+                            <p>
+                                <code>firstIso</code> — For any group homomorphism f: G -> H, define a homomorphism G/ker(f) -> im(f),
+                                and show that it is an isomorphism.
                             </p>
                         </a>
                     </div>
