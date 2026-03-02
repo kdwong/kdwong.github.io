@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:title" content="Lean Proof Explanation: First Isomorphism Theorem">
+    <meta property="og:description" content="Interactive line-by-line explanation of the First Isomorphism Theorem in Lean 4">
+    <meta property="og:image" content="https://cdn.simulationtheory.ai/gasset/?asset=img&prompt=mathematical proof diagram with group theory isomorphism&w=64&h=64&style=professional">
+    <meta property="og:type" content="website">
+    <link rel="icon" href="https://cdn.simulationtheory.ai/gasset/?asset=img&prompt=lambda symbol mathematics&w=32&h=32&style=professional">
+    <title>Lean Proof: First Isomorphism Theorem</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="/chat/cdn/animate.min.css" rel="stylesheet">
+    <style>
+        .proof-line {
+            transition: all 0.2s ease;
+        }
+        .proof-line:hover {
+            background-color: rgba(59, 130, 246, 0.05);
+        }
+        .code-block {
+            font-family: 'Courier New', monospace;
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+        }
+        .keyword  { color: #569cd6; }
+        .type     { color: #4ec9b0; }
+        .variable { color: #9cdcfe; }
+        .comment  { color: #6a9955; }
+        .function { color: #dcdcaa; }
+        .full-code-line {
+            cursor: pointer;
+            transition: all 0.15s ease;
+            padding: 2px 8px;
+            border-left: 3px solid transparent;
+        }
+        .full-code-line:hover {
+            background-color: rgba(59, 130, 246, 0.1);
+            border-left-color: #3b82f6;
+        }
+        .full-code-line.active-code-line {
+            background-color: rgba(251, 191, 36, 0.15);
+            border-left-color: #f59e0b;
+        }
+        .line-number {
+            display: inline-block;
+            width: 40px;
+            color: #858585;
+            user-select: none;
+        }
+        .inline-explanation {
+            display: none;
+            background-color: #f8fafc;
+            border-left: 4px solid #f59e0b;
+            border-radius: 0 0.5rem 0.5rem 0;
+            margin: 4px 0 4px 40px;
+            padding: 14px 18px;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            font-size: 0.95rem;
+            color: #1e293b;
+            animation: fadeSlideIn 0.2s ease;
+        }
+        .inline-explanation.visible {
+            display: block;
+        }
+        @keyframes fadeSlideIn {
+            from { opacity: 0; transform: translateY(-6px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .expl-code-snippet {
+            font-family: 'Courier New', monospace;
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 0.4rem;
+            padding: 10px 14px;
+            font-size: 0.82rem;
+            margin-bottom: 10px;
+            overflow-x: auto;
+            white-space: pre;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen">
+<div class="container mx-auto px-4 py-8 max-w-7xl">
+
+    <div class="text-center mb-12 animate__animated animate__fadeInDown">
+        <h1 class="text-5xl font-bold text-slate-800 mb-4">
+            <span class="text-blue-600">Lean Proof</span> Explanation
+        </h1>
+        <p class="text-xl text-slate-600">First Isomorphism Theorem: G/ker(f) ≅ im(f)</p>
+    </div>
+
+    <div class="bg-emerald-50 border-l-4 border-emerald-600 p-6 mb-8 rounded-r-lg animate__animated animate__fadeInUp">
+        <h3 class="text-xl font-bold text-emerald-900 mb-3">Overview</h3>
+        <p class="text-slate-700 leading-relaxed">
+            The First Isomorphism Theorem states that for any group homomorphism f : G → H, the quotient group G/ker(f) is isomorphic to the image im(f):
+            <strong>G/ker(f) ≅ im(f)</strong>.
+            The proof constructs an explicit map from the quotient to the image using the <strong>universal property of quotients</strong>,
+            then proves it's <strong>bijective</strong>: injective (if f(x) = f(y) then [x] = [y]) and surjective (every element of im(f) has a preimage).
+            This theorem is fundamental in algebra, connecting quotient structures with image substructures and enabling the study of homomorphisms through their kernels.
+        </p>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-xl mb-8 overflow-hidden animate__animated animate__fadeInUp">
+        <div class="bg-gradient-to-r from-indigo-600 to-blue-600 p-6">
+            <h2 class="text-3xl font-bold text-white flex items-center gap-3">
+                <span class="bg-white text-indigo-600 rounded-lg px-3 py-1">📝</span>
+                Full Proof Code (Click any line for explanation)
+            </h2>
+            <p class="text-indigo-100 mt-2">Interactive Lean 4 proof — click a line to see its strategy and explanation inline</p>
+        </div>
+
+        <div class="p-8">
+            <div class="code-block p-6 rounded-lg overflow-x-auto">
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line1', this)">
+                    <span class="line-number">1</span><span class="keyword">def</span> <span class="function">firstIsoMap</span> {G H : <span class="type">Type</span>*} [<span class="type">Group</span> G] [<span class="type">Group</span> H] (f : G →* H) :
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line1', this)">
+                    <span class="line-number">2</span>&nbsp;&nbsp;G ⧸ kernel_subgroup f →* image_subgroup f := <span class="keyword">by</span>
+                </div>
+                <div id="expl-line1" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">def</span> <span class="function">firstIsoMap</span> {G H : <span class="type">Type</span>*} [<span class="type">Group</span> G] [<span class="type">Group</span> H] (f : G →* H) :
+  G ⧸ kernel_subgroup f →* image_subgroup f</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Define the canonical homomorphism from G/ker(f) to im(f) that will become our isomorphism.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> Given a homomorphism f : G →* H, we construct a group homomorphism (→*) from the quotient G ⧸ ker(f) to the image im(f). This map will send each coset [g] ↦ f(g). The challenge is proving this is well-defined (independent of coset representative) and is a homomorphism. We'll use the universal property of quotient groups to lift a map from G to a map from G/ker(f).</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line2', this)">
+                    <span class="line-number">3</span>&nbsp;&nbsp;<span class="keyword">classical</span>
+                </div>
+                <div id="expl-line2" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">classical</span></div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Enable classical logic for the proof.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> The classical tactic allows us to use the law of excluded middle and the axiom of choice. This is standard in Lean when working with quotients and decidability, as it simplifies many proofs by allowing us to make case distinctions freely.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line3', this)">
+                    <span class="line-number">4</span>&nbsp;&nbsp;<span class="comment">-- Step 1: define map into image</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line3', this)">
+                    <span class="line-number">5</span>&nbsp;&nbsp;<span class="keyword">let</span> φ : G →* image_subgroup f :=
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line3', this)">
+                    <span class="line-number">6</span>&nbsp;&nbsp;{ toFun := <span class="keyword">fun</span> g => ⟨f g, ⟨g, rfl⟩⟩,
+                </div>
+                <div id="expl-line3" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="comment">-- Step 1: define map into image</span>
+<span class="keyword">let</span> φ : G →* image_subgroup f :=
+{ toFun := <span class="keyword">fun</span> g => ⟨f g, ⟨g, rfl⟩⟩,</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Define an auxiliary homomorphism φ : G → im(f) before lifting to the quotient.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> We define φ as a group homomorphism from G to image_subgroup f. The underlying function (toFun) sends each g ∈ G to the pair ⟨f g, proof⟩ where the proof is ⟨g, rfl⟩, witnessing that f(g) is indeed in the image (since f(g) = f(g) by reflexivity). The image_subgroup f is a subtype {h : H | ∃ g, f(g) = h}, so we must package f(g) with evidence of membership.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line4', this)">
+                    <span class="line-number">7</span>&nbsp;&nbsp;&nbsp;&nbsp;map_one' := <span class="keyword">by</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line4', this)">
+                    <span class="line-number">8</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ext
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line4', this)">
+                    <span class="line-number">9</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;simp,
+                </div>
+                <div id="expl-line4" class="inline-explanation">
+                    <div class="expl-code-snippet">    map_one' := <span class="keyword">by</span>
+      ext
+      simp,</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Prove that φ preserves the identity: φ(1) = 1.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> To show φ is a homomorphism, we must verify map_one': φ(1_G) = 1_{im(f)}. We use ext (extensionality) to reduce this to showing the underlying elements are equal in H. Then simp applies the fact that f(1) = 1 (a property of all group homomorphisms) to complete the proof. This shows ⟨f(1), ...⟩ = ⟨1, ...⟩ in the image subgroup.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line5', this)">
+                    <span class="line-number">10</span>&nbsp;&nbsp;&nbsp;&nbsp;map_mul' := <span class="keyword">by</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line5', this)">
+                    <span class="line-number">11</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;intro a b
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line5', this)">
+                    <span class="line-number">12</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ext
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line5', this)">
+                    <span class="line-number">13</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;simp [map_mul],
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line5', this)">
+                    <span class="line-number">14</span>&nbsp;&nbsp;}
+                </div>
+                <div id="expl-line5" class="inline-explanation">
+                    <div class="expl-code-snippet">    map_mul' := <span class="keyword">by</span>
+      intro a b
+      ext
+      simp [map_mul],
+  }</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Prove that φ preserves multiplication: φ(ab) = φ(a)φ(b).</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> To complete the homomorphism structure, we prove map_mul'. Introduce arbitrary elements a, b ∈ G. Use ext to reduce to showing equality of underlying elements in H. Then simp with map_mul (which states f(ab) = f(a)f(b) for homomorphisms) completes the proof. This shows ⟨f(ab), ...⟩ = ⟨f(a), ...⟩ · ⟨f(b), ...⟩ = ⟨f(a)f(b), ...⟩. Now φ : G →* image_subgroup f is fully defined.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line6', this)">
+                    <span class="line-number">15</span>&nbsp;&nbsp;<span class="comment">-- Step 2: prove kernel condition</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line6', this)">
+                    <span class="line-number">16</span>&nbsp;&nbsp;<span class="keyword">have</span> <span class="variable">hker</span> :
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line6', this)">
+                    <span class="line-number">17</span>&nbsp;&nbsp;&nbsp;&nbsp;∀ x ∈ kernel_subgroup f, φ x = <span class="keyword">1</span> := <span class="keyword">by</span>
+                </div>
+                <div id="expl-line6" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="comment">-- Step 2: prove kernel condition</span>
+<span class="keyword">have</span> <span class="variable">hker</span> :
+    ∀ x ∈ kernel_subgroup f, φ x = <span class="keyword">1</span></div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Prove the kernel condition required by the universal property of quotients.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> To lift φ to a map from the quotient G/ker(f), we must verify that ker(f) ⊆ ker(φ). That is, for all x ∈ ker(f), we have φ(x) = 1 in im(f). This condition ensures the map is well-defined on cosets: if x and y are in the same coset (i.e., x⁻¹y ∈ ker(f)), then φ(x) = φ(y). This is the key property that allows us to invoke QuotientGroup.lift.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line7', this)">
+                    <span class="line-number">18</span>&nbsp;&nbsp;&nbsp;&nbsp;intro x hx
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line7', this)">
+                    <span class="line-number">19</span>&nbsp;&nbsp;&nbsp;&nbsp;ext
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line7', this)">
+                    <span class="line-number">20</span>&nbsp;&nbsp;&nbsp;&nbsp;simp [φ, kernel_subgroup, kernel_set] <span class="keyword">at</span> *
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line7', this)">
+                    <span class="line-number">21</span>&nbsp;&nbsp;&nbsp;&nbsp;simp [hx]
+                </div>
+                <div id="expl-line7" class="inline-explanation">
+                    <div class="expl-code-snippet">    intro x hx
+    ext
+    simp [φ, kernel_subgroup, kernel_set] <span class="keyword">at</span> *
+    simp [hx]</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Show that elements in ker(f) map to the identity under φ.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> Introduce x and the hypothesis hx : x ∈ ker(f). Use ext to reduce to showing the underlying elements in H are equal. Unfold the definitions: φ sends x ↦ ⟨f(x), ...⟩, kernel_subgroup f is {x : G | f(x) = 1}, and we need to show ⟨f(x), ...⟩ = ⟨1, ...⟩. The simp tactics expand these definitions and apply hx : f(x) = 1, completing the proof. This establishes hker, the crucial property for lifting.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line8', this)">
+                    <span class="line-number">22</span>&nbsp;&nbsp;<span class="comment">-- Step 3: lift to quotient</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line8', this)">
+                    <span class="line-number">23</span>&nbsp;&nbsp;<span class="keyword">exact</span> QuotientGroup.lift (kernel_subgroup f) φ hker
+                </div>
+                <div id="expl-line8" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="comment">-- Step 3: lift to quotient</span>
+<span class="keyword">exact</span> QuotientGroup.lift (kernel_subgroup f) φ hker</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Apply the universal property to obtain the desired homomorphism G/ker(f) → im(f).</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> QuotientGroup.lift is the universal property of quotient groups: given a homomorphism φ : G → H such that N ⊆ ker(φ), there exists a unique homomorphism G/N → H making the diagram commute. Here, N = ker(f), φ : G → im(f), and hker proves the kernel condition. The result is the homomorphism firstIsoMap : G/ker(f) →* im(f) defined by [g] ↦ f(g). This completes the definition of firstIsoMap.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line9', this)">
+                    <span class="line-number">24</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line9', this)">
+                    <span class="line-number">25</span><span class="comment">/-</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line9', this)">
+                    <span class="line-number">26</span><span class="comment">The induced map is bijective.</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line9', this)">
+                    <span class="line-number">27</span><span class="comment">-/</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line9', this)">
+                    <span class="line-number">28</span><span class="keyword">theorem</span> <span class="function">firstIsoMap_bijective</span> {G H : <span class="type">Type</span>*} [<span class="type">Group</span> G] [<span class="type">Group</span> H] (f : G →* H) :
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line9', this)">
+                    <span class="line-number">29</span>&nbsp;&nbsp;Function.Bijective (firstIsoMap f) := <span class="keyword">by</span>
+                </div>
+                <div id="expl-line9" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">theorem</span> <span class="function">firstIsoMap_bijective</span> {G H : <span class="type">Type</span>*} [<span class="type">Group</span> G] [<span class="type">Group</span> H] (f : G →* H) :
+  Function.Bijective (firstIsoMap f)</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Prove that firstIsoMap is bijective (both injective and surjective).</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> To establish the isomorphism, we must prove that firstIsoMap : G/ker(f) → im(f) is bijective. Function.Bijective is defined as the conjunction of injective and surjective. We'll prove each property separately: injectivity means if firstIsoMap([x]) = firstIsoMap([y]) then [x] = [y], and surjectivity means every element of im(f) has a preimage in G/ker(f).</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line10', this)">
+                    <span class="line-number">30</span>&nbsp;&nbsp;constructor
+                </div>
+                <div id="expl-line10" class="inline-explanation">
+                    <div class="expl-code-snippet">  constructor</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Split the goal into two parts: injective and surjective.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> The constructor tactic applies the constructor for the conjunction (AND). Since Function.Bijective f is defined as Injective f ∧ Surjective f, this splits our goal into two subgoals: first prove injectivity, then prove surjectivity. The · bullets will separate these two sub-proofs.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line11', this)">
+                    <span class="line-number">31</span>&nbsp;&nbsp;· <span class="keyword">unfold</span> Function.Injective
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line11', this)">
+                    <span class="line-number">32</span>&nbsp;&nbsp;&nbsp;&nbsp;intro x y
+                </div>
+                <div id="expl-line11" class="inline-explanation">
+                    <div class="expl-code-snippet">  · <span class="keyword">unfold</span> Function.Injective
+    intro x y</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Begin the injectivity proof by unfolding the definition and introducing elements.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> Unfold Function.Injective to its definition: ∀ x y, f(x) = f(y) → x = y. Introduce arbitrary elements x, y ∈ G/ker(f). The goal becomes: if firstIsoMap(x) = firstIsoMap(y), then x = y. To work with elements of the quotient, we'll use quotient induction to reduce to representatives in G.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line12', this)">
+                    <span class="line-number">33</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">refine</span> QuotientGroup.induction_on x (<span class="keyword">fun</span> x' => ?_)
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line12', this)">
+                    <span class="line-number">34</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">refine</span> QuotientGroup.induction_on y (<span class="keyword">fun</span> y' => ?_)
+                </div>
+                <div id="expl-line12" class="inline-explanation">
+                    <div class="expl-code-snippet">    <span class="keyword">refine</span> QuotientGroup.induction_on x (<span class="keyword">fun</span> x' => ?_)
+    <span class="keyword">refine</span> QuotientGroup.induction_on y (<span class="keyword">fun</span> y' => ?_)</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Use quotient induction to work with representatives.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> QuotientGroup.induction_on is the induction principle for quotients: to prove a property P([x]) for all cosets, it suffices to prove P([g]) for all representatives g ∈ G. We apply this twice: first to x, obtaining a representative x' ∈ G, then to y, obtaining y' ∈ G. Now we work with x = [x'] and y = [y'], which allows us to use the explicit definition of firstIsoMap on representatives.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line13', this)">
+                    <span class="line-number">35</span>&nbsp;&nbsp;&nbsp;&nbsp;simp only [firstIsoMap, QuotientGroup.lift_mk, MonoidHom.coe_mk, OneHom.coe_mk, Subtype.ext_iff,
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line13', this)">
+                    <span class="line-number">36</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;QuotientGroup.eq]
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line13', this)">
+                    <span class="line-number">37</span>&nbsp;&nbsp;&nbsp;&nbsp;intro h
+                </div>
+                <div id="expl-line13" class="inline-explanation">
+                    <div class="expl-code-snippet">    simp only [firstIsoMap, QuotientGroup.lift_mk, MonoidHom.coe_mk, OneHom.coe_mk, Subtype.ext_iff,
+      QuotientGroup.eq]
+    intro h</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Simplify the goal using definitions and introduce the equality hypothesis.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> Simp unfolds: firstIsoMap applied to [x'] via lift_mk gives f(x'), homomorphism coercions, subtype extensionality (two elements ⟨a, p⟩ and ⟨b, q⟩ are equal iff a = b), and QuotientGroup.eq (which states [x'] = [y'] iff x'⁻¹y' ∈ ker(f)). After simplification, the goal becomes: if f(x') = f(y') (hypothesis h), then x'⁻¹y' ∈ ker(f). This is the heart of injectivity for the quotient map.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line14', this)">
+                    <span class="line-number">38</span>&nbsp;&nbsp;&nbsp;&nbsp;simp only [kernel_subgroup, kernel_set, Subgroup.mem_mk, Submonoid.mem_mk, Subsemigroup.mem_mk,
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line14', this)">
+                    <span class="line-number">39</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Set.mem_setOf_eq, map_mul, map_inv]
+                </div>
+                <div id="expl-line14" class="inline-explanation">
+                    <div class="expl-code-snippet">    simp only [kernel_subgroup, kernel_set, Subgroup.mem_mk, Submonoid.mem_mk, Subsemigroup.mem_mk,
+      Set.mem_setOf_eq, map_mul, map_inv]</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Unfold the definition of kernel and apply homomorphism properties.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> Expand kernel_subgroup f to the set {x : G | f(x) = 1}, and unfold the subgroup membership predicates. Apply homomorphism properties: f(x'⁻¹y') = f(x'⁻¹)f(y') = f(x')⁻¹f(y') using map_mul and map_inv. The goal is now: prove f(x')⁻¹f(y') = 1, given h : f(x') = f(y'). This is a straightforward algebraic manipulation.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line15', this)">
+                    <span class="line-number">40</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">have</span> h' : (f x')⁻¹ * (f y') = <span class="keyword">1</span> := <span class="keyword">by</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line15', this)">
+                    <span class="line-number">41</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;simp only [h]
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line15', this)">
+                    <span class="line-number">42</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;aesop
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line15', this)">
+                    <span class="line-number">43</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">exact</span> h'
+                </div>
+                <div id="expl-line15" class="inline-explanation">
+                    <div class="expl-code-snippet">    <span class="keyword">have</span> h' : (f x')⁻¹ * (f y') = <span class="keyword">1</span> := <span class="keyword">by</span>
+      simp only [h]
+      aesop
+    <span class="keyword">exact</span> h'</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Complete the injectivity proof by algebraic manipulation.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> Prove the intermediate fact h' : (f x')⁻¹ * (f y') = 1. Substitute h : f(x') = f(y') to get (f x')⁻¹ * (f x') = 1. The aesop tactic (automated proof search) solves this using group axioms: a⁻¹ * a = 1 for all a. Finally, exact h' provides this as the proof that x'⁻¹y' ∈ ker(f), establishing [x'] = [y']. This completes the injectivity proof.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line16', this)">
+                    <span class="line-number">44</span>&nbsp;&nbsp;· intro x
+                </div>
+                <div id="expl-line16" class="inline-explanation">
+                    <div class="expl-code-snippet">  · intro x</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Begin the surjectivity proof by introducing an arbitrary element of the codomain.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> Surjectivity means ∀ y, ∃ x, f(x) = y. Introduce an arbitrary element x ∈ im(f). We must find a preimage in G/ker(f). Since x is in the image of f, by definition there exists some g ∈ G with f(g) = x. We'll use this witness to construct our preimage coset [g].</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line17', this)">
+                    <span class="line-number">45</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">rcases</span> x <span class="keyword">with</span> ⟨ x, ⟨ g, rfl ⟩ ⟩
+                </div>
+                <div id="expl-line17" class="inline-explanation">
+                    <div class="expl-code-snippet">    <span class="keyword">rcases</span> x <span class="keyword">with</span> ⟨ x, ⟨ g, rfl ⟩ ⟩</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Destructure the image element to extract a witness from G.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> The element x ∈ im(f) is a subtype: a pair ⟨x, proof⟩ where proof witnesses x ∈ {h : H | ∃ g, f(g) = h}. The rcases tactic destructures this: we get x (the underlying element of H) and ⟨g, rfl⟩ (the witness that f(g) = x). The rfl indicates that the equality f(g) = x is definitional (it's the way x was constructed). Now we have g ∈ G such that f(g) = x.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line18', this)">
+                    <span class="line-number">46</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">use</span> QuotientGroup.mk g
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line18', this)">
+                    <span class="line-number">47</span>&nbsp;&nbsp;&nbsp;&nbsp;aesop
+                </div>
+                <div id="expl-line18" class="inline-explanation">
+                    <div class="expl-code-snippet">    <span class="keyword">use</span> QuotientGroup.mk g
+    aesop</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Provide the coset [g] as the preimage and verify it maps to x.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> The use tactic provides the witness for the existential: we claim that [g] (denoted QuotientGroup.mk g) is the preimage of x. We must verify that firstIsoMap([g]) = x. By definition of firstIsoMap (via lift), firstIsoMap([g]) = f(g). Since we know f(g) = x (from the rcases step), the equality holds. The aesop tactic completes this verification automatically, closing the surjectivity proof and thus the bijectivity theorem.</p>
+                </div>
+
+                <div class="full-code-line" onclick="toggleExplanation('expl-line19', this)">
+                    <span class="line-number">48</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line19', this)">
+                    <span class="line-number">49</span><span class="comment">/-</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line19', this)">
+                    <span class="line-number">50</span><span class="comment">The first isomorphism theorem: G/ker(f) is isomorphic to im(f).</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line19', this)">
+                    <span class="line-number">51</span><span class="comment">-/</span>
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line19', this)">
+                    <span class="line-number">52</span><span class="keyword">noncomputable def</span> <span class="function">firstIso</span> {G H : <span class="type">Type</span>*} [<span class="type">Group</span> G] [<span class="type">Group</span> H] (f : G →* H) :
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line19', this)">
+                    <span class="line-number">53</span>&nbsp;&nbsp;&nbsp;&nbsp;G ⧸ f.ker ≃* f.range :=
+                </div>
+                <div class="full-code-line" onclick="toggleExplanation('expl-line19', this)">
+                    <span class="line-number">54</span>&nbsp;&nbsp;MulEquiv.ofBijective (firstIsoMap f) (firstIsoMap_bijective f)
+                </div>
+                <div id="expl-line19" class="inline-explanation">
+                    <div class="expl-code-snippet"><span class="keyword">noncomputable def</span> <span class="function">firstIso</span> {G H : <span class="type">Type</span>*} [<span class="type">Group</span> G] [<span class="type">Group</span> H] (f : G →* H) :
+    G ⧸ f.ker ≃* f.range :=
+  MulEquiv.ofBijective (firstIsoMap f) (firstIsoMap_bijective f)</div>
+                    <p><span class="font-semibold text-blue-700">Strategy:</span> Package the bijective homomorphism as a group isomorphism.</p>
+                    <p class="mt-2"><span class="font-semibold text-green-700">Explanation:</span> Define the First Isomorphism Theorem as a group isomorphism (≃*) from G ⧸ f.ker to f.range. We use MulEquiv.ofBijective, which constructs an isomorphism from a homomorphism and a proof of bijectivity. The homomorphism is firstIsoMap f, and the bijectivity proof is firstIsoMap_bijective f. The definition is noncomputable because it relies on classical logic (via the classical tactic used earlier). This completes the First Isomorphism Theorem: G/ker(f) ≅ im(f). □</p>
+                </div>
+
+            </div>
+            <p class="text-sm text-slate-500 mt-4 italic">💡 Tip: Click on any line above to see its strategy and explanation inline. Click again to hide it.</p>
+        </div>
+    </div>
+
+    <div class="bg-emerald-50 border-l-4 border-emerald-600 p-6 mb-8 rounded-r-lg animate__animated animate__fadeInUp">
+        <h3 class="text-xl font-bold text-emerald-900 mb-3">Proof Structure Summary</h3>
+        <p class="text-slate-700 leading-relaxed mb-4">The proof constructs an explicit isomorphism via the universal property of quotients and establishes bijectivity:</p>
+        <ul class="list-disc list-inside text-slate-700 space-y-3 ml-4">
+            <li><strong>Part 1 - Constructing the map:</strong> Define φ : G → im(f) sending g ↦ f(g), prove it's a homomorphism (preserves identity and multiplication), verify the kernel condition (ker(f) ⊆ ker(φ)), and lift to G/ker(f) → im(f) using QuotientGroup.lift.</li>
+            <li><strong>Part 2 - Proving injectivity:</strong> Show that if firstIsoMap([x]) = firstIsoMap([y]), then [x] = [y]:
+                <ul class="list-circle list-inside ml-6 mt-2">
+                    <li>Use quotient induction to work with representatives x', y' ∈ G</li>
+                    <li>Simplify to: if f(x') = f(y') then x'⁻¹y' ∈ ker(f)</li>
+                    <li>Compute: f(x'⁻¹y') = f(x')⁻¹f(y') = f(x')⁻¹f(x') = 1, so x'⁻¹y' ∈ ker(f)</li>
+                </ul>
+            </li>
+            <li><strong>Part 3 - Proving surjectivity:</strong> Show every element of im(f) has a preimage:
+                <ul class="list-circle list-inside ml-6 mt-2">
+                    <li>Given x ∈ im(f), extract witness g ∈ G with f(g) = x</li>
+                    <li>Provide [g] ∈ G/ker(f) as the preimage</li>
+                    <li>Verify: firstIsoMap([g]) = f(g) = x by definition</li>
+                </ul>
+            </li>
+            <li><strong>Part 4 - The isomorphism:</strong> Package the bijective homomorphism as a group isomorphism using MulEquiv.ofBijective.</li>
+        </ul>
+        <p class="text-slate-700 leading-relaxed mt-4">
+            <strong>Key insight:</strong> The First Isomorphism Theorem reveals that every homomorphism f : G → H factors through its kernel: G → G/ker(f) → im(f) → H. The middle map is an isomorphism, showing that the "essential content" of f is captured by the quotient structure. This is fundamental for understanding homomorphisms structurally rather than elementwise.
+        </p>
+    </div>
+
+    <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl shadow-xl p-8 text-white animate__animated animate__fadeInUp animate__delay-1s">
+        <h2 class="text-3xl font-bold mb-6 flex items-center gap-3">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z">
+                </path>
+            </svg>
+            Key Lemmas Used
+        </h2>
+
+        <div class="grid md:grid-cols-2 gap-6">
+            <div class="bg-slate-700 rounded-xl p-6">
+                <h3 class="text-xl font-bold mb-3 text-emerald-300">1. QuotientGroup.lift</h3>
+                <p class="text-slate-200">
+                    Universal property of quotient groups: if φ : G → H is a homomorphism with N ⊆ ker(φ), then φ lifts uniquely to a homomorphism G/N → H. This is the key principle that allows us to define maps from quotients by defining maps from the original group and verifying a kernel condition. Essential for constructing firstIsoMap.
+                </p>
+            </div>
+
+            <div class="bg-slate-700 rounded-xl p-6">
+                <h3 class="text-xl font-bold mb-3 text-blue-300">2. QuotientGroup.induction_on</h3>
+                <p class="text-slate-200">
+                    Induction principle for quotients: to prove P([x]) for all cosets [x] ∈ G/N, it suffices to prove P([g]) for all representatives g ∈ G. This allows us to work with concrete elements rather than abstract cosets, simplifying proofs about quotient structures. Crucial for the injectivity proof where we need to manipulate representatives.
+                </p>
+            </div>
+
+            <div class="bg-slate-700 rounded-xl p-6">
+                <h3 class="text-xl font-bold mb-3 text-purple-300">3. QuotientGroup.eq</h3>
+                <p class="text-slate-200">
+                    Characterization of equality in quotients: [x] = [y] in G/N if and only if x⁻¹y ∈ N. This is the fundamental property of quotient groups that translates coset equality into group membership. Used extensively in the injectivity proof to show that equal images imply equal cosets by verifying the difference lies in the kernel.
+                </p>
+            </div>
+
+            <div class="bg-slate-700 rounded-xl p-6">
+                <h3 class="text-xl font-bold mb-3 text-yellow-300">4. MulEquiv.ofBijective</h3>
+                <p class="text-slate-200">
+                    Constructor for group isomorphisms: a bijective group homomorphism is a group isomorphism. Given a homomorphism f : G →* H and a proof that f is bijective, this constructs the isomorphism G ≃* H with inverse. This packages our bijective firstIsoMap as the final isomorphism, completing the theorem statement.
+                </p>
+            </div>
+        </div>
+
+        <div class="mt-8 bg-slate-700 rounded-xl p-6">
+            <h3 class="text-xl font-bold mb-3 text-red-300">Mathematical Significance</h3>
+            <p class="text-slate-200 leading-relaxed">
+                The First Isomorphism Theorem is one of the fundamental isomorphism theorems in algebra, providing a canonical way to understand homomorphisms through their kernels. It reveals that every homomorphism can be "factored" into three steps: a quotient map (G → G/ker(f)), an isomorphism (G/ker(f) ≅ im(f)), and an inclusion (im(f) → H). This decomposition is powerful: it shows that the kernel completely determines the structure of the image, and that studying f reduces to studying the simpler quotient structure. Applications are ubiquitous: from proving that ℤ/nℤ ≅ ℤ_n to understanding normal subgroups, from linear algebra (rank-nullity theorem) to category theory (exact sequences). The theorem exemplifies the algebraic philosophy of understanding objects through their morphisms and quotients.
+            </p>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    var currentOpen = null;
+    var currentLine = null;
+
+    function toggleExplanation(explId, clickedLine) {
+        var expl = document.getElementById(explId);
+        if (!expl) return;
+
+        if (currentOpen && currentOpen !== expl) {
+            currentOpen.classList.remove('visible');
+        }
+        if (currentLine && currentLine !== clickedLine) {
+            document.querySelectorAll('.full-code-line').forEach(function(el) {
+                el.classList.remove('active-code-line');
+            });
+        }
+
+        if (expl.classList.contains('visible')) {
+            expl.classList.remove('visible');
+            clickedLine.classList.remove('active-code-line');
+            currentOpen = null;
+            currentLine = null;
+        } else {
+            expl.classList.add('visible');
+            document.querySelectorAll('.full-code-line').forEach(function(el) {
+                el.classList.remove('active-code-line');
+            });
+            var siblings = document.querySelectorAll('[onclick="toggleExplanation(\'' + explId + '\', this)"]');
+            siblings.forEach(function(el) {
+                el.classList.add('active-code-line');
+            });
+            currentOpen = expl;
+            currentLine = clickedLine;
+            setTimeout(function() {
+                expl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 50);
+        }
+    }
+
+    document.querySelectorAll('.full-code-line').forEach(function(line) {
+        line.addEventListener('mouseenter', function () {
+            this.style.transform = 'translateX(4px)';
+        });
+        line.addEventListener('mouseleave', function () {
+            this.style.transform = 'translateX(0)';
+        });
+    });
+</script>
+</body>
+</html>
