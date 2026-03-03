@@ -135,16 +135,17 @@
                     <h3>Introduction</h3>
                     <p>
                         <a href="https://lean-lang.org/" target="_blank"><strong>Lean</strong></a> is a mathematics proof assistant — a programming language where the "programs" are mathematical proofs, to make 
-                        sure every step of the proof is justified, and every claim is verified. It has gained serious traction in recent years, 
-                        for formalizing everything from undergraduate calculus to cutting-edge research (see the 
-                        <a href="https://leanprover-community.github.io/" target="_blank">Lean community's mathlib</a>, 
-                        a massive library of formalized mathematics).
+                        sure every step of the proof is justified and verified. 
+                    </p>
+
+                    <p>
+It has gained serious attention in the last few years. For instance, a considerable number of <a href="https://www.erdosproblems.com/" target="_blank">Erdos problems</a> has been solved using Lean and Large Language Models. See here for <a href="https://terrytao.wordpress.com/2025/12/08/the-story-of-erdos-problem-126/" target="_blank">a commentary of Terence Tao</a> on one of the recently solved problems.
                     </p>
 
                     <p>
                         Writing proofs in Lean used to be hard. With the introduction of <a href="https://aristotle.harmonic.fun/" target="_blank"><strong>Aristotle</strong></a>, 
                         One can sketch the argument in natural language and translates it into formal code.
-                        This page aims at formalizing some theorems in MAT 3004 – Abstract Algebra I. 
+                        To showcase its ability, we have formalized some theorems in MAT 3004 – Abstract Algebra I. 
                         The traditional lecture notes cen be found  
                         <a href="https://github.com/kdwong/Abstract-Algebra-I" target="_blank">here</a>, 
                         while the formalized proofs live 
@@ -160,7 +161,24 @@
                     
                     <p>
                         Below are some formalized proofs with full interactive walkthroughs. Each page lets you click through the proof line-by-line, 
-                        with strategy annotations and mathematical context.
+                        with strategy annotations and mathematical context. 
+                    </p>
+
+                    <p>
+To take full advantage of them, you can copy and paste the full formalized proofs on the above link to the 
+<a href="https://live.lean-lang.org/?from=lean" target="_blank">online Lean compiler</a>, so that you can trace what is changed before and after adding a new line of proof. Just like pen-and-paper proofs, it usually does one of the following: 
+                    </p>
+
+                    <p>
+(a) setting up an explicit goal to prove the theorem; 
+                    </p>
+
+                    <p>
+(b) adding a new tool in your toolbox; 
+                    </p>
+
+                    <p>
+(c) applying strategies to refine your tools or refine the goal.
                     </p>
 
                     <div class="proof-cards">
