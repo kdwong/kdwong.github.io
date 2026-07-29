@@ -20,8 +20,8 @@
   --plum-light: #ece2ea;
   --shadow-sm: 0 1px 2px rgb(28 42 38 / 5%), 0 7px 22px rgb(57 42 23 / 5%);
   --shadow-md: 0 2px 4px rgb(28 42 38 / 5%), 0 18px 48px rgb(57 42 23 / 9%);
-  --serif: Georgia, "Times New Roman", Times, serif;
-  --sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --serif: Arial, sans-serif;
+  --sans: Arial, sans-serif;
   color-scheme: light;
 }
 
@@ -85,12 +85,16 @@ summary:focus-visible {
 }
 
 .site-header {
-  width: min(1180px, calc(100% - 48px));
-  margin: 0 auto;
-  padding: 24px 0 20px;
+  position: relative;
+  width: 100%;
+  margin: 0;
+  padding: 1em 0;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
+  color: #fff;
+  background: #b795c0;
+  text-align: center;
 }
 
 .brand {
@@ -122,11 +126,12 @@ summary:focus-visible {
 }
 
 .brand-name {
-  font-family: var(--serif);
-  font-size: 19px;
+  margin: 0;
+  font-family: var(--sans);
+  font-size: 150%;
   font-weight: 700;
-  letter-spacing: -0.02em;
-  line-height: 1.15;
+  letter-spacing: normal;
+  line-height: normal;
 }
 
 .brand-note {
@@ -139,14 +144,16 @@ summary:focus-visible {
 }
 
 .local-badge {
+  position: absolute;
+  right: 1em;
   display: inline-flex;
   align-items: center;
   gap: 8px;
   padding: 7px 11px;
-  color: var(--ink-soft);
-  border: 1px solid var(--line);
+  color: #fff;
+  border: 1px solid rgb(255 255 255 / 55%);
   border-radius: 999px;
-  background: rgb(255 253 248 / 56%);
+  background: rgb(255 255 255 / 14%);
   font-size: 12px;
   font-weight: 650;
   letter-spacing: 0.02em;
@@ -220,7 +227,7 @@ h1 em {
 
 .program-description {
   color: var(--ink);
-  font-family: var(--serif);
+  font-family: var(--sans);
   font-size: 19px;
   line-height: 1.65;
 }
@@ -1514,13 +1521,8 @@ h1 em {
 }
 
 @media (max-width: 640px) {
-  .site-header,
   main {
     width: min(100% - 28px, 1180px);
-  }
-
-  .site-header {
-    padding-top: 16px;
   }
 
   .brand-note,
