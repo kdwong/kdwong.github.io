@@ -173,9 +173,82 @@ main {
   margin: 0 auto;
 }
 
+.group-selector {
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 28px 0 0;
+  border: 0;
+  text-align: center;
+}
+
+.group-selector legend {
+  width: 100%;
+  margin-bottom: 8px;
+  padding: 0;
+  color: var(--ink-soft);
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.group-options {
+  display: inline-grid;
+  grid-template-columns: repeat(2, minmax(150px, 1fr));
+  gap: 4px;
+  padding: 4px;
+  background: rgb(255 253 248 / 78%);
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  box-shadow: var(--shadow-sm);
+}
+
+.group-options label {
+  position: relative;
+  cursor: pointer;
+}
+
+.group-options input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.group-options span {
+  min-height: 42px;
+  padding: 9px 16px;
+  display: grid;
+  place-items: center;
+  color: var(--ink-soft);
+  border-radius: 7px;
+  font-size: 14px;
+  font-weight: 700;
+  transition: color 150ms ease, background 150ms ease, box-shadow 150ms ease;
+}
+
+.group-options input:checked + span {
+  color: #fff;
+  background: var(--teal);
+  box-shadow: 0 3px 12px rgb(22 79 75 / 18%);
+}
+
+.group-options input:focus-visible + span {
+  outline: 3px solid rgb(185 77 53 / 28%);
+  outline-offset: 3px;
+}
+
+#group-selector-hint {
+  margin: 7px 0 0;
+  color: var(--ink-faint);
+  font-size: 12px;
+}
+
 .hero {
   min-height: 475px;
-  padding: 58px 0 74px;
+  padding: 38px 0 74px;
   display: grid;
   grid-template-columns: minmax(0, 1.05fr) minmax(430px, 0.95fr);
   align-items: center;
@@ -1525,6 +1598,22 @@ h1 em {
     width: min(100% - 28px, 1180px);
   }
 
+  .group-selector {
+    width: 100%;
+    padding-top: 22px;
+  }
+
+  .group-options {
+    width: 100%;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .group-options span {
+    padding-right: 9px;
+    padding-left: 9px;
+    font-size: 13px;
+  }
+
   .brand-note,
   .local-badge {
     display: none;
@@ -1686,7 +1775,7 @@ h1 em {
   :root { --paper: #fff; --surface: #fff; }
 
   body { background: #fff; }
-  .site-header, .hero, .loading-view, .k-navigation, .toggle-paths { display: none !important; }
+  .site-header, .group-selector, .hero, .loading-view, .k-navigation, .toggle-paths { display: none !important; }
   main { width: 100%; }
   .results-view { padding: 0; border: 0; }
   .pbp-group, .tower-panel { break-inside: avoid; box-shadow: none; }
