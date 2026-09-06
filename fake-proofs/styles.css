@@ -1,0 +1,271 @@
+body {
+      min-width: 320px;
+      margin: 0;
+      color: #182a2a;
+      background:
+        radial-gradient(circle at 8% 8%, rgb(255 255 255 / 70%) 0, transparent 28rem),
+        linear-gradient(180deg, #f6f1e8 0, #f4efe4 34rem, #eee7da 100%);
+      font-family: Arial, sans-serif;
+      font-size: 16px;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    #banner {
+      padding: 1em 0;
+      background: #B795C0;
+      color: white;
+      text-align: center;
+    }
+
+    #banner h1 {
+      font-size: 150%;
+      margin: 0;
+    }
+
+    .nowrap {
+      white-space: nowrap;
+    }
+
+    .inner {
+      max-width: 800px;
+      margin: auto;
+      padding: 0.5em;
+    }
+
+    nav {
+      padding: 0.7em 0 0;
+      text-align: center;
+    }
+
+    nav a {
+      display: inline-block;
+      margin: 0.25em 0.65em;
+    }
+
+    main {
+      max-width: 800px;
+      margin: auto;
+      padding: 0.5em;
+      counter-reset: exercise;
+    }
+
+    h2 {
+      margin: 2em 0 1em;
+      padding-bottom: 0.35em;
+      border-bottom: 2px solid #B795C0;
+      color: #182a2a;
+      font-size: 1.17em;
+    }
+
+    .intro {
+      max-width: 800px;
+      margin: 0 auto 1.5em;
+      padding: 0.5em;
+    }
+
+    .lede {
+      margin-top: 0;
+    }
+
+    table {
+      display: block;
+      width: 100%;
+      margin: 1.2em 0 2.5em;
+      border: 0;
+      background: transparent;
+    }
+
+    thead {
+      display: none;
+    }
+
+    tbody {
+      display: block;
+    }
+
+    tbody tr {
+      display: block;
+      margin-bottom: 1.6em;
+      border: 1px solid #d8cfd9;
+      border-radius: 8px;
+      overflow: hidden;
+      background: rgb(255 255 255 / 72%);
+      box-shadow: 0 2px 8px rgb(66 43 70 / 7%);
+      counter-increment: exercise;
+    }
+
+    td {
+      display: block;
+      padding: 1em 1.15em;
+      border: 0;
+      border-bottom: 1px solid #ddd5cf;
+      overflow-wrap: anywhere;
+    }
+
+    td:last-child {
+      border-bottom: 0;
+    }
+
+    td:empty {
+      display: none;
+    }
+
+    td::before {
+      display: block;
+      margin-bottom: 0.55em;
+      color: #6c3483;
+      font-weight: bold;
+    }
+
+    td:nth-child(1)::before {
+      content: counter(exercise) ".";
+      display: inline;
+      margin-right: 0.35em;
+      font-size: 1.08em;
+    }
+
+    td:nth-child(2)::before {
+      content: "(a) Proof of statement";
+    }
+
+    td:nth-child(3)::before {
+      content: "(b) Where does the proof go wrong?";
+    }
+
+    td:nth-child(4)::before {
+      content: "(c) Is the statement correct? If so, give a correct proof. Otherwise, give a counterexample.";
+    }
+
+    td:nth-child(4) details {
+      background: #edf5f8;
+      border-left-color: #5b8196;
+    }
+
+    td:nth-child(4) details summary {
+      color: #315f73;
+    }
+
+
+    mjx-container[display="true"] {
+      max-width: 100%;
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
+
+    .true {
+      color: #2d6a4f;
+      font-weight: bold;
+    }
+
+    .false {
+      color: #9d3d3d;
+      font-weight: bold;
+    }
+
+    .small {
+      font-size: 0.92em;
+    }
+
+    details {
+      margin: 0.4em 0;
+      padding: 0.5em 0.7em;
+      background: #f7f1f8;
+      border-left: 4px solid #B795C0;
+      border-radius: 0 6px 6px 0;
+    }
+
+    details summary {
+      cursor: pointer;
+      font-weight: bold;
+      color: #6c3483;
+    }
+
+    details[open] {
+      background: rgb(255 255 255 / 65%);
+    }
+
+    .fake {
+      background: #f7f1f8;
+      border-left-color: #B795C0;
+    }
+
+    .correct {
+      background: #f1f7f2;
+      border-left-color: #4d7c5b;
+    }
+
+    .warning {
+      background: #fbf6e8;
+      border-left-color: #c69026;
+    }
+
+    .counterexample {
+      background: #fbefef;
+      border-left-color: #a34a4a;
+    }
+
+    footer {
+      max-width: 800px;
+      margin: 2em auto 0;
+      padding: 1.2em 0.5em;
+      border-top: 1px solid rgb(183 149 192 / 55%);
+      text-align: center;
+      font-size: 0.9em;
+    }
+
+    @media screen and (max-width: 600px) {
+      td {
+        padding: 0.9em;
+      }
+    }
+nav a[aria-current="page"] {
+  color: #4f245f;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.topic-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 1rem;
+  margin: 1.5em 0 2.5em;
+}
+
+.topic-card {
+  display: flex;
+  min-height: 10rem;
+  padding: 1.2rem;
+  border: 1px solid #d8cfd9;
+  border-radius: 8px;
+  background: rgb(255 255 255 / 76%);
+  box-shadow: 0 2px 8px rgb(66 43 70 / 7%);
+  color: #182a2a;
+  flex-direction: column;
+  text-decoration: none;
+  transition: border-color 120ms ease, box-shadow 120ms ease, transform 120ms ease;
+}
+
+.topic-card:hover,
+.topic-card:focus-visible {
+  border-color: #B795C0;
+  box-shadow: 0 5px 14px rgb(66 43 70 / 13%);
+  transform: translateY(-2px);
+}
+
+.topic-title {
+  color: #6c3483;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.topic-count {
+  margin: 0.3rem 0 0.8rem;
+  color: #5b6870;
+  font-size: 0.92rem;
+  font-weight: bold;
+}
+
+.topic-description {
+  margin: 0;
+}

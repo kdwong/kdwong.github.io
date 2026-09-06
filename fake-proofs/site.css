@@ -1,0 +1,59 @@
+/* Extend the existing Fake Proofs in Abstract Algebra I stylesheet. */
+* { box-sizing: border-box; }
+a { color: #6c3483; text-underline-offset: 3px; }
+a:hover { color: #4f245f; }
+a:focus-visible, button:focus-visible, summary:focus-visible { outline: 3px solid #6c3483; outline-offset: 4px; }
+#banner { padding: 1.25em .6em; }
+main { padding: 1em .75em; }
+.intro { padding: .5em 0; }
+.intro p { margin: 0 0 1.1em; }
+.course-title { margin-top: .65em; }
+.course-code { display: block; color: #6c3483; font-size: .9rem; letter-spacing: .05em; margin-bottom: .25em; }
+.topic-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.topic-card { min-height: 10rem; }
+.topic-count { font-size: .9rem; }
+.tasks { padding-left: 1.5em; list-style-type: lower-alpha; }
+.tasks li { padding-left: .3em; margin: .6em 0; }
+.reference { color: #5e6266; font-size: .85rem; }
+.exercise { margin: 1.5em 0; border: 1px solid #d8cfd9; border-radius: 8px; background: rgb(255 255 255 / 76%); box-shadow: 0 2px 8px rgb(66 43 70 / 7%); overflow: hidden; }
+.exercise-header { padding: 1.15em 1.3em 1em; border-bottom: 1px solid #ddd5cf; }
+.exercise-meta { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; color: #68606b; font-size: .9rem; }
+.exercise-meta time { color: #6c3483; font-weight: bold; }
+.exercise-header h3 { font-size: 1.13rem; margin: .65em 0 .55em; }
+.exercise-header p { margin: .6em 0 0; }
+.exercise-body { padding: 1.2em 1.3em; }
+.animation-label { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: .5em; margin-bottom: .75em; }
+.animation-label h4 { color: #6c3483; margin: 0; font-size: 1rem; }
+.animation-label span { color: #69626c; font-size: .85rem; }
+.chat-animation { width: 100%; height: 720px; display: block; border: 0; border-radius: 8px; background: #fff; }
+.animation-links { display: flex; justify-content: space-between; gap: 14px; flex-wrap: wrap; font-size: .85rem; margin: .65em 0 1.25em; }
+.exercise-body h4 { margin: 1.35em 0 .4em; }
+.exercise-body details { margin-top: .9em; padding: .8em 1em; }
+.exercise-body details p { margin: .8em 0; }
+.exercise-body summary { font-size: .95rem; }
+.transcript { font-size: 1rem; line-height: 1.8; }
+.written-proof { margin-top: 1em; padding-top: .25em; border-top: 1px solid #ddd5cf; }
+.written-proof h4 { color: #6c3483; }
+.katex-display { overflow-x: auto; overflow-y: hidden; padding: .2em 0; }
+.katex { font-size: 1.08em; }
+.entry-index { margin-top: 1.25em; color: #625a66; }
+.course-topics { margin-top: 1.5em; }
+.topic-nav { text-align: left; padding: 0 0 .5em; border-bottom: 1px solid #d8cfd9; }
+.topic-nav a:first-child { margin-left: 0; }
+.course-topics .topic-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+footer { margin-top: 2.5em; }
+@media (max-width: 600px) {
+  #banner h1 { font-size: 1.3rem; }
+  nav a { margin: .3em .4em; font-size: .9rem; }
+  main { padding: .75em; }
+  .topic-grid, .course-topics .topic-grid { grid-template-columns: 1fr; }
+  .topic-card { min-height: auto; }
+  .exercise-header, .exercise-body { padding: 1em .8em; }
+  .chat-animation { height: 715px; }
+  .exercise-header h3 { font-size: 1.05rem; }
+  .katex-display { font-size: .88em; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .topic-card { transition: none; }
+  .topic-card:hover, .topic-card:focus-visible { transform: none; }
+}
