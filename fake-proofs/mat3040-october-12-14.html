@@ -31,24 +31,12 @@
         <div class="transcript">
           <p>Suppose, for the sake of contradiction, that <span class="math-inline"><i>S</i> ≠ <i>T</i></span>. Without loss of generality, choose</p>
           <div class="math-display"><i>v</i> ∈ <i>S</i> ∖ <i>T</i>.</div>
-          <p>Take a basis</p>
-          <div class="math-display">{<i>v</i><sub>1</sub>, …, <i>v</i><sub><i>k</i></sub>}</div>
-          <p>of <span class="math-inline">Span(<i>T</i>)</span>. Since <span class="math-inline"><i>v</i> ∉ <i>T</i></span>, we may extend</p>
-          <div class="math-display">{<i>v</i><sub>1</sub>, …, <i>v</i><sub><i>k</i></sub>, <i>v</i>}</div>
-          <p>to a basis</p>
-          <div class="math-display">{<i>v</i><sub>1</sub>, …, <i>v</i><sub><i>k</i></sub>, <i>v</i>, <i>v</i><sub><i>k</i>+2</sub>, …, <i>v</i><sub><i>n</i></sub>}</div>
-          <p>of <span class="math-inline"><i>V</i></span>.</p>
+          <p>Take a basis <span class="math-inline">{<i>v</i><sub>1</sub>, …, <i>v</i><sub><i>k</i></sub>}</span> of <span class="math-inline">Span(<i>T</i>)</span>. Since <span class="math-inline"><i>v</i> ∉ <i>T</i></span>, we may extend to a linearly independent set <span class="math-inline">{<i>v</i><sub>1</sub>, …, <i>v</i><sub><i>k</i></sub>, <i>v</i>}</span> and then to a basis <span class="math-inline">{<i>v</i><sub>1</sub>, …, <i>v</i><sub><i>k</i></sub>, <i>v</i>, <i>v</i><sub><i>k</i>+2</sub>, …, <i>v</i><sub><i>n</i></sub>}</span> of <span class="math-inline"><i>V</i></span>.</p>
           <p>Define <span class="math-inline"><i>f</i> ∈ <i>V</i><sup>*</sup></span> on this basis by</p>
           <div class="math-display"><i>f</i>(<i>v</i><sub>1</sub>) = ··· = <i>f</i>(<i>v</i><sub><i>k</i></sub>) = 0, &nbsp;&nbsp; <i>f</i>(<i>v</i>) = 1,</div>
           <p>and</p>
           <div class="math-display"><i>f</i>(<i>v</i><sub><i>k</i>+2</sub>) = ··· = <i>f</i>(<i>v</i><sub><i>n</i></sub>) = 0.</div>
-          <p>Then <span class="math-inline"><i>f</i></span> vanishes on <span class="math-inline">Span(<i>T</i>)</span>, and hence</p>
-          <div class="math-display"><i>f</i> ∈ Ann(<i>T</i>).</div>
-          <p>By hypothesis,</p>
-          <div class="math-display">Ann(<i>T</i>) = Ann(<i>S</i>),</div>
-          <p>so <span class="math-inline"><i>f</i> ∈ Ann(<i>S</i>)</span>. Since <span class="math-inline"><i>v</i> ∈ <i>S</i></span>, this implies</p>
-          <div class="math-display"><i>f</i>(<i>v</i>) = 0,</div>
-          <p>contradicting <span class="math-inline"><i>f</i>(<i>v</i>) = 1</span>. Therefore <span class="math-inline"><i>S</i> = <i>T</i></span>. □</p>
+          <p>Then <span class="math-inline"><i>f</i></span> vanishes on <span class="math-inline">Span(<i>T</i>)</span>, and hence <span class="math-inline"><i>f</i> ∈ Ann(<i>T</i>)</span>. By hypothesis <span class="math-inline">Ann(<i>T</i>) = Ann(<i>S</i>)</span>, so <span class="math-inline"><i>f</i> ∈ Ann(<i>S</i>)</span>. Since <span class="math-inline"><i>v</i> ∈ <i>S</i></span>, this implies <span class="math-inline"><i>f</i>(<i>v</i>) = 0</span>, contradicting <span class="math-inline"><i>f</i>(<i>v</i>) = 1</span>. Therefore <span class="math-inline"><i>S</i> = <i>T</i></span>. □</p>
         </div>
       </section>
     </div>
