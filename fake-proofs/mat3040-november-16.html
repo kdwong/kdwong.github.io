@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>November 16 · MAT3040 · Fake Proofs in Mathematics</title>
+  <meta name="description" content="November 16: explore a FakeGPT proof of the Cauchy–Schwarz inequality in a complex inner product space.">
+  <link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="site.css"><link rel="stylesheet" href="assets/katex/katex.min.css">
+  <style>
+    .math-display { margin: .9em 0; overflow-x: auto; overflow-y: hidden; padding: .2em 0; text-align: center; }
+    .math-inline { white-space: nowrap; }
+  </style>
+</head>
+<body>
+<header id="banner"><h1>Fake Proofs in Mathematics</h1></header>
+<nav aria-label="Courses"><div class="inner">
+  <a href="/index.html">Home</a><a href="index.html">Fake Proofs</a><a href="mat3004.html">MAT3004 Abstract Algebra I</a><a href="mat3040.html">MAT3040 Advanced Linear Algebra</a>
+</div></nav>
+<main>
+  <h2 class="course-title">MAT3040 Advanced Linear Algebra · <time datetime="2026-11-16">November 16</time></h2>
+  <p>My <strong>FakeGPT</strong> model generates a proof of the following statement for me. Do the following:</p>
+  <ol class="tasks" type="a"><li>Identify exactly where the proof goes wrong.</li><li>Decide whether the original statement is correct. If it is, give a correct proof. If it is not, give a counterexample.</li></ol>
+  <article class="exercise" id="cauchy-schwarz">
+    <div class="exercise-body">
+      <iframe class="chat-animation" src="animations/november-16-cauchy-schwarz.html?embed=1" title="FakeGPT gives a deliberately flawed proof of the Cauchy–Schwarz inequality" allow="fullscreen" allowfullscreen></iframe>
+      <section class="written-proof" aria-label="Statement and proposed proof">
+        <h4>Statement</h4>
+        <div class="statement">
+          <p>Let <span class="math-inline">V</span> be a complex inner product space. For any <span class="math-inline">\mathbf{u},\mathbf{v}\in V</span>,</p>
+          <div class="math-display">|\langle\mathbf{u},\mathbf{v}\rangle|\leq\|\mathbf{u}\|\,\|\mathbf{v}\|.</div>
+        </div>
+        <h4>Proposed proof</h4>
+        <div class="transcript">
+          <p>For any <span class="math-inline">t\in\mathbb{C}</span>, positivity gives</p>
+          <div class="math-display">\langle\mathbf{u}+t\mathbf{v},\,\mathbf{u}+t\mathbf{v}\rangle\geq 0.</div>
+          <p>Expanding the inner product, we obtain</p>
+          <div class="math-display">\langle\mathbf{u},\mathbf{u}\rangle+2t\langle\mathbf{u},\mathbf{v}\rangle+t^2\langle\mathbf{v},\mathbf{v}\rangle\geq 0.</div>
+          <p>In particular, this quadratic expression is nonnegative for all real <span class="math-inline">t</span>. Therefore its discriminant is nonpositive:</p>
+          <div class="math-display">4|\langle\mathbf{u},\mathbf{v}\rangle|^2-4\langle\mathbf{u},\mathbf{u}\rangle\langle\mathbf{v},\mathbf{v}\rangle\leq 0.</div>
+          <p>It follows that</p>
+          <div class="math-display">|\langle\mathbf{u},\mathbf{v}\rangle|\leq\|\mathbf{u}\|\,\|\mathbf{v}\|,</div>
+          <p>as required.</p>
+        </div>
+      </section>
+    </div>
+  </article>
+</main>
+<script src="assets/katex/katex.min.js"></script>
+<script>
+  document.querySelectorAll('.math-inline, .math-display').forEach(function(element) {
+    katex.render(element.textContent, element, {
+      displayMode: element.classList.contains('math-display'),
+      throwOnError: false,
+      trust: false
+    });
+  });
+</script>
+</body>
+</html>
